@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "username": "john_doe",
+    "fullname": "John Doe",
+    "email": "john@example.com",
+    "phone": "0912345678",
+    "role": "Manager"
+  },
+  {
+    "id": 2,
+    "username": "anna_smith",
+    "fullname": "Anna Smith",
+    "email": "anna@example.com",
+    "phone": "0987654321",
+    "role": "Member"
+  },
+  {
+    "id": 3,
+    "username": "david_lee",
+    "fullname": "David Lee",
+    "email": "david@example.com",
+    "phone": "0909090909",
+    "role": "Member"
+  }
+]

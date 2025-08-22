@@ -1,1 +1,277 @@
-<p>landing works!</p>
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-background">
+    <div class="hero-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+  </div>
+  
+  <div class="container">
+    <nav class="navbar">
+      <div class="nav-brand">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#FF5E13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="#FF5E13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="#FF5E13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>MeetingPro</span>
+        </div>
+      </div>
+      
+      <div class="nav-menu">
+        <a href="#features" (click)="scrollToSection('features')">Features</a>
+        <a href="#about" (click)="scrollToSection('about')">About</a>
+        <a href="#testimonials" (click)="scrollToSection('testimonials')">Reviews</a>
+        <a href="#contact" (click)="scrollToSection('contact')">Contact</a>
+      </div>
+      
+      <div class="nav-actions">
+        <a routerLink="/auth/login" class="btn btn-outline">Sign In</a>
+        <a routerLink="/auth/register" class="btn btn-primary">Get Started</a>
+      </div>
+    </nav>
+
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">
+          Transform Your
+          <span class="gradient-text">Meetings</span>
+          Into Success
+        </h1>
+        <p class="hero-description">
+          The ultimate meeting support platform that helps teams collaborate, 
+          track progress, and achieve goals faster than ever before.
+        </p>
+        <div class="hero-actions">
+          <a routerLink="/auth/register" class="btn btn-primary btn-large">
+            Start Free Trial
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <button class="btn btn-play">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 5V19L19 12L8 5Z" fill="#FF5E13"/>
+            </svg>
+            Watch Demo
+          </button>
+        </div>
+      </div>
+      
+      <div class="hero-visual">
+        <div class="hero-image">
+          <div class="floating-card card-1">
+            <div class="card-icon">📅</div>
+            <div class="card-content">
+              <div class="card-title">Meeting Scheduled</div>
+              <div class="card-time">2:00 PM Today</div>
+            </div>
+          </div>
+          <div class="floating-card card-2">
+            <div class="card-icon">✅</div>
+            <div class="card-content">
+              <div class="card-title">Task Completed</div>
+              <div class="card-status">Project Review</div>
+            </div>
+          </div>
+          <div class="floating-card card-3">
+            <div class="card-icon">📊</div>
+            <div class="card-content">
+              <div class="card-title">Progress</div>
+              <div class="card-progress">85% Complete</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item" *ngFor="let stat of stats">
+        <div class="stat-number">{{ stat.number }}</div>
+        <div class="stat-label">{{ stat.label }}</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="features-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Why Choose MeetingPro?</h2>
+      <p class="section-description">
+        Built with modern technology and user experience in mind, 
+        MeetingPro delivers everything your team needs to succeed.
+      </p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let feature of features">
+        <div class="feature-icon">{{ feature.icon }}</div>
+        <h3 class="feature-title">{{ feature.title }}</h3>
+        <p class="feature-description">{{ feature.description }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="about-section">
+  <div class="container">
+    <div class="about-content">
+      <div class="about-text">
+        <h2 class="section-title">Built for Modern Teams</h2>
+        <p class="section-description">
+          MeetingPro is designed to address the real challenges that teams face 
+          in today's fast-paced business environment. From scheduling conflicts 
+          to tracking action items, we've got you covered.
+        </p>
+        
+        <div class="about-features">
+          <div class="about-feature">
+            <div class="feature-check">✓</div>
+            <span>Intelligent scheduling with conflict detection</span>
+          </div>
+          <div class="about-feature">
+            <div class="feature-check">✓</div>
+            <span>Real-time collaboration tools</span>
+          </div>
+          <div class="about-feature">
+            <div class="feature-check">✓</div>
+            <span>Advanced analytics and reporting</span>
+          </div>
+          <div class="about-feature">
+            <div class="feature-check">✓</div>
+            <span>Mobile-first responsive design</span>
+          </div>
+        </div>
+        
+        <a routerLink="/auth/register" class="btn btn-primary">Learn More</a>
+      </div>
+      
+      <div class="about-visual">
+        <div class="about-image">
+          <div class="mockup-device">
+            <div class="device-screen">
+              <div class="screen-content">
+                <div class="app-header">
+                  <div class="app-title">MeetingPro</div>
+                  <div class="app-status">Online</div>
+                </div>
+                <div class="app-menu">
+                  <div class="menu-item active">Dashboard</div>
+                  <div class="menu-item">Meetings</div>
+                  <div class="menu-item">Tasks</div>
+                  <div class="menu-item">Analytics</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section id="testimonials" class="testimonials-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">What Our Users Say</h2>
+      <p class="section-description">
+        Join thousands of satisfied teams who have transformed their 
+        meeting experience with MeetingPro.
+      </p>
+    </div>
+    
+    <div class="testimonials-grid">
+      <div class="testimonial-card" *ngFor="let testimonial of testimonials">
+        <div class="testimonial-content">
+          <p>"{{ testimonial.content }}"</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar">{{ testimonial.avatar }}</div>
+          <div class="author-info">
+            <div class="author-name">{{ testimonial.name }}</div>
+            <div class="author-role">{{ testimonial.role }} at {{ testimonial.company }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-content">
+      <h2 class="cta-title">Ready to Transform Your Meetings?</h2>
+      <p class="cta-description">
+        Join thousands of teams who are already using MeetingPro to 
+        make their meetings more productive and engaging.
+      </p>
+      <div class="cta-actions">
+        <a routerLink="/auth/register" class="btn btn-primary btn-large">Get Started Free</a>
+        <a routerLink="/auth/login" class="btn btn-outline btn-large">Sign In</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#FF5E13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="#FF5E13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="#FF5E13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>MeetingPro</span>
+        </div>
+        <p>Transform your meetings into success with our intelligent platform.</p>
+      </div>
+      
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>Product</h4>
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#integrations">Integrations</a>
+        </div>
+        <div class="footer-column">
+          <h4>Company</h4>
+          <a href="#about">About</a>
+          <a href="#careers">Careers</a>
+          <a href="#contact">Contact</a>
+        </div>
+        <div class="footer-column">
+          <h4>Support</h4>
+          <a href="#help">Help Center</a>
+          <a href="#docs">Documentation</a>
+          <a href="#status">Status</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <div class="footer-copyright">
+        © 2024 MeetingPro. All rights reserved.
+      </div>
+      <div class="footer-legal">
+        <a href="#privacy">Privacy Policy</a>
+        <a href="#terms">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+</footer>
