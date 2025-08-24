@@ -1,0 +1,334 @@
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="hero-background">
+    <div class="hero-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+  </div>
+  
+  <div class="container">
+    <nav class="navbar">
+      <div class="nav-brand">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#FF5E13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="#FF5E13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="#FF5E13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>MSP</span>
+        </div>
+      </div>
+      
+      <div class="nav-menu">
+        <a href="#features" (click)="scrollToSection('features')">Tính Năng</a>
+        <a href="#pricing" (click)="scrollToSection('pricing')">Giá Cả</a>
+        <a href="#about" (click)="scrollToSection('about')">Giới Thiệu</a>
+        <a href="#testimonials" (click)="scrollToSection('testimonials')">Đánh Giá</a>
+        <a href="#contact" (click)="scrollToSection('contact')">Liên Hệ</a>
+      </div>
+      
+      <div class="nav-actions">
+        <a routerLink="/auth/login" class="btn btn-outline">Đăng Nhập</a>
+        <a routerLink="/auth/register" class="btn btn-primary">Đăng Ký Doanh Nghiệp</a>
+      </div>
+    </nav>
+
+    <div class="hero-content">
+      <div class="hero-text">
+        <h1 class="hero-title">
+          Biến Đổi
+          <span class="gradient-text">Cuộc Họp Kinh Doanh</span>
+          Thành Thành Công
+        </h1>
+        <p class="hero-description">
+          Nền tảng hỗ trợ cuộc họp tối ưu được thiết kế cho chủ doanh nghiệp và nhóm. 
+          Tối ưu hóa hợp tác, theo dõi tiến độ và đạt được mục tiêu kinh doanh nhanh hơn bao giờ hết.
+        </p>
+        <div class="hero-actions">
+          <a routerLink="/auth/register" class="btn btn-primary btn-large">
+            Đăng Ký Doanh Nghiệp
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <button class="btn btn-play">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8 5V19L19 12L8 5Z" fill="#FF5E13"/>
+            </svg>
+            Xem Demo
+          </button>
+        </div>
+      </div>
+      
+      <div class="hero-visual">
+        <div class="hero-image">
+          <div class="floating-card card-1">
+            <div class="card-icon">📅</div>
+            <div class="card-content">
+              <div class="card-title">Cuộc Họp Đã Lên Lịch</div>
+              <div class="card-time">2:00 PM Hôm Nay</div>
+            </div>
+          </div>
+          <div class="floating-card card-2">
+            <div class="card-icon">✅</div>
+            <div class="card-content">
+              <div class="card-title">Công Việc Hoàn Thành</div>
+              <div class="card-status">Đánh Giá Dự Án</div>
+            </div>
+          </div>
+          <div class="floating-card card-3">
+            <div class="card-icon">📊</div>
+            <div class="card-content">
+              <div class="card-title">Tiến Độ</div>
+              <div class="card-progress">85% Hoàn Thành</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item" *ngFor="let stat of stats">
+        <div class="stat-number">{{ stat.number }}</div>
+        <div class="stat-label">{{ stat.label }}</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="features-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Tại Sao Chủ Doanh Nghiệp Chọn MeetingPro?</h2>
+      <p class="section-description">
+        Được xây dựng với công nghệ hiện đại và nhu cầu kinh doanh, 
+        MeetingPro cung cấp mọi thứ doanh nghiệp của bạn cần để thành công.
+      </p>
+    </div>
+    
+    <div class="features-grid">
+      <div class="feature-card" *ngFor="let feature of features">
+        <div class="feature-icon">{{ feature.icon }}</div>
+        <h3 class="feature-title">{{ feature.title }}</h3>
+        <p class="feature-description">{{ feature.description }}</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="pricing-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Chọn Gói Của Bạn</h2>
+      <p class="section-description">
+        Tùy chọn giá cả linh hoạt được thiết kế cho doanh nghiệp mọi quy mô. 
+        Bắt đầu với dùng thử miễn phí và nâng cấp khi bạn sẵn sàng.
+      </p>
+    </div>
+    
+          <div class="pricing-toggle">
+        <span>Theo Tháng</span>
+        <label class="switch">
+          <input type="checkbox" [(ngModel)]="isYearlyBilling" (change)="toggleBilling()" aria-label="Toggle yearly billing">
+          <span class="slider"></span>
+        </label>
+        <span>Theo Năm <span class="save-badge">Tiết Kiệm 20%</span></span>
+      </div>
+    
+    <div class="pricing-grid">
+      <div class="pricing-card" *ngFor="let plan of pricingPlans" [class.featured]="plan.featured">
+        <div class="plan-header">
+          <h3 class="plan-name">{{ plan.name }}</h3>
+          <div class="plan-price">
+            <span class="currency">$</span>
+            <span class="amount">{{ plan.price }}</span>
+            <span class="period">/{{ isYearlyBilling ? 'năm' : 'tháng' }}</span>
+          </div>
+          <p class="plan-description">{{ plan.description }}</p>
+        </div>
+        
+        <div class="plan-features">
+          <div class="feature-item" *ngFor="let feature of plan.features">
+            <svg class="feature-check" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 6L9 17L4 12" stroke="#10B981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>{{ feature }}</span>
+          </div>
+        </div>
+        
+        <div class="plan-actions">
+          <a [routerLink]="plan.featured ? '/auth/register' : '/auth/register'" 
+             class="btn" 
+             [class.btn-primary]="plan.featured" 
+             [class.btn-outline]="!plan.featured">
+            {{ plan.featured ? 'Đăng Ký Ngay' : 'Đăng Ký' }}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="about-section">
+  <div class="container">
+    <div class="about-content">
+      <div class="about-text">
+        <h2 class="section-title">Được Xây Dựng Cho Nhóm Hiện Đại</h2>
+        <p class="section-description">
+          MeetingPro được thiết kế để giải quyết những thách thức thực tế mà nhóm phải đối mặt 
+          trong môi trường kinh doanh nhanh chóng ngày nay. Từ xung đột lịch trình 
+          đến theo dõi các mục hành động, chúng tôi đã bao phủ mọi thứ.
+        </p>
+        
+                  <div class="about-features">
+            <div class="about-feature">
+              <div class="feature-check">✓</div>
+              <span>Lập lịch thông minh với phát hiện xung đột</span>
+            </div>
+            <div class="about-feature">
+              <div class="feature-check">✓</div>
+              <span>Công cụ hợp tác thời gian thực</span>
+            </div>
+            <div class="about-feature">
+              <div class="feature-check">✓</div>
+              <span>Phân tích và báo cáo nâng cao</span>
+            </div>
+            <div class="about-feature">
+              <div class="feature-check">✓</div>
+              <span>Thiết kế responsive ưu tiên di động</span>
+            </div>
+          </div>
+        
+        <a routerLink="/auth/register" class="btn btn-primary">Đăng Ký Ngay</a>
+      </div>
+      
+      <div class="about-visual">
+        <div class="about-image">
+          <div class="mockup-device">
+            <div class="device-screen">
+              <div class="screen-content">
+                <div class="app-header">
+                  <div class="app-title">MeetingPro</div>
+                  <div class="app-status">Online</div>
+                </div>
+                <div class="app-menu">
+                  <div class="menu-item active">Bảng Điều Khiển</div>
+                  <div class="menu-item">Cuộc Họp</div>
+                  <div class="menu-item">Công Việc</div>
+                  <div class="menu-item">Phân Tích</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section id="testimonials" class="testimonials-section">
+  <div class="container">
+    <div class="section-header">
+      <h2 class="section-title">Người Dùng Nói Gì</h2>
+      <p class="section-description">
+        Tham gia hàng nghìn nhóm hài lòng đã thay đổi 
+        trải nghiệm cuộc họp của họ với MeetingPro.
+      </p>
+    </div>
+    
+    <div class="testimonials-grid">
+      <div class="testimonial-card" *ngFor="let testimonial of testimonials">
+        <div class="testimonial-content">
+          <p>"{{ testimonial.content }}"</p>
+        </div>
+        <div class="testimonial-author">
+          <div class="author-avatar">{{ testimonial.avatar }}</div>
+          <div class="author-info">
+            <div class="author-name">{{ testimonial.name }}</div>
+            <div class="author-role">{{ testimonial.role }} at {{ testimonial.company }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+  <div class="container">
+    <div class="cta-content">
+      <h2 class="cta-title">Sẵn Sàng Biến Đổi Cuộc Họp Kinh Doanh Của Bạn?</h2>
+      <p class="cta-description">
+        Tham gia hàng nghìn chủ doanh nghiệp đã sử dụng MeetingPro để 
+        tối ưu hóa hoạt động và đạt được kết quả kinh doanh tốt hơn.
+      </p>
+      <div class="cta-actions">
+        <a routerLink="/auth/register" class="btn btn-primary btn-large">Đăng Ký Doanh Nghiệp</a>
+        <a routerLink="/auth/login" class="btn btn-outline btn-large">Đăng Nhập</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="logo">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#FF5E13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="#FF5E13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="#FF5E13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>MSP</span>
+        </div>
+        <p>Biến đổi cuộc họp của bạn thành thành công với nền tảng thông minh của chúng tôi.</p>
+      </div>
+      
+      <div class="footer-links">
+        <div class="footer-column">
+          <h4>Sản Phẩm</h4>
+          <a href="#features">Tính Năng</a>
+          <a href="#pricing">Giá Cả</a>
+          <a href="#integrations">Tích Hợp</a>
+        </div>
+        <div class="footer-column">
+          <h4>Công Ty</h4>
+          <a href="#about">Giới Thiệu</a>
+          <a href="#careers">Tuyển Dụng</a>
+          <a href="#contact">Liên Hệ</a>
+        </div>
+        <div class="footer-column">
+          <h4>Hỗ Trợ</h4>
+          <a href="#help">Trung Tâm Trợ Giúp</a>
+          <a href="#docs">Tài Liệu</a>
+          <a href="#status">Trạng Thái</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <div class="footer-copyright">
+        © 2024 MeetingPro. All rights reserved.
+      </div>
+      <div class="footer-legal">
+        <a href="#privacy">Chính Sách Bảo Mật</a>
+        <a href="#terms">Điều Khoản Dịch Vụ</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+

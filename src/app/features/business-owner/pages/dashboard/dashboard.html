@@ -1,0 +1,518 @@
+<div class="business-owner-dashboard">
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading()">
+    <div class="loading-spinner"></div>
+    <p>Đang tải dữ liệu dashboard...</p>
+  </div>
+
+  <!-- Dashboard Content -->
+  <div class="dashboard-content" *ngIf="!isLoading()">
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div class="header-content">
+        <h1>Tổng Quan Dự Án</h1>
+        <p>Quản lý dự án, milestone và cuộc họp của tổ chức</p>
+      </div>
+                   <div class="header-actions">
+               <button class="btn-primary" (click)="openCreatePMModal()">
+                 <span class="icon">👤</span>
+                 Tạo PM Mới
+               </button>
+               <button class="btn-secondary" (click)="onViewAllMilestones()">
+                 <span class="icon">🎯</span>
+                 Xem Tất Cả Milestone
+               </button>
+             </div>
+    </div>
+
+    <!-- Quick Actions -->
+                 <div class="quick-actions">
+               <div class="action-card" (click)="openCreatePMModal()">
+                 <div class="action-icon">👤</div>
+                 <h3>Tạo PM Mới</h3>
+                 <p>Thêm Project Manager</p>
+               </div>
+               <div class="action-card" (click)="onViewAllMilestones()">
+                 <div class="action-icon">🎯</div>
+                 <h3>Xem Milestone</h3>
+                 <p>Theo dõi tiến độ</p>
+               </div>
+               <div class="action-card" (click)="onViewAllMeetings()">
+                 <div class="action-icon">📅</div>
+                 <h3>Lịch Họp</h3>
+                 <p>Xem cuộc họp</p>
+               </div>
+               <div class="action-card" (click)="onViewAllMeetings()">
+                 <div class="action-icon">👥</div>
+                 <h3>Quản Lý PM</h3>
+                 <p>Gán PM cho dự án</p>
+               </div>
+             </div>
+
+    <!-- Summary Stats -->
+    <div class="summary-stats">
+      <div class="stat-card">
+        <div class="stat-icon">📁</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ summaryStats().totalProjects }}</div>
+          <div class="stat-label">Tổng Dự Án</div>
+          <div class="stat-detail">{{ summaryStats().activeProjects }} đang hoạt động</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ summaryStats().totalMilestones }}</div>
+          <div class="stat-label">Tổng Milestone</div>
+          <div class="stat-detail">{{ summaryStats().completedMilestones }} hoàn thành</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">👨‍💼</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ summaryStats().totalPMs }}</div>
+          <div class="stat-label">Project Manager</div>
+          <div class="stat-detail">{{ summaryStats().availablePMs }} có sẵn</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-content">
+          <div class="stat-value">{{ summaryStats().upcomingMeetings }}</div>
+          <div class="stat-label">Cuộc Họp Sắp Tới</div>
+          <div class="stat-detail">Trong tuần này</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="dashboard-grid">
+      <!-- Project Management -->
+      <div class="dashboard-card project-management">
+                         <div class="card-header">
+                   <h2>Quản Lý Dự Án</h2>
+                   <div class="header-actions">
+                     <button class="btn-small" (click)="openCreatePMModal()">+ Tạo PM</button>
+                     <button class="btn-small" (click)="onViewAllMilestones()">Xem Tất Cả</button>
+                   </div>
+                 </div>
+        <div class="card-content">
+          <div class="projects-list">
+            <div class="project-item" *ngFor="let project of projects()">
+              <div class="project-header">
+                <div class="project-info">
+                  <h3 class="project-name">{{ project.name }}</h3>
+                  <div class="project-meta">
+                    <span class="project-status" [style.background-color]="getStatusColor(project.status)">
+                      {{ getStatusText(project.status) }}
+                    </span>
+                    <span class="project-priority" [style.background-color]="getPriorityColor(project.priority)">
+                      {{ getPriorityText(project.priority) }}
+                    </span>
+                    <span class="project-budget">${{ project.budget.toLocaleString() }}</span>
+                  </div>
+                </div>
+                <div class="project-actions">
+                  <button class="btn-small" (click)="onViewProjectDetails(project.id)">
+                    <span class="icon">👁️</span>
+                    Chi Tiết
+                  </button>
+                  <button class="btn-small" (click)="onEditProject(project.id)">
+                    <span class="icon">✏️</span>
+                    Sửa
+                  </button>
+                  <button 
+                    class="btn-small" 
+                    *ngIf="!project.manager"
+                    (click)="onAssignPM(project.id)"
+                  >
+                    <span class="icon">👤</span>
+                    Gán PM
+                  </button>
+                </div>
+              </div>
+              
+              <div class="project-details">
+                <div class="project-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="project.progress"></div>
+                  </div>
+                  <span class="progress-text">{{ project.progress }}%</span>
+                </div>
+                
+                <div class="project-stats">
+                  <div class="stat">
+                    <span class="stat-label">PM:</span>
+                    <span class="stat-value">{{ project.manager || 'Chưa gán' }}</span>
+                  </div>
+                  <div class="stat">
+                    <span class="stat-label">Team:</span>
+                    <span class="stat-value">{{ project.teamSize }} người</span>
+                  </div>
+                  <div class="stat">
+                    <span class="stat-label">Milestone:</span>
+                    <span class="stat-value">{{ project.completedMilestones }}/{{ project.totalMilestones }}</span>
+                  </div>
+                  <div class="stat">
+                    <span class="stat-label">Tasks:</span>
+                    <span class="stat-value">{{ project.completedTasks }}/{{ project.totalTasks }}</span>
+                  </div>
+                </div>
+
+                <div class="project-timeline">
+                  <div class="timeline-item">
+                    <span class="timeline-label">Bắt đầu:</span>
+                    <span class="timeline-value">{{ formatDate(project.startDate) }}</span>
+                  </div>
+                  <div class="timeline-item">
+                    <span class="timeline-label">Kết thúc:</span>
+                    <span class="timeline-value">{{ formatDate(project.endDate) }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Milestones Overview -->
+      <div class="dashboard-card milestones-overview">
+        <div class="card-header">
+          <h2>Tổng Quan Milestone</h2>
+          <div class="header-actions">
+            <button class="btn-small" (click)="onViewAllMilestones()">Xem Tất Cả</button>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="milestones-list">
+            <div class="milestone-item" *ngFor="let milestone of milestones()">
+              <div class="milestone-header">
+                <h4 class="milestone-name">{{ milestone.name }}</h4>
+                <span class="milestone-status" [style.background-color]="getMilestoneStatusColor(milestone.status)">
+                  {{ getMilestoneStatusText(milestone.status) }}
+                </span>
+              </div>
+              <p class="milestone-description">{{ milestone.description }}</p>
+              <div class="milestone-meta">
+                <div class="meta-item">
+                  <span class="meta-label">Dự án:</span>
+                  <span class="meta-value">{{ getProjectName(milestone.projectId) }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Người thực hiện:</span>
+                  <span class="meta-value">{{ milestone.assignedTo }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Hạn:</span>
+                  <span class="meta-value">{{ formatDate(milestone.dueDate) }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Tiến độ:</span>
+                  <span class="meta-value">{{ milestone.progress }}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming Meetings -->
+      <div class="dashboard-card upcoming-meetings">
+        <div class="card-header">
+          <h2>Cuộc Họp Sắp Tới</h2>
+          <div class="header-actions">
+            <button class="btn-small" (click)="onViewAllMeetings()">Xem Tất Cả</button>
+          </div>
+        </div>
+        <div class="card-content">
+          <div class="meetings-list">
+            <div class="meeting-item" *ngFor="let meeting of meetings()">
+              <div class="meeting-header">
+                <h4 class="meeting-title">{{ meeting.title }}</h4>
+                <span class="meeting-type">{{ getMeetingTypeText(meeting.type) }}</span>
+              </div>
+              <div class="meeting-meta">
+                <div class="meta-item">
+                  <span class="meta-label">Dự án:</span>
+                  <span class="meta-value">{{ getProjectName(meeting.projectId) }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Thời gian:</span>
+                  <span class="meta-value">{{ formatDateTime(meeting.date) }}</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Thời lượng:</span>
+                  <span class="meta-value">{{ meeting.duration }} phút</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Tham gia:</span>
+                  <span class="meta-value">{{ meeting.participants.length }} người</span>
+                </div>
+              </div>
+              <p class="meeting-agenda">{{ meeting.agenda }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Available Project Managers -->
+      <div class="dashboard-card available-pms">
+        <div class="card-header">
+          <h2>Project Manager Có Sẵn</h2>
+        </div>
+        <div class="card-content">
+          <div class="pms-list">
+            <div class="pm-item" *ngFor="let pm of getAvailablePMs()">
+              <div class="pm-header">
+                <div class="pm-avatar">{{ pm.avatar }}</div>
+                <div class="pm-info">
+                  <h4 class="pm-name">{{ pm.name }}</h4>
+                  <p class="pm-role">{{ pm.role }}</p>
+                </div>
+                <div class="pm-rating">
+                  <span class="rating-value">{{ pm.rating }}</span>
+                  <span class="rating-star">⭐</span>
+                </div>
+              </div>
+              <div class="pm-details">
+                <div class="pm-expertise">
+                  <span class="expertise-label">Chuyên môn:</span>
+                  <div class="expertise-tags">
+                    <span class="expertise-tag" *ngFor="let skill of pm.expertise">{{ skill }}</span>
+                  </div>
+                </div>
+                <div class="pm-capacity">
+                  <span class="capacity-label">Dự án:</span>
+                  <span class="capacity-value">{{ pm.managedProjects }}/{{ pm.maxProjects }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Assign PM Modal -->
+  <div class="modal-overlay" *ngIf="showAssignPMModal()" (click)="onCloseModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Gán Project Manager</h3>
+        <button class="modal-close" (click)="onCloseModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="project-info" *ngIf="selectedProject()">
+          <h4>Dự án: {{ selectedProject()?.name }}</h4>
+          <p>Chọn PM để gán cho dự án này:</p>
+        </div>
+        <div class="pm-selection">
+          <div class="pm-option" *ngFor="let pm of getAvailablePMs()" (click)="onAssignProjectToPM(selectedProject()?.id || 0, pm.id)">
+            <div class="pm-avatar">{{ pm.avatar }}</div>
+            <div class="pm-details">
+              <h5>{{ pm.name }}</h5>
+              <p>{{ pm.role }}</p>
+              <span class="pm-rating">⭐ {{ pm.rating }}</span>
+            </div>
+            <div class="pm-status">
+              <span class="status-available">Có sẵn</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Project Details Modal -->
+  <div class="modal-overlay" *ngIf="showProjectDetailsModal()" (click)="onCloseModal()">
+    <div class="modal-content large" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Chi Tiết Dự Án</h3>
+        <button class="modal-close" (click)="onCloseModal()">×</button>
+      </div>
+      <div class="modal-body" *ngIf="selectedProject()">
+        <div class="project-overview">
+          <h4>{{ selectedProject()?.name }}</h4>
+          <div class="project-stats-grid">
+            <div class="stat-item">
+              <span class="stat-label">Trạng thái:</span>
+              <span class="stat-value" [style.color]="getStatusColor(selectedProject()?.status || '')">
+                {{ getStatusText(selectedProject()?.status || '') }}
+              </span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Tiến độ:</span>
+              <span class="stat-value">{{ selectedProject()?.progress }}%</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">PM:</span>
+              <span class="stat-value">{{ selectedProject()?.manager || 'Chưa gán' }}</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Team size:</span>
+              <span class="stat-value">{{ selectedProject()?.teamSize }} người</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-milestones">
+          <h5>Milestones</h5>
+          <div class="milestones-grid">
+            <div class="milestone-card" *ngFor="let milestone of getProjectMilestones(selectedProject()?.id || 0)">
+              <div class="milestone-header">
+                <h6>{{ milestone.name }}</h6>
+                <span class="milestone-status" [style.background-color]="getMilestoneStatusColor(milestone.status)">
+                  {{ getMilestoneStatusText(milestone.status) }}
+                </span>
+              </div>
+              <p>{{ milestone.description }}</p>
+              <div class="milestone-meta">
+                <span>Hạn: {{ formatDate(milestone.dueDate) }}</span>
+                <span>Tiến độ: {{ milestone.progress }}%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-meetings">
+          <h5>Cuộc Họp</h5>
+          <div class="meetings-grid">
+            <div class="meeting-card" *ngFor="let meeting of getProjectMeetings(selectedProject()?.id || 0)">
+              <div class="meeting-header">
+                <h6>{{ meeting.title }}</h6>
+                <span class="meeting-type">{{ getMeetingTypeText(meeting.type) }}</span>
+              </div>
+              <div class="meeting-meta">
+                <span>Thời gian: {{ formatDateTime(meeting.date) }}</span>
+                <span>Thời lượng: {{ meeting.duration }} phút</span>
+              </div>
+              <p class="meeting-agenda">{{ meeting.agenda }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create New PM Modal -->
+<div *ngIf="showCreatePMModal()" class="modal-overlay" (click)="closeCreatePMModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Tạo Project Manager Mới</h2>
+      <button class="modal-close" (click)="closeCreatePMModal()">✕</button>
+    </div>
+    
+    <div class="modal-body">
+      <form (ngSubmit)="createNewPM()" #pmForm="ngForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="name">Họ Tên Đầy Đủ *</label>
+            <input 
+              type="text" 
+              id="name"
+              [(ngModel)]="newPMForm().name" 
+              name="name"
+              class="form-input"
+              [class.error]="formErrors()['name']"
+              placeholder="Nhập họ tên đầy đủ"
+            >
+            <span *ngIf="formErrors()['name']" class="error-message">{{ formErrors()['name'] }}</span>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Địa Chỉ Email *</label>
+            <input 
+              type="email" 
+              id="email"
+              [(ngModel)]="newPMForm().email" 
+              name="email"
+              class="form-input"
+              [class.error]="formErrors()['email']"
+              placeholder="Nhập địa chỉ email"
+            >
+            <span *ngIf="formErrors()['email']" class="error-message">{{ formErrors()['email'] }}</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="phone">Số Điện Thoại *</label>
+            <input 
+              type="tel" 
+              id="phone"
+              [(ngModel)]="newPMForm().phone" 
+              name="phone"
+              class="form-input"
+              [class.error]="formErrors()['phone']"
+              placeholder="Nhập số điện thoại"
+            >
+            <span *ngIf="formErrors()['phone']" class="error-message">{{ formErrors()['phone'] }}</span>
+          </div>
+          
+          <div class="form-group">
+            <label for="position">Chức Vụ *</label>
+            <input 
+              type="text" 
+              id="position"
+              [(ngModel)]="newPMForm().position" 
+              name="position"
+              class="form-input"
+              [class.error]="formErrors()['position']"
+              placeholder="Nhập chức vụ"
+            >
+            <span *ngIf="formErrors()['position']" class="error-message">{{ formErrors()['position'] }}</span>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="department">Phòng Ban *</label>
+            <input 
+              type="text" 
+              id="department"
+              [(ngModel)]="newPMForm().department" 
+              name="department"
+              class="form-input"
+              [class.error]="formErrors()['department']"
+              placeholder="Nhập phòng ban"
+            >
+            <span *ngIf="formErrors()['department']" class="error-message">{{ formErrors()['department'] }}</span>
+          </div>
+          
+          <div class="form-group">
+            <label for="startDate">Ngày Bắt Đầu *</label>
+            <input 
+              type="date" 
+              id="startDate"
+              [(ngModel)]="newPMForm().startDate" 
+              name="startDate"
+              class="form-input"
+              [class.error]="formErrors()['startDate']"
+            >
+            <span *ngIf="formErrors()['startDate']" class="error-message">{{ formErrors()['startDate'] }}</span>
+          </div>
+        </div>
+
+        <div class="form-info">
+          <p>📧 Email kích hoạt sẽ được gửi đến địa chỉ email đã cung cấp để thiết lập tài khoản.</p>
+          <p>🔐 Tài khoản mới sẽ được tạo với vai trò Project Manager và trạng thái chờ xử lý.</p>
+        </div>
+      </form>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeCreatePMModal()">Hủy</button>
+      <button 
+        class="btn btn-primary" 
+        (click)="createNewPM()"
+        [disabled]="isSubmitting()"
+      >
+        <span *ngIf="isSubmitting()" class="spinner-small"></span>
+        {{ isSubmitting() ? 'Đang tạo...' : 'Tạo Project Manager' }}
+      </button>
+    </div>
+  </div>
+</div>

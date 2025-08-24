@@ -1,0 +1,245 @@
+<div class="meetings-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Quản Lý Cuộc Họp</h1>
+      <p class="page-subtitle">Theo dõi và tham gia các cuộc họp của bạn</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="refreshMeetings()">
+        <span class="btn-icon">🔄</span>
+        Làm Mới
+      </button>
+      <button class="btn btn-primary" (click)="scheduleMeeting()">
+        <span class="btn-icon">📅</span>
+        Lên Lịch Họp
+      </button>
+    </div>
+  </div>
+
+  <!-- Meeting Stats -->
+  <div class="meeting-stats">
+    <div class="stat-item">
+      <div class="stat-icon">📅</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ meetingStats().total }}</div>
+        <div class="stat-label">Tổng Cuộc Họp</div>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon">⏰</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ meetingStats().upcoming }}</div>
+        <div class="stat-label">Sắp Diễn Ra</div>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon">🎥</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ meetingStats().ongoing }}</div>
+        <div class="stat-label">Đang Diễn Ra</div>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ meetingStats().completed }}</div>
+        <div class="stat-label">Đã Hoàn Thành</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="filters-section">
+    <div class="search-box">
+      <input 
+        type="text" 
+        placeholder="Tìm kiếm cuộc họp..."
+        [(ngModel)]="searchTerm"
+        (input)="filterMeetings()"
+        class="search-input"
+      >
+      <span class="search-icon">🔍</span>
+    </div>
+    
+    <div class="filter-options">
+      <select [(ngModel)]="statusFilter" (change)="filterMeetings()" class="filter-select" title="Trạng thái cuộc họp">
+        <option value="">Tất cả trạng thái</option>
+        <option value="upcoming">Sắp diễn ra</option>
+        <option value="ongoing">Đang diễn ra</option>
+        <option value="completed">Đã hoàn thành</option>
+        <option value="cancelled">Đã hủy</option>
+      </select>
+      
+      <select [(ngModel)]="typeFilter" (change)="filterMeetings()" class="filter-select" title="Loại cuộc họp">
+        <option value="">Tất cả loại</option>
+        <option value="online">Trực tuyến</option>
+        <option value="offline">Trực tiếp</option>
+      </select>
+      
+      <select [(ngModel)]="projectFilter" (change)="filterMeetings()" class="filter-select" title="Dự án">
+        <option value="">Tất cả dự án</option>
+        <option *ngFor="let project of projects()" [value]="project">{{ project }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Meetings List -->
+  <div class="meetings-container">
+    <div class="meetings-list">
+      <div 
+        *ngFor="let meeting of filteredMeetings()" 
+        class="meeting-card"
+        [class]="'status-' + meeting.status"
+      >
+        <div class="meeting-header">
+          <div class="meeting-title-section">
+            <h3 class="meeting-title">{{ meeting.title }}</h3>
+            <span class="meeting-project">{{ meeting.project }}</span>
+          </div>
+          <div class="meeting-status-badge" [class]="meeting.status">
+            {{ getStatusText(meeting.status) }}
+          </div>
+        </div>
+        
+        <div class="meeting-details">
+          <p class="meeting-description">{{ meeting.description }}</p>
+          
+          <div class="meeting-info-grid">
+            <div class="info-item">
+              <span class="info-label">📅 Ngày:</span>
+              <span class="info-value">{{ meeting.date }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">⏰ Giờ:</span>
+              <span class="info-value">{{ meeting.time }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">⏱️ Thời lượng:</span>
+              <span class="info-value">{{ meeting.duration }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">👤 Người tổ chức:</span>
+              <span class="info-value">{{ meeting.organizer }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">🌐 Loại:</span>
+              <span class="info-value" [class]="meeting.type">
+                {{ meeting.type === 'online' ? '🌐 Trực tuyến' : '🏢 Trực tiếp' }}
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">👥 Tham gia:</span>
+              <span class="info-value">{{ meeting.participants.length }} người</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="meeting-actions">
+          <div class="action-buttons">
+            <button 
+              *ngIf="meeting.status === 'upcoming' || meeting.status === 'ongoing'"
+              class="btn btn-primary"
+              (click)="joinMeeting(meeting)"
+            >
+              <span class="btn-icon">🎥</span>
+              {{ meeting.status === 'ongoing' ? 'Tham Gia Ngay' : 'Tham Gia' }}
+            </button>
+            
+            <button 
+              *ngIf="meeting.status === 'upcoming'"
+              class="btn btn-outline"
+              (click)="addToCalendar(meeting)"
+            >
+              <span class="btn-icon">📅</span>
+              Thêm Lịch
+            </button>
+            
+            <button 
+              *ngIf="meeting.status === 'completed'"
+              class="btn btn-outline"
+              (click)="viewMeetingDetails(meeting)"
+            >
+              <span class="btn-icon">📋</span>
+              Xem Chi Tiết
+            </button>
+          </div>
+          
+          <div class="meeting-links" *ngIf="meeting.meetingLink || meeting.accessCode">
+            <div *ngIf="meeting.meetingLink" class="link-item">
+              <span class="link-label">🔗 Link họp:</span>
+              <a [href]="meeting.meetingLink" target="_blank" class="meeting-link">
+                {{ meeting.meetingLink }}
+              </a>
+            </div>
+            <div *ngIf="meeting.accessCode" class="link-item">
+              <span class="link-label">🔑 Mã truy cập:</span>
+              <span class="access-code">{{ meeting.accessCode }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Meeting Results (for completed meetings) -->
+        <div *ngIf="meeting.status === 'completed'" class="meeting-results">
+          <div class="results-header">
+            <h4>Kết Quả Cuộc Họp</h4>
+          </div>
+          
+          <div class="results-content">
+            <div *ngIf="meeting.transcript" class="result-item">
+              <span class="result-label">📝 Transcript:</span>
+              <button class="btn btn-sm btn-outline" (click)="viewTranscript(meeting)">
+                Xem Transcript
+              </button>
+            </div>
+            
+            <div *ngIf="meeting.summary" class="result-item">
+              <span class="result-label">📋 Tóm tắt:</span>
+              <button class="btn btn-sm btn-outline" (click)="viewSummary(meeting)">
+                Xem Tóm Tắt
+              </button>
+            </div>
+            
+            <div *ngIf="meeting.todoList && meeting.todoList.length > 0" class="result-item">
+              <span class="result-label">✅ To-do list:</span>
+              <button class="btn btn-sm btn-outline" (click)="viewTodoList(meeting)">
+                Xem To-do ({{ meeting.todoList.length }})
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="filteredMeetings().length === 0" class="empty-state">
+        <div class="empty-icon">📅</div>
+        <h3>Không có cuộc họp nào</h3>
+        <p>{{ searchTerm || statusFilter || typeFilter || projectFilter ? 'Thử thay đổi bộ lọc để xem kết quả khác' : 'Bạn chưa có cuộc họp nào được lên lịch' }}</p>
+        <button class="btn btn-primary" (click)="scheduleMeeting()">
+          <span class="btn-icon">📅</span>
+          Lên Lịch Cuộc Họp Đầu Tiên
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions Panel -->
+  <div class="quick-actions-panel">
+    <div class="panel-header">
+      <h3>Thao Tác Nhanh</h3>
+    </div>
+    <div class="panel-content">
+      <button class="quick-action-btn" (click)="joinRandomMeeting()">
+        <span class="action-icon">🎲</span>
+        <span class="action-text">Tham Gia Ngẫu Nhiên</span>
+      </button>
+      <button class="quick-action-btn" (click)="viewTodayMeetings()">
+        <span class="action-icon">📅</span>
+        <span class="action-text">Họp Hôm Nay</span>
+      </button>
+      <button class="quick-action-btn" (click)="exportMeetings()">
+        <span class="action-icon">📤</span>
+        <span class="action-text">Xuất Lịch Họp</span>
+      </button>
+    </div>
+  </div>
+</div>

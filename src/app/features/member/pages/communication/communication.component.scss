@@ -1,0 +1,555 @@
+// Color variables from landing page
+$primary-orange: #FF5E13;
+$secondary-orange: #FFA463;
+$light-orange: #FFDBBD;
+$cream: #FDF0D2;
+$off-white: #F9F4EE;
+
+.communication-page {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+// Page Header
+.page-header {
+  background: white;
+  padding: 32px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .header-content {
+    .page-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 0 0 8px 0;
+    }
+
+    .page-subtitle {
+      color: #64748b;
+      font-size: 16px;
+      margin: 0;
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 16px;
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      &.btn-primary {
+        background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+        color: white;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(255, 94, 19, 0.3);
+        }
+      }
+
+      &.btn-outline {
+        background: transparent;
+        color: $primary-orange;
+        border: 2px solid $primary-orange;
+
+        &:hover {
+          background: $primary-orange;
+          color: white;
+        }
+      }
+    }
+  }
+}
+
+// Communication Grid
+.communication-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+// Chat Section
+.chat-section {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+
+  .section-header {
+    background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+    color: white;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .section-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .chat-actions {
+      display: flex;
+      gap: 8px;
+
+      .btn-sm {
+        padding: 6px 12px;
+        font-size: 11px;
+      }
+    }
+  }
+
+  .chat-container {
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+
+    .messages-list {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .message-item {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+
+        &.own-message {
+          flex-direction: row-reverse;
+
+          .message-content {
+            align-items: flex-end;
+
+            .message-header {
+              flex-direction: row-reverse;
+            }
+
+            .message-text {
+              background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+              color: white;
+            }
+          }
+        }
+
+        .message-avatar {
+          .avatar {
+            width: 40px;
+            height: 40px;
+            background: $light-orange;
+            color: $primary-orange;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+          }
+        }
+
+        .message-content {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+
+          .message-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 4px;
+            font-size: 12px;
+
+            .message-author {
+              color: $primary-orange;
+              font-weight: 600;
+            }
+
+            .message-time {
+              color: #64748b;
+            }
+          }
+
+          .message-text {
+            background: $off-white;
+            color: #1e293b;
+            padding: 12px 16px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.4;
+            max-width: 80%;
+            word-wrap: break-word;
+          }
+        }
+      }
+    }
+
+    .message-input {
+      padding: 20px;
+      border-top: 1px solid #e1e5e9;
+
+      .input-container {
+        display: flex;
+        gap: 12px;
+
+        .message-input-field {
+          flex: 1;
+          padding: 12px 16px;
+          border: 2px solid #e1e5e9;
+          border-radius: 24px;
+          font-size: 14px;
+          transition: all 0.3s ease;
+
+          &:focus {
+            outline: none;
+            border-color: $primary-orange;
+            box-shadow: 0 0 0 3px rgba(255, 94, 19, 0.1);
+          }
+        }
+
+        .send-btn {
+          width: 48px;
+          height: 48px;
+          background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+          color: white;
+          border: none;
+          border-radius: 50%;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(255, 94, 19, 0.3);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Feedback Section
+.feedback-section {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+
+  .section-header {
+    background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+    color: white;
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .section-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 11px;
+    }
+  }
+
+  .feedback-form {
+    padding: 24px;
+
+    .form-group {
+      margin-bottom: 20px;
+
+      .form-label {
+        display: block;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+
+      .form-select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:focus {
+          outline: none;
+          border-color: $primary-orange;
+        }
+      }
+
+      .form-textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: inherit;
+        resize: vertical;
+        transition: all 0.3s ease;
+
+        &:focus {
+          outline: none;
+          border-color: $primary-orange;
+          box-shadow: 0 0 0 3px rgba(255, 94, 19, 0.1);
+        }
+      }
+
+      .rating-stars {
+        display: flex;
+        gap: 8px;
+
+        .star {
+          font-size: 24px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          opacity: 0.3;
+
+          &:hover {
+            transform: scale(1.2);
+          }
+
+          &.active {
+            opacity: 1;
+            color: #fbbf24;
+          }
+        }
+      }
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+
+      .btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        border: none;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        &.btn-primary {
+          background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+          color: white;
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 94, 19, 0.3);
+          }
+        }
+
+        &.btn-outline {
+          background: transparent;
+          color: $primary-orange;
+          border: 2px solid $primary-orange;
+
+          &:hover {
+            background: $primary-orange;
+            color: white;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Quick Actions Panel
+.quick-actions-panel {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+
+  .panel-header {
+    background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+    color: white;
+    padding: 20px 24px;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+  }
+
+  .panel-content {
+    padding: 24px;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+
+    .quick-action-btn {
+      background: $off-white;
+      border: none;
+      padding: 16px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 200px;
+
+      &:hover {
+        background: $light-orange;
+        transform: translateY(-2px);
+      }
+
+      .action-icon {
+        font-size: 24px;
+      }
+
+      .action-text {
+        color: #1e293b;
+        font-weight: 500;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+// Button Styles
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  &.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .page-header {
+    flex-direction: column;
+    gap: 24px;
+    text-align: center;
+
+    .header-actions {
+      justify-content: center;
+    }
+  }
+
+  .communication-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    padding: 24px 20px;
+
+    .page-title {
+      font-size: 28px;
+    }
+  }
+
+  .chat-container {
+    height: 400px;
+  }
+
+  .feedback-form {
+    padding: 20px 16px;
+  }
+
+  .quick-actions-panel .panel-content {
+    flex-direction: column;
+
+    .quick-action-btn {
+      min-width: auto;
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header {
+    padding: 20px 16px;
+
+    .page-title {
+      font-size: 24px;
+    }
+
+    .header-actions {
+      flex-direction: column;
+      width: 100%;
+
+      .btn {
+        justify-content: center;
+      }
+    }
+  }
+
+  .chat-container {
+    height: 350px;
+
+    .message-input {
+      padding: 16px;
+
+      .input-container {
+        flex-direction: column;
+
+        .send-btn {
+          align-self: center;
+        }
+      }
+    }
+  }
+
+  .feedback-form {
+    padding: 16px;
+
+    .form-actions {
+      flex-direction: column;
+
+      .btn {
+        justify-content: center;
+      }
+    }
+  }
+}

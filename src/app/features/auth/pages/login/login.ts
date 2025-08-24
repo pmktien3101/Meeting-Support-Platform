@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -19,6 +20,12 @@ export class Login {
 
   showPassword = false;
   isLoading = false;
+  errorMessage = '';
+
+  constructor(
+    private router: Router,
+    private authService: AuthService
+  ) {}
 
   togglePassword() {
     this.showPassword = !this.showPassword;
@@ -27,11 +34,30 @@ export class Login {
   onLogin() {
     if (this.loginForm.email && this.loginForm.password) {
       this.isLoading = true;
-      // Simulate API call
-      setTimeout(() => {
-        console.log('Login attempt:', this.loginForm);
-        this.isLoading = false;
-      }, 2000);
+      this.errorMessage = '';
+      
+      this.authService.login(this.loginForm).subscribe({
+        next: (user: any) => {
+          console.log('✅ Login thành công:', user);
+          this.isLoading = false;
+          if (user.role === 'admin') {
+            this.router.navigate(['/admin/dashboard']);
+          } else if (user.role === 'business-owner') {
+            this.router.navigate(['/business-owner/dashboard']);
+          } else if (user.role === 'pm') {
+            this.router.navigate(['/pm/dashboard']);
+          } else {
+            this.router.navigate(['/member/dashboard']);
+          }
+        },
+        error: (err: any) => {
+          console.error('❌ Login error:', err);
+          this.isLoading = false;
+          this.errorMessage = err.message || 'Đăng nhập thất bại. Vui lòng thử lại.';
+        }
+      });
+    } else {
+      this.errorMessage = 'Vui lòng nhập đầy đủ email và mật khẩu.';
     }
   }
 }

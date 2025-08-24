@@ -1,0 +1,123 @@
+<div class="pm-projects">
+  <div class="page-header">
+    <div class="header-content">
+      <h2>📁 Quản Lý Dự Án</h2>
+      <p>Theo dõi và quản lý các dự án của bạn</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="openCreateProject()">
+        ➕ Tạo Dự Án Mới
+      </button>
+      <button class="btn btn-secondary">
+        📊 Xem Báo Cáo
+      </button>
+    </div>
+  </div>
+
+  <div class="projects-filters">
+    <div class="filter-group">
+      <label>Trạng thái:</label>
+      <select class="filter-select" aria-label="Lọc theo trạng thái">
+        <option value="">Tất cả</option>
+        <option value="planning">Lập kế hoạch</option>
+        <option value="active">Đang thực hiện</option>
+        <option value="on-hold">Tạm dừng</option>
+        <option value="completed">Hoàn thành</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Quản lý:</label>
+      <select class="filter-select" aria-label="Lọc theo quản lý">
+        <option value="">Tất cả</option>
+        <option value="me">Của tôi</option>
+        <option value="team">Của nhóm</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Tìm kiếm:</label>
+      <input type="text" class="filter-input" placeholder="Tìm kiếm dự án...">
+    </div>
+  </div>
+
+  <div class="projects-grid">
+    <div class="project-card" *ngFor="let project of projects">
+      <div class="project-header">
+        <div class="project-icon">📁</div>
+        <div class="project-status">
+          <span class="status-badge" [class]="project.status">
+            {{ getProjectStatusText(project.status) }}
+          </span>
+        </div>
+      </div>
+      
+      <div class="project-content">
+        <h3 class="project-title">{{ project.name }}</h3>
+        <p class="project-description">{{ project.description }}</p>
+        
+        <div class="project-meta">
+          <div class="meta-item">
+            <span class="meta-icon">📅</span>
+            <span class="meta-text">
+              {{ project.startDate | date:'dd/MM/yyyy' }} - {{ project.endDate | date:'dd/MM/yyyy' }}
+            </span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-icon">👤</span>
+            <span class="meta-text">{{ project.manager }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-icon">👥</span>
+            <span class="meta-text">8 thành viên</span>
+          </div>
+        </div>
+        
+        <div class="project-progress">
+          <div class="progress-header">
+            <span class="progress-label">Tiến độ</span>
+            <span class="progress-percentage">{{ project.progress }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="project.progress"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="project-actions">
+        <button class="btn btn-primary btn-sm">Xem Chi Tiết</button>
+        <button class="btn btn-secondary btn-sm">Chỉnh Sửa</button>
+        <button class="btn btn-outline btn-sm">📊 Báo Cáo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="projects-summary">
+    <div class="summary-card">
+      <div class="summary-icon">📊</div>
+      <div class="summary-content">
+        <h4>Tổng số dự án</h4>
+        <p class="summary-number">{{ projects.length }}</p>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">🚀</div>
+      <div class="summary-content">
+        <h4>Đang thực hiện</h4>
+        <p class="summary-number">{{ getActiveProjectsCount() }}</p>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">✅</div>
+      <div class="summary-content">
+        <h4>Hoàn thành</h4>
+        <p class="summary-number">{{ getCompletedProjectsCount() }}</p>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">⏰</div>
+      <div class="summary-content">
+        <h4>Trung bình hoàn thành</h4>
+        <p class="summary-number">{{ getAverageProgress() }}%</p>
+      </div>
+    </div>
+  </div>
+</div>

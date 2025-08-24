@@ -1,0 +1,128 @@
+<div class="meetings-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h2>📅 Quản Lý Cuộc Họp</h2>
+      <p>Lên lịch và quản lý các cuộc họp dự án</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="openCreateMeeting()">
+        ➕ Tạo Cuộc Họp Mới
+      </button>
+      <button class="btn btn-secondary">
+        📊 Xem Lịch
+      </button>
+    </div>
+  </div>
+
+  <div class="meetings-filters">
+    <div class="filter-group">
+      <label>Trạng thái:</label>
+      <select class="filter-select" aria-label="Lọc theo trạng thái">
+        <option value="">Tất cả</option>
+        <option value="scheduled">Đã lên lịch</option>
+        <option value="ongoing">Đang diễn ra</option>
+        <option value="completed">Đã hoàn thành</option>
+        <option value="cancelled">Đã hủy</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Hình thức:</label>
+      <select class="filter-select" aria-label="Lọc theo hình thức">
+        <option value="">Tất cả</option>
+        <option value="online">Trực tuyến</option>
+        <option value="offline">Trực tiếp</option>
+        <option value="hybrid">Kết hợp</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Tìm kiếm:</label>
+      <input type="text" class="filter-input" placeholder="Tìm kiếm cuộc họp...">
+    </div>
+  </div>
+
+  <div class="meetings-grid">
+    <div class="meeting-card" *ngFor="let meeting of meetings">
+      <div class="meeting-header">
+        <div class="meeting-icon">📅</div>
+        <div class="meeting-status">
+          <span class="status-badge" [class]="meeting.status">
+            {{ getStatusText(meeting.status) }}
+          </span>
+        </div>
+      </div>
+      
+      <div class="meeting-content">
+        <h3 class="meeting-title">{{ meeting.title }}</h3>
+        <p class="meeting-description">{{ meeting.description }}</p>
+        
+        <div class="meeting-details">
+          <div class="detail-item">
+            <span class="detail-icon">📅</span>
+            <span class="detail-text">{{ meeting.date | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">⏰</span>
+            <span class="detail-text">{{ meeting.time }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">⏱️</span>
+            <span class="detail-text">{{ meeting.duration }} phút</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-icon">🌐</span>
+            <span class="detail-text">{{ getTypeText(meeting.type) }}</span>
+          </div>
+        </div>
+        
+        <div class="meeting-participants">
+          <span class="participants-label">Người tham dự:</span>
+          <div class="participants-list">
+            <span class="participant" *ngFor="let participant of meeting.participants.slice(0, 3)">
+              {{ participant }}
+            </span>
+            <span class="more-participants" *ngIf="meeting.participants.length > 3">
+              +{{ meeting.participants.length - 3 }} khác
+            </span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="meeting-actions">
+        <button class="btn btn-primary btn-sm">Tham Gia</button>
+        <button class="btn btn-secondary btn-sm">Chỉnh Sửa</button>
+        <button class="btn btn-outline btn-sm">📋 Ghi Chú</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="meetings-summary">
+    <div class="summary-card">
+      <div class="summary-icon">📅</div>
+      <div class="summary-content">
+        <h4>Tổng số cuộc họp</h4>
+        <p class="summary-number">{{ meetings.length }}</p>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">🚀</div>
+      <div class="summary-content">
+        <h4>Đã lên lịch</h4>
+        <p class="summary-number">{{ getScheduledCount() }}</p>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">✅</div>
+      <div class="summary-content">
+        <h4>Đã hoàn thành</h4>
+        <p class="summary-number">{{ getCompletedCount() }}</p>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">👥</div>
+      <div class="summary-content">
+        <h4>Trung bình tham dự</h4>
+        <p class="summary-number">{{ getAverageParticipants() }}</p>
+      </div>
+    </div>
+  </div>
+</div>

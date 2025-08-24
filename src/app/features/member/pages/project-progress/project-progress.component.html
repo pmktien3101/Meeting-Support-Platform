@@ -1,0 +1,164 @@
+<div class="project-progress-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Tiến Độ Dự Án</h1>
+      <p class="page-subtitle">Theo dõi tiến độ và milestone của các dự án bạn tham gia</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="refreshProgress()">
+        <span class="btn-icon">🔄</span>
+        Làm Mới
+      </button>
+      <button class="btn btn-primary" (click)="exportProgress()">
+        <span class="btn-icon">📊</span>
+        Xuất Báo Cáo
+      </button>
+    </div>
+  </div>
+
+  <!-- Project Stats -->
+  <div class="project-stats">
+    <div class="stat-item">
+      <div class="stat-icon">📊</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ projectStats().total }}</div>
+        <div class="stat-label">Tổng Dự Án</div>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ projectStats().inProgress }}</div>
+        <div class="stat-label">Đang Thực Hiện</div>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ projectStats().completed }}</div>
+        <div class="stat-label">Đã Hoàn Thành</div>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ projectStats().averageProgress }}%</div>
+        <div class="stat-label">Tiến Độ Trung Bình</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Projects Grid -->
+  <div class="projects-grid">
+    <div *ngFor="let project of projects()" class="project-card">
+      <div class="project-header">
+        <div class="project-info">
+          <h3 class="project-title">{{ project.name }}</h3>
+          <span class="project-status" [class]="project.status">
+            {{ getStatusText(project.status) }}
+          </span>
+        </div>
+        <div class="project-priority" [class]="'priority-' + project.priority">
+          {{ getPriorityText(project.priority) }}
+        </div>
+      </div>
+      
+      <div class="project-progress">
+        <div class="progress-info">
+          <span class="progress-text">Tiến độ</span>
+          <span class="progress-percentage">{{ project.progress }}%</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="project.progress"></div>
+        </div>
+      </div>
+      
+      <div class="project-details">
+        <div class="detail-row">
+          <span class="detail-label">👤 Quản lý:</span>
+          <span class="detail-value">{{ project.manager }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">⏰ Deadline:</span>
+          <span class="detail-value" [class.overdue]="isOverdue(project.deadline)">
+            {{ project.deadline }}
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">📋 Nhiệm vụ:</span>
+          <span class="detail-value">{{ project.completedTasks }}/{{ project.totalTasks }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">👥 Thành viên:</span>
+          <span class="detail-value">{{ project.teamSize }} người</span>
+        </div>
+      </div>
+      
+      <div class="project-milestones" *ngIf="project.milestones.length > 0">
+        <h4 class="milestones-title">Milestone</h4>
+        <div class="milestones-list">
+          <div 
+            *ngFor="let milestone of project.milestones" 
+            class="milestone-item"
+            [class.completed]="milestone.completed"
+          >
+            <div class="milestone-status">
+              <span class="status-icon">{{ milestone.completed ? '✅' : '⏳' }}</span>
+            </div>
+            <div class="milestone-content">
+              <div class="milestone-title">{{ milestone.title }}</div>
+              <div class="milestone-date">{{ milestone.date }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="project-actions">
+        <button class="btn btn-sm btn-outline" (click)="viewProjectDetails(project)">
+          <span class="btn-icon">👁️</span>
+          Chi Tiết
+        </button>
+        <button class="btn btn-sm btn-outline" (click)="viewProjectTasks(project)">
+          <span class="btn-icon">📋</span>
+          Nhiệm Vụ
+        </button>
+        <button class="btn btn-sm btn-primary" (click)="viewProjectTimeline(project)">
+          <span class="btn-icon">📅</span>
+          Timeline
+        </button>
+      </div>
+    </div>
+    
+    <div *ngIf="projects().length === 0" class="empty-state">
+      <div class="empty-icon">📊</div>
+      <h3>Không có dự án nào</h3>
+      <p>Bạn chưa được giao dự án nào hoặc tất cả dự án đã hoàn thành</p>
+    </div>
+  </div>
+
+  <!-- Quick Actions Panel -->
+  <div class="quick-actions-panel">
+    <div class="panel-header">
+      <h3>Thao Tác Nhanh</h3>
+    </div>
+    <div class="panel-content">
+      <button class="quick-action-btn" (click)="viewActiveProjects()">
+        <span class="action-icon">🚀</span>
+        <span class="action-text">Dự Án Đang Thực Hiện</span>
+      </button>
+      <button class="quick-action-btn" (click)="viewCompletedProjects()">
+        <span class="action-icon">✅</span>
+        <span class="action-text">Dự Án Đã Hoàn Thành</span>
+      </button>
+      <button class="quick-action-btn" (click)="viewProjectReports()">
+        <span class="action-icon">📈</span>
+        <span class="action-text">Báo Cáo Tiến Độ</span>
+      </button>
+      <button class="quick-action-btn" (click)="viewTeamPerformance()">
+        <span class="action-icon">👥</span>
+        <span class="action-text">Hiệu Suất Team</span>
+      </button>
+    </div>
+  </div>
+</div>

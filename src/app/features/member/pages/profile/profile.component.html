@@ -1,0 +1,362 @@
+<div class="profile-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Hồ Sơ Cá Nhân</h1>
+      <p class="page-subtitle">Quản lý thông tin cá nhân và tùy chỉnh tài khoản</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="resetProfile()">
+        <span class="btn-icon">🔄</span>
+        Khôi Phục
+      </button>
+      <button class="btn btn-primary" (click)="saveProfile()">
+        <span class="btn-icon">💾</span>
+        Lưu Thay Đổi
+      </button>
+    </div>
+  </div>
+
+  <!-- Profile Content -->
+  <div class="profile-content">
+    <!-- Profile Overview -->
+    <div class="profile-overview">
+      <div class="profile-avatar-section">
+        <div class="avatar-container">
+          <img 
+            [src]="profileData().avatar || 'assets/images/default-avatar.png'" 
+            [alt]="profileData().displayName + ' avatar'"
+            [title]="profileData().displayName + ' avatar'"
+            class="profile-avatar"
+            title="avatar"
+          >
+          <div class="avatar-overlay">
+            <button class="avatar-upload-btn" (click)="uploadAvatar()">
+              <span class="upload-icon">📷</span>
+            </button>
+          </div>
+        </div>
+        <div class="profile-info">
+          <h2 class="profile-name">{{ profileData().displayName }}</h2>
+          <p class="profile-title">{{ profileData().title }}</p>
+          <p class="profile-email">{{ profileData().email }}</p>
+          <div class="profile-status">
+            <span class="status-indicator online"></span>
+            <span class="status-text">Đang hoạt động</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Form -->
+    <div class="profile-form-container">
+      <div class="profile-form">
+        <!-- Personal Information -->
+        <div class="form-section">
+          <div class="section-header">
+            <h3 class="section-title">Thông Tin Cá Nhân</h3>
+            <span class="section-icon">👤</span>
+          </div>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="displayName" class="form-label">
+                <span class="label-icon">👤</span>
+                Tên hiển thị
+              </label>
+              <input 
+                type="text" 
+                id="displayName"
+                [(ngModel)]="profileData().displayName"
+                placeholder="Nhập tên hiển thị"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="firstName" class="form-label">
+                <span class="label-icon">📝</span>
+                Tên
+              </label>
+              <input 
+                type="text" 
+                id="firstName"
+                [(ngModel)]="profileData().firstName"
+                placeholder="Nhập tên"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="lastName" class="form-label">
+                <span class="label-icon">📝</span>
+                Họ
+              </label>
+              <input 
+                type="text" 
+                id="lastName"
+                [(ngModel)]="profileData().lastName"
+                placeholder="Nhập họ"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="title" class="form-label">
+                <span class="label-icon">💼</span>
+                Chức vụ
+              </label>
+              <input 
+                type="text" 
+                id="title"
+                [(ngModel)]="profileData().title"
+                placeholder="Nhập chức vụ"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="email" class="form-label">
+                <span class="label-icon">📧</span>
+                Email
+              </label>
+              <input 
+                type="email" 
+                id="email"
+                [(ngModel)]="profileData().email"
+                placeholder="Nhập email"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="phone" class="form-label">
+                <span class="label-icon">📱</span>
+                Số điện thoại
+              </label>
+              <input 
+                type="tel" 
+                id="phone"
+                [(ngModel)]="profileData().phone"
+                placeholder="Nhập số điện thoại"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="dateOfBirth" class="form-label">
+                <span class="label-icon">🎂</span>
+                Ngày sinh
+              </label>
+              <input 
+                type="date" 
+                id="dateOfBirth"
+                [(ngModel)]="profileData().dateOfBirth"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="location" class="form-label">
+                <span class="label-icon">📍</span>
+                Địa chỉ
+              </label>
+              <input 
+                type="text" 
+                id="location"
+                [(ngModel)]="profileData().location"
+                placeholder="Nhập địa chỉ"
+                class="form-input"
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Professional Information -->
+        <div class="form-section">
+          <div class="section-header">
+            <h3 class="section-title">Thông Tin Nghề Nghiệp</h3>
+            <span class="section-icon">💼</span>
+          </div>
+          
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="department" class="form-label">
+                <span class="label-icon">🏢</span>
+                Phòng ban
+              </label>
+              <input 
+                type="text" 
+                id="department"
+                [(ngModel)]="profileData().department"
+                placeholder="Nhập phòng ban"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="manager" class="form-label">
+                <span class="label-icon">👨‍💼</span>
+                Quản lý trực tiếp
+              </label>
+              <input 
+                type="text" 
+                id="manager"
+                [(ngModel)]="profileData().manager"
+                placeholder="Nhập tên quản lý"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="startDate" class="form-label">
+                <span class="label-icon">📅</span>
+                Ngày bắt đầu làm việc
+              </label>
+              <input 
+                type="date" 
+                id="startDate"
+                [(ngModel)]="profileData().startDate"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="employeeId" class="form-label">
+                <span class="label-icon">🆔</span>
+                Mã nhân viên
+              </label>
+              <input 
+                type="text" 
+                id="employeeId"
+                [(ngModel)]="profileData().employeeId"
+                placeholder="Nhập mã nhân viên"
+                class="form-input"
+                readonly
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Skills & Expertise -->
+        <div class="form-section">
+          <div class="section-header">
+            <h3 class="section-title">Kỹ Năng & Chuyên Môn</h3>
+            <span class="section-icon">🎯</span>
+          </div>
+          
+          <div class="skills-container">
+            <div class="skills-list">
+              <div *ngFor="let skill of profileData().skills; let i = index" class="skill-item">
+                <div class="skill-inputs">
+                  <input 
+                    type="text" 
+                    [(ngModel)]="skill.name"
+                    placeholder="Tên kỹ năng"
+                    class="skill-name-input"
+                  >
+                  <select [(ngModel)]="skill.level" class="skill-level-select" aria-label="Chọn mức độ kỹ năng">
+                    <option value="beginner">Mới bắt đầu</option>
+                    <option value="intermediate">Trung bình</option>
+                    <option value="advanced">Nâng cao</option>
+                    <option value="expert">Chuyên gia</option>
+                  </select>
+                  <button 
+                    type="button" 
+                    class="remove-skill-btn"
+                    (click)="removeSkill(i)"
+                    aria-label="Xóa kỹ năng"
+                  >
+                    ❌
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <button type="button" class="btn btn-outline add-skill-btn" (click)="addSkill()">
+              <span class="btn-icon">➕</span>
+              Thêm Kỹ Năng
+            </button>
+          </div>
+        </div>
+
+        <!-- Bio & Description -->
+        <div class="form-section">
+          <div class="section-header">
+            <h3 class="section-title">Giới Thiệu</h3>
+            <span class="section-icon">📖</span>
+          </div>
+          
+          <div class="form-group">
+            <label for="bio" class="form-label">
+              <span class="label-icon">✍️</span>
+              Mô tả bản thân
+            </label>
+            <textarea 
+              id="bio"
+              [(ngModel)]="profileData().bio"
+              placeholder="Viết một vài dòng giới thiệu về bản thân..."
+              class="form-textarea"
+              rows="4"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Sidebar -->
+      <div class="profile-sidebar">
+        <!-- Quick Stats -->
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Thống Kê Nhanh</h4>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-number">{{ profileStats().meetingsAttended }}</div>
+              <div class="stat-label">Cuộc họp đã tham gia</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">{{ profileStats().tasksCompleted }}</div>
+              <div class="stat-label">Nhiệm vụ hoàn thành</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-number">{{ profileStats().projectsInvolved }}</div>
+              <div class="stat-label">Dự án tham gia</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Hoạt Động Gần Đây</h4>
+          <div class="activity-list">
+            <div *ngFor="let activity of recentActivities()" class="activity-item">
+              <div class="activity-icon">{{ activity.icon }}</div>
+              <div class="activity-content">
+                <div class="activity-text">{{ activity.text }}</div>
+                <div class="activity-time">{{ activity.time }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="sidebar-section">
+          <h4 class="sidebar-title">Thao Tác Nhanh</h4>
+          <div class="quick-actions">
+            <button class="quick-action-btn" (click)="changePassword()">
+              <span class="action-icon">🔐</span>
+              Đổi mật khẩu
+            </button>
+            <button class="quick-action-btn" (click)="exportProfile()">
+              <span class="action-icon">📤</span>
+              Xuất hồ sơ
+            </button>
+            <button class="quick-action-btn" (click)="viewActivityLog()">
+              <span class="action-icon">📊</span>
+              Xem nhật ký
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

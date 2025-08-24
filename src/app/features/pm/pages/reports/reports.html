@@ -1,0 +1,254 @@
+<div class="reports-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h2>📊 Báo Cáo & Phân Tích</h2>
+      <p>Xem báo cáo chi tiết và phân tích dữ liệu dự án</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="generateReport()">
+        📈 Tạo Báo Cáo
+      </button>
+      <button class="btn btn-secondary" (click)="exportData()">
+        📥 Xuất Dữ Liệu
+      </button>
+    </div>
+  </div>
+
+  <div class="reports-filters">
+    <div class="filter-group">
+      <label>Loại báo cáo:</label>
+      <select class="filter-select" aria-label="Lọc theo loại báo cáo">
+        <option value="">Tất cả</option>
+        <option value="progress">Báo cáo tiến độ</option>
+        <option value="performance">Báo cáo hiệu suất</option>
+        <option value="timeline">Phân tích thời gian</option>
+        <option value="resource">Báo cáo tài nguyên</option>
+        <option value="quality">Báo cáo chất lượng</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Dự án:</label>
+      <select class="filter-select" aria-label="Lọc theo dự án">
+        <option value="">Tất cả dự án</option>
+        <option value="1">Website E-commerce</option>
+        <option value="2">Mobile App</option>
+        <option value="3">CRM System</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Thời gian:</label>
+      <select class="filter-select" aria-label="Lọc theo thời gian">
+        <option value="7">7 ngày qua</option>
+        <option value="30">30 ngày qua</option>
+        <option value="90">3 tháng qua</option>
+        <option value="365">1 năm qua</option>
+        <option value="custom">Tùy chỉnh</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Tìm kiếm:</label>
+      <input type="text" class="filter-input" placeholder="Tìm kiếm báo cáo...">
+    </div>
+  </div>
+
+  <div class="reports-overview">
+    <div class="overview-card">
+      <div class="overview-icon">📊</div>
+      <div class="overview-content">
+        <div class="overview-value">{{ getTotalProjects() }}</div>
+        <div class="overview-label">Tổng dự án</div>
+      </div>
+    </div>
+    <div class="overview-card">
+      <div class="overview-icon">✅</div>
+      <div class="overview-content">
+        <div class="overview-value">{{ getCompletedProjects() }}</div>
+        <div class="overview-label">Dự án hoàn thành</div>
+      </div>
+    </div>
+    <div class="overview-card">
+      <div class="overview-icon">⏳</div>
+      <div class="overview-content">
+        <div class="overview-value">{{ getInProgressProjects() }}</div>
+        <div class="overview-label">Đang thực hiện</div>
+      </div>
+    </div>
+    <div class="overview-card">
+      <div class="overview-icon">👥</div>
+      <div class="overview-content">
+        <div class="overview-value">{{ getTeamMembers() }}</div>
+        <div class="overview-label">Thành viên nhóm</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reports-grid">
+    <div class="report-card">
+      <div class="report-header">
+        <h3>📈 Báo Cáo Tiến Độ Dự Án</h3>
+        <div class="report-actions">
+          <button class="btn-icon" (click)="refreshReport('progress')" title="Làm mới">
+            🔄
+          </button>
+          <button class="btn-icon" (click)="exportReport('progress')" title="Xuất báo cáo">
+            📥
+          </button>
+        </div>
+      </div>
+      <div class="report-chart">
+        <div class="chart-placeholder">
+          <div class="chart-icon">📊</div>
+          <div class="chart-text">Biểu đồ tiến độ dự án</div>
+          <div class="chart-description">Hiển thị % hoàn thành của từng dự án</div>
+        </div>
+      </div>
+      <div class="report-summary">
+        <div class="summary-item">
+          <span class="label">Tổng dự án:</span>
+          <span class="value">{{ getTotalProjects() }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Hoàn thành:</span>
+          <span class="value">{{ getCompletedProjects() }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Đang thực hiện:</span>
+          <span class="value">{{ getInProgressProjects() }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Tỷ lệ hoàn thành:</span>
+          <span class="value">{{ getCompletionRate() }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-card">
+      <div class="report-header">
+        <h3>👥 Báo Cáo Hiệu Suất Nhóm</h3>
+        <div class="report-actions">
+          <button class="btn-icon" (click)="refreshReport('performance')" title="Làm mới">
+            🔄
+          </button>
+          <button class="btn-icon" (click)="exportReport('performance')" title="Xuất báo cáo">
+            📥
+          </button>
+        </div>
+      </div>
+      <div class="report-chart">
+        <div class="chart-placeholder">
+          <div class="chart-icon">📈</div>
+          <div class="chart-text">Biểu đồ hiệu suất nhóm</div>
+          <div class="chart-description">Hiển thị KPI của từng thành viên</div>
+        </div>
+      </div>
+      <div class="report-summary">
+        <div class="summary-item">
+          <span class="label">Thành viên:</span>
+          <span class="value">{{ getTeamMembers() }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Hiệu suất TB:</span>
+          <span class="value">{{ getAveragePerformance() }}%</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Task hoàn thành:</span>
+          <span class="value">{{ getCompletedTasks() }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Tỷ lệ đúng hạn:</span>
+          <span class="value">{{ getOnTimeRate() }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-card">
+      <div class="report-header">
+        <h3>⏰ Phân Tích Thời Gian</h3>
+        <div class="report-actions">
+          <button class="btn-icon" (click)="refreshReport('timeline')" title="Làm mới">
+            🔄
+          </button>
+          <button class="btn-icon" (click)="exportReport('timeline')" title="Xuất báo cáo">
+            📥
+          </button>
+        </div>
+      </div>
+      <div class="report-chart">
+        <div class="chart-placeholder">
+          <div class="chart-icon">⏰</div>
+          <div class="chart-text">Biểu đồ thời gian</div>
+          <div class="chart-description">Phân tích tiến độ theo timeline</div>
+        </div>
+      </div>
+      <div class="report-summary">
+        <div class="summary-item">
+          <span class="label">Đúng tiến độ:</span>
+          <span class="value">{{ getOnScheduleRate() }}%</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Chậm tiến độ:</span>
+          <span class="value">{{ getDelayedRate() }}%</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Vượt tiến độ:</span>
+          <span class="value">{{ getAheadRate() }}%</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Tỷ lệ rủi ro:</span>
+          <span class="value">{{ getRiskRate() }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="report-card">
+      <div class="report-header">
+        <h3>💰 Báo Cáo Tài Nguyên</h3>
+        <div class="report-actions">
+          <button class="btn-icon" (click)="refreshReport('resource')" title="Làm mới">
+            🔄
+          </button>
+          <button class="btn-icon" (click)="exportReport('resource')" title="Xuất báo cáo">
+            📥
+          </button>
+        </div>
+      </div>
+      <div class="report-chart">
+        <div class="chart-placeholder">
+          <div class="chart-icon">💰</div>
+          <div class="chart-text">Biểu đồ tài nguyên</div>
+          <div class="chart-description">Phân bổ ngân sách và nhân lực</div>
+        </div>
+      </div>
+      <div class="report-summary">
+        <div class="summary-item">
+          <span class="label">Ngân sách đã dùng:</span>
+          <span class="value">{{ getBudgetUsed() }}%</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Nhân lực hiện tại:</span>
+          <span class="value">{{ getCurrentResources() }}</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Hiệu quả sử dụng:</span>
+          <span class="value">{{ getResourceEfficiency() }}%</span>
+        </div>
+        <div class="summary-item">
+          <span class="label">Dự báo chi phí:</span>
+          <span class="value">{{ getCostForecast() }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reports-actions">
+    <button class="btn btn-primary" (click)="scheduleReport()">
+      ⏰ Lên Lịch Báo Cáo
+    </button>
+    <button class="btn btn-secondary" (click)="customizeReport()">
+      🎨 Tùy Chỉnh Báo Cáo
+    </button>
+    <button class="btn btn-outline" (click)="shareReport()">
+      🔗 Chia Sẻ Báo Cáo
+    </button>
+  </div>
+</div>

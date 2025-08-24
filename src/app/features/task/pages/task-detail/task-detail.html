@@ -1,0 +1,182 @@
+<div class="task-detail-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="loading-state">
+    <div class="loading-spinner"></div>
+    <p>Loading task details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error()" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <h3>Error Loading Task</h3>
+    <p>{{ error() }}</p>
+    <button class="btn btn-primary" (click)="loadTaskDetail()">Try Again</button>
+  </div>
+
+  <!-- Task Content -->
+  <div *ngIf="!isLoading() && task()" class="task-content">
+    <!-- Header -->
+    <div class="task-header">
+      <div class="header-content">
+        <div class="breadcrumb">
+          <a routerLink="/task/list">Tasks</a>
+          <span class="separator">/</span>
+          <span class="current">Task #{{ task()!.id }}</span>
+        </div>
+        <h1>{{ task()!.title }}</h1>
+        <div class="task-meta">
+          <span class="status-badge" [class]="'status-' + task()!.status">
+            {{ task()!.status }}
+          </span>
+          <span class="priority-badge" [style.background-color]="getPriorityColor(task()!.priority)">
+            {{ task()!.priority }}
+          </span>
+          <span class="due-date" [class.overdue]="isOverdue()">
+            Due: {{ task()!.dueDate | date:'MMM dd, yyyy' }}
+            <span *ngIf="isOverdue()" class="overdue-text">(Overdue)</span>
+          </span>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="navigateToEdit()">
+          <span class="icon">✏️</span>
+          Edit Task
+        </button>
+        <button class="btn btn-primary" (click)="navigateToList()">
+          <span class="icon">←</span>
+          Back to Tasks
+        </button>
+      </div>
+    </div>
+
+    <!-- Task Details Grid -->
+    <div class="task-details-grid">
+      <!-- Main Content -->
+      <div class="main-content">
+        <!-- Description -->
+        <div class="section">
+          <h2>Description</h2>
+          <p class="description">{{ task()!.description }}</p>
+        </div>
+
+        <!-- Comments -->
+        <div class="section">
+          <h2>Comments ({{ task()!.comments.length }})</h2>
+          
+          <!-- Add Comment -->
+          <div class="add-comment">
+            <textarea 
+              [value]="newComment()"
+              (input)="newComment.set($any($event.target).value)"
+              placeholder="Add a comment..."
+              rows="3"
+              class="comment-input"
+            ></textarea>
+            <button 
+              class="btn btn-primary"
+              (click)="addComment()"
+              [disabled]="!newComment().trim()"
+            >
+              Add Comment
+            </button>
+          </div>
+
+          <!-- Comments List -->
+          <div class="comments-list">
+            <div *ngFor="let comment of task()!.comments" class="comment-item">
+              <div class="comment-header">
+                <div class="comment-author">
+                  <div class="author-avatar">{{ comment.userAvatar }}</div>
+                  <div class="author-info">
+                    <span class="author-name">{{ comment.userName }}</span>
+                    <span class="comment-date">{{ comment.createdAt | date:'MMM dd, yyyy HH:mm' }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="comment-content">
+                {{ comment.content }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Assignment -->
+        <div class="section">
+          <h3>Assignment</h3>
+          <div class="assignee-info">
+            <div class="assignee-avatar">{{ task()!.assigneeAvatar }}</div>
+            <div class="assignee-details">
+              <span class="assignee-name">{{ task()!.assigneeName }}</span>
+              <span class="assigner">Assigned by {{ task()!.assignerName }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project -->
+        <div class="section" *ngIf="task()!.projectId">
+          <h3>Project</h3>
+          <div class="project-info">
+            <span class="project-name">{{ task()!.projectName }}</span>
+          </div>
+        </div>
+
+        <!-- Time Tracking -->
+        <div class="section">
+          <h3>Time Tracking</h3>
+          <div class="time-info">
+            <div class="time-item">
+              <span class="label">Estimated:</span>
+              <span class="value">{{ task()!.estimatedHours || 0 }}h</span>
+            </div>
+            <div class="time-item" *ngIf="task()!.actualHours">
+              <span class="label">Actual:</span>
+              <span class="value">{{ task()!.actualHours }}h</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tags -->
+        <div class="section" *ngIf="task()!.tags.length > 0">
+          <h3>Tags</h3>
+          <div class="tags-list">
+            <span *ngFor="let tag of task()!.tags" class="tag">{{ tag }}</span>
+          </div>
+        </div>
+
+        <!-- Attachments -->
+        <div class="section" *ngIf="task()!.attachments.length > 0">
+          <h3>Attachments</h3>
+          <div class="attachments-list">
+            <div *ngFor="let attachment of task()!.attachments" class="attachment-item">
+              <span class="attachment-icon">📎</span>
+              <span class="attachment-name">{{ attachment }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Task Info -->
+        <div class="section">
+          <h3>Task Info</h3>
+          <div class="info-list">
+            <div class="info-item">
+              <span class="label">Created:</span>
+              <span class="value">{{ task()!.createdAt | date:'MMM dd, yyyy' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Updated:</span>
+              <span class="value">{{ task()!.updatedAt | date:'MMM dd, yyyy' }}</span>
+            </div>
+            <div class="info-item" *ngIf="task()!.completedAt">
+              <span class="label">Completed:</span>
+              <span class="value">{{ task()!.completedAt | date:'MMM dd, yyyy' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

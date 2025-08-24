@@ -1,0 +1,144 @@
+<div class="tasks-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h2>✅ Quản Lý Công Việc</h2>
+      <p>Theo dõi và quản lý các task của dự án</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="openCreateTask()">
+        ➕ Tạo Task Mới
+      </button>
+      <button class="btn btn-secondary">
+        📊 Xem Báo Cáo
+      </button>
+    </div>
+  </div>
+
+  <div class="tasks-filters">
+    <div class="filter-group">
+      <label>Trạng thái:</label>
+      <select class="filter-select" aria-label="Lọc theo trạng thái">
+        <option value="">Tất cả</option>
+        <option value="todo">To-do</option>
+        <option value="in-progress">Đang thực hiện</option>
+        <option value="review">Đang review</option>
+        <option value="done">Hoàn thành</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Mức độ ưu tiên:</label>
+      <select class="filter-select" aria-label="Lọc theo mức độ ưu tiên">
+        <option value="">Tất cả</option>
+        <option value="low">Thấp</option>
+        <option value="medium">Trung bình</option>
+        <option value="high">Cao</option>
+        <option value="urgent">Khẩn cấp</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Người thực hiện:</label>
+      <select class="filter-select" aria-label="Lọc theo người thực hiện">
+        <option value="">Tất cả</option>
+        <option value="me">Của tôi</option>
+        <option value="team">Của nhóm</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Tìm kiếm:</label>
+      <input type="text" class="filter-input" placeholder="Tìm kiếm task...">
+    </div>
+  </div>
+
+  <div class="tasks-grid">
+    <div class="task-card" *ngFor="let task of tasks">
+      <div class="task-header">
+        <div class="task-icon">✅</div>
+        <div class="task-status">
+          <span class="status-badge" [class]="task.status">
+            {{ getStatusText(task.status) }}
+          </span>
+        </div>
+      </div>
+      
+      <div class="task-content">
+        <h3 class="task-title">{{ task.title }}</h3>
+        <p class="task-description">{{ task.description }}</p>
+        
+        <div class="task-meta">
+          <div class="meta-item">
+            <span class="meta-icon">📁</span>
+            <span class="meta-text">{{ getProjectName(task.projectId) }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-icon">👤</span>
+            <span class="meta-text">{{ getAssigneeName(task.assigneeId) }}</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-icon">🎯</span>
+            <span class="meta-text">{{ getPriorityText(task.priority) }}</span>
+          </div>
+        </div>
+        
+        <div class="task-dates">
+          <div class="date-item">
+            <span class="date-label">Bắt đầu:</span>
+            <span class="date-value">{{ task.startDate | date:'dd/MM/yyyy' }}</span>
+          </div>
+          <div class="date-item">
+            <span class="date-label">Hạn:</span>
+            <span class="date-value" [class.overdue]="isOverdue(task.dueDate)">
+              {{ task.dueDate | date:'dd/MM/yyyy' }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="task-progress">
+          <div class="progress-header">
+            <span class="progress-label">Tiến độ</span>
+            <span class="progress-percentage">{{ getTaskProgress(task.id) }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getTaskProgress(task.id)"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="task-actions">
+        <button class="btn btn-primary btn-sm">Xem Chi Tiết</button>
+        <button class="btn btn-secondary btn-sm">Chỉnh Sửa</button>
+        <button class="btn btn-outline btn-sm">📋 Ghi Chú</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tasks-summary">
+    <div class="summary-card">
+      <div class="summary-icon">✅</div>
+      <div class="summary-content">
+        <h4>Tổng số task</h4>
+        <p class="summary-number">{{ tasks.length }}</p>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">🚀</div>
+      <div class="summary-content">
+        <h4>Đang thực hiện</h4>
+        <p class="summary-number">{{ getInProgressCount() }}</p>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">✅</div>
+      <div class="summary-content">
+        <h4>Hoàn thành</h4>
+        <p class="summary-number">{{ getCompletedCount() }}</p>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">⏰</div>
+      <div class="summary-content">
+        <h4>Sắp hạn</h4>
+        <p class="summary-number">{{ getDueSoonCount() }}</p>
+      </div>
+    </div>
+  </div>
+</div>

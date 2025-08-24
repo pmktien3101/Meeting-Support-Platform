@@ -1,0 +1,245 @@
+<div class="tasks-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Quản Lý Nhiệm Vụ</h1>
+      <p class="page-subtitle">Theo dõi và cập nhật tiến độ công việc của bạn</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="refreshTasks()">
+        <span class="btn-icon">🔄</span>
+        Làm Mới
+      </button>
+      <button class="btn btn-primary" (click)="createTask()">
+        <span class="btn-icon">➕</span>
+        Tạo Nhiệm Vụ
+      </button>
+    </div>
+  </div>
+
+  <!-- Task Stats -->
+  <div class="task-stats">
+    <div class="stat-item">
+      <div class="stat-icon">📋</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ taskStats().total }}</div>
+        <div class="stat-label">Tổng Nhiệm Vụ</div>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ taskStats().inProgress }}</div>
+        <div class="stat-label">Đang Thực Hiện</div>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon">✅</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ taskStats().completed }}</div>
+        <div class="stat-label">Đã Hoàn Thành</div>
+      </div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-icon">⏰</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ taskStats().overdue }}</div>
+        <div class="stat-label">Quá Hạn</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="filters-section">
+    <div class="search-box">
+      <input 
+        type="text" 
+        placeholder="Tìm kiếm nhiệm vụ..."
+        [(ngModel)]="searchTerm"
+        (input)="filterTasks()"
+        class="search-input"
+      >
+      <span class="search-icon">🔍</span>
+    </div>
+    
+    <div class="filter-options">
+      <select [(ngModel)]="statusFilter" (change)="filterTasks()" class="filter-select" title="Lọc theo trạng thái">
+        <option value="">Tất cả trạng thái</option>
+        <option value="todo">Chưa bắt đầu</option>
+        <option value="in-progress">Đang thực hiện</option>
+        <option value="done">Hoàn thành</option>
+      </select>
+      
+      <select [(ngModel)]="priorityFilter" (change)="filterTasks()" class="filter-select" title="Lọc theo độ ưu tiên">
+        <option value="">Tất cả độ ưu tiên</option>
+        <option value="high">Cao</option>
+        <option value="medium">Trung bình</option>
+        <option value="low">Thấp</option>
+      </select>
+      
+      <select [(ngModel)]="projectFilter" (change)="filterTasks()" class="filter-select" title="Lọc theo dự án">
+        <option value="">Tất cả dự án</option>
+        <option *ngFor="let project of projects()" [value]="project">{{ project }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Tasks List -->
+  <div class="tasks-container">
+    <div class="tasks-list">
+      <div 
+        *ngFor="let task of filteredTasks()" 
+        class="task-card"
+        [class]="'priority-' + task.priority + ' status-' + task.status"
+      >
+        <div class="task-header">
+          <div class="task-title-section">
+            <h3 class="task-title">{{ task.title }}</h3>
+            <span class="task-project">{{ task.project }}</span>
+          </div>
+          <div class="task-meta">
+            <span class="task-priority" [class]="'priority-' + task.priority">
+              {{ getPriorityText(task.priority) }}
+            </span>
+            <span class="task-status" [class]="task.status">
+              {{ getStatusText(task.status) }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="task-details">
+          <p class="task-description">{{ task.description }}</p>
+          
+          <div class="task-info-grid">
+            <div class="info-item">
+              <span class="info-label">👤 Người thực hiện:</span>
+              <span class="info-value">{{ task.assignee }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">⏰ Đến hạn:</span>
+              <span class="info-value" [class.overdue]="isOverdue(task.dueDate)">
+                {{ task.dueDate }}
+              </span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">⏱️ Ước tính:</span>
+              <span class="info-value">{{ task.estimatedHours }}h</span>
+            </div>
+            <div class="info-item" *ngIf="task.actualHours">
+              <span class="info-label">⏱️ Thực tế:</span>
+              <span class="info-value">{{ task.actualHours }}h</span>
+            </div>
+          </div>
+          
+          <div class="task-tags" *ngIf="task.tags.length > 0">
+            <span 
+              *ngFor="let tag of task.tags" 
+              class="task-tag"
+            >
+              {{ tag }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="task-actions">
+          <div class="action-buttons">
+            <button 
+              *ngIf="task.status === 'todo'"
+              class="btn btn-primary"
+              (click)="startTask(task)"
+            >
+              <span class="btn-icon">▶️</span>
+              Bắt Đầu
+            </button>
+            
+            <button 
+              *ngIf="task.status === 'in-progress'"
+              class="btn btn-primary"
+              (click)="completeTask(task)"
+            >
+              <span class="btn-icon">✅</span>
+              Hoàn Thành
+            </button>
+            
+            <button 
+              class="btn btn-outline"
+              (click)="editTask(task)"
+            >
+              <span class="btn-icon">✏️</span>
+              Chỉnh Sửa
+            </button>
+            
+            <button 
+              class="btn btn-outline"
+              (click)="addComment(task)"
+            >
+              <span class="btn-icon">💬</span>
+              Thêm Ghi Chú
+            </button>
+          </div>
+          
+          <div class="task-progress">
+            <div class="progress-info">
+              <span class="progress-text">Tiến độ</span>
+              <span class="progress-percentage">{{ getProgressPercentage(task) }}%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="getProgressPercentage(task)"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Task Comments -->
+        <div *ngIf="task.comments.length > 0" class="task-comments">
+          <div class="comments-header">
+            <h4>Ghi Chú ({{ task.comments.length }})</h4>
+          </div>
+          
+          <div class="comments-list">
+            <div 
+              *ngFor="let comment of task.comments.slice(-3)" 
+              class="comment-item"
+            >
+              <div class="comment-header">
+                <span class="comment-author">{{ comment.author }}</span>
+                <span class="comment-time">{{ comment.timestamp }}</span>
+              </div>
+              <p class="comment-content">{{ comment.content }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div *ngIf="filteredTasks().length === 0" class="empty-state">
+        <div class="empty-icon">✅</div>
+        <h3>Không có nhiệm vụ nào</h3>
+        <p>{{ searchTerm || statusFilter || priorityFilter || projectFilter ? 'Thử thay đổi bộ lọc để xem kết quả khác' : 'Bạn chưa có nhiệm vụ nào được giao' }}</p>
+        <button class="btn btn-primary" (click)="createTask()">
+          <span class="btn-icon">➕</span>
+          Tạo Nhiệm Vụ Đầu Tiên
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions Panel -->
+  <div class="quick-actions-panel">
+    <div class="panel-header">
+      <h3>Thao Tác Nhanh</h3>
+    </div>
+    <div class="panel-content">
+      <button class="quick-action-btn" (click)="viewMyTasks()">
+        <span class="action-icon">👤</span>
+        <span class="action-text">Nhiệm Vụ Của Tôi</span>
+      </button>
+      <button class="quick-action-btn" (click)="viewOverdueTasks()">
+        <span class="action-icon">⏰</span>
+        <span class="action-text">Nhiệm Vụ Quá Hạn</span>
+      </button>
+      <button class="quick-action-btn" (click)="exportTasks()">
+        <span class="action-icon">📤</span>
+        <span class="action-text">Xuất Báo Cáo</span>
+      </button>
+    </div>
+  </div>
+</div>

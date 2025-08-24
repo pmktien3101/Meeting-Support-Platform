@@ -1,0 +1,551 @@
+// Color variables from landing page
+$primary-orange: #FF5E13;
+$secondary-orange: #FFA463;
+$light-orange: #FFDBBD;
+$cream: #FDF0D2;
+$off-white: #F9F4EE;
+
+.dashboard-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+// Welcome Section
+.welcome-section {
+  background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+  color: white;
+  padding: 40px;
+  border-radius: 24px;
+  margin-bottom: 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .welcome-content {
+    .welcome-title {
+      font-size: 36px;
+      font-weight: 700;
+      margin: 0 0 12px 0;
+    }
+
+    .welcome-subtitle {
+      font-size: 18px;
+      margin: 0;
+      opacity: 0.9;
+    }
+  }
+
+  .welcome-actions {
+    display: flex;
+    gap: 16px;
+
+    .btn {
+      padding: 14px 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      &.btn-primary {
+        background: white;
+        color: $primary-orange;
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
+        }
+      }
+
+      &.btn-outline {
+        background: transparent;
+        color: white;
+        border: 2px solid white;
+
+        &:hover {
+          background: white;
+          color: $primary-orange;
+        }
+      }
+    }
+  }
+}
+
+// Stats Section
+.stats-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+
+  .stat-item {
+    background: white;
+    padding: 32px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: translateY(-4px);
+    }
+
+    .stat-icon {
+      font-size: 40px;
+      width: 80px;
+      height: 80px;
+      background: $light-orange;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-content {
+      .stat-number {
+        font-size: 36px;
+        font-weight: 800;
+        color: $primary-orange;
+        margin-bottom: 8px;
+      }
+
+      .stat-label {
+        color: #64748b;
+        font-size: 16px;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// Quick Actions Section
+.quick-actions-section {
+  margin-bottom: 32px;
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 24px 0;
+  }
+
+  .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+
+    .action-card {
+      background: white;
+      border: none;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-align: center;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+      }
+
+      .action-icon {
+        font-size: 32px;
+        margin-bottom: 12px;
+      }
+
+      .action-text {
+        color: #1e293b;
+        font-weight: 500;
+        font-size: 14px;
+      }
+    }
+  }
+}
+
+// Content Grid
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 32px;
+
+  .content-section {
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+
+      .section-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0;
+      }
+
+      .btn-sm {
+        padding: 8px 16px;
+        font-size: 12px;
+      }
+    }
+
+    .meetings-list, .tasks-list {
+      .meeting-item, .task-item {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 16px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+        background: $off-white;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: $light-orange;
+        }
+
+        .meeting-time, .task-status {
+          min-width: 80px;
+          text-align: center;
+
+          .time {
+            font-size: 18px;
+            font-weight: 700;
+            color: $primary-orange;
+          }
+
+          .duration {
+            font-size: 12px;
+            color: #64748b;
+          }
+
+          .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin: 0 auto;
+
+            &.todo {
+              background: #f59e0b;
+            }
+
+            &.in-progress {
+              background: #3b82f6;
+            }
+
+            &.done {
+              background: #10b981;
+            }
+          }
+        }
+
+        .meeting-info, .task-info {
+          flex: 1;
+
+          .meeting-title, .task-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0 0 4px 0;
+          }
+
+          .meeting-project, .task-project {
+            color: $primary-orange;
+            font-size: 14px;
+            margin: 0 0 8px 0;
+          }
+
+          .meeting-meta, .task-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #64748b;
+
+            .overdue {
+              color: #dc2626;
+              font-weight: 600;
+            }
+
+            .priority {
+              padding: 2px 8px;
+              border-radius: 12px;
+              font-size: 10px;
+              font-weight: 600;
+
+              &.priority-high {
+                background: #fef2f2;
+                color: #dc2626;
+              }
+
+              &.priority-medium {
+                background: #fffbeb;
+                color: #d97706;
+              }
+
+              &.priority-low {
+                background: #f0fdf4;
+                color: #059669;
+              }
+            }
+          }
+        }
+
+        .meeting-actions, .task-actions {
+          .btn-sm {
+            padding: 6px 12px;
+            font-size: 11px;
+          }
+        }
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #64748b;
+
+        p {
+          margin: 0;
+        }
+      }
+    }
+  }
+}
+
+// Project Progress Section
+.project-progress-section {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+  .section-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 24px 0;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+
+    .project-card {
+      background: $off-white;
+      padding: 20px;
+      border-radius: 16px;
+      transition: all 0.3s ease;
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .project-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+
+        .project-title {
+          font-size: 18px;
+          font-weight: 600;
+          color: #1e293b;
+          margin: 0;
+        }
+
+        .project-status {
+          padding: 4px 12px;
+          border-radius: 20px;
+          font-size: 12px;
+          font-weight: 600;
+          background: $light-orange;
+          color: $primary-orange;
+        }
+      }
+
+      .project-progress {
+        margin-bottom: 16px;
+
+        .progress-info {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+
+          .progress-text {
+            font-size: 14px;
+            color: #64748b;
+          }
+
+          .progress-percentage {
+            font-size: 16px;
+            font-weight: 700;
+            color: $primary-orange;
+          }
+        }
+
+        .progress-bar {
+          height: 8px;
+          background: #e1e5e9;
+          border-radius: 4px;
+          overflow: hidden;
+
+          .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+          }
+        }
+      }
+
+      .project-meta {
+        display: flex;
+        gap: 16px;
+        margin-bottom: 16px;
+        font-size: 12px;
+        color: #64748b;
+      }
+
+      .btn-sm {
+        width: 100%;
+        padding: 10px;
+        font-size: 12px;
+      }
+    }
+  }
+}
+
+// Button Styles
+.btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+
+  &.btn-primary {
+    background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+    color: white;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(255, 94, 19, 0.3);
+    }
+  }
+
+  &.btn-outline {
+    background: transparent;
+    color: $primary-orange;
+    border: 2px solid $primary-orange;
+
+    &:hover {
+      background: $primary-orange;
+      color: white;
+    }
+  }
+
+  &.btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+  .welcome-section {
+    flex-direction: column;
+    text-align: center;
+    gap: 24px;
+
+    .welcome-actions {
+      justify-content: center;
+    }
+  }
+
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .projects-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-page {
+    padding: 16px;
+  }
+
+  .welcome-section {
+    padding: 24px;
+
+    .welcome-title {
+      font-size: 28px;
+    }
+
+    .welcome-subtitle {
+      font-size: 16px;
+    }
+  }
+
+  .stats-section {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .actions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .welcome-section {
+    padding: 20px;
+
+    .welcome-title {
+      font-size: 24px;
+    }
+
+    .welcome-actions {
+      flex-direction: column;
+      width: 100%;
+
+      .btn {
+        justify-content: center;
+      }
+    }
+  }
+
+  .stats-section {
+    grid-template-columns: 1fr;
+  }
+
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .content-section {
+    padding: 16px;
+  }
+}

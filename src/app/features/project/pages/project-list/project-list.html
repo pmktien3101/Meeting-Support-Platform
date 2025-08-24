@@ -1,0 +1,124 @@
+<div class="project-list-container">
+  <div class="project-list-header">
+    <div class="header-content">
+      <div class="title-section">
+        <h1>Projects</h1>
+        <p>Manage and track your project milestones and progress</p>
+      </div>
+      <div class="actions">
+        <button class="create-btn" routerLink="/project/create">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 5V19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Create Project
+        </button>
+      </div>
+    </div>
+
+    <div class="filters-section">
+      <div class="search-box">
+        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 21L16.514 16.506L21 21ZM19 10.5C19 15.194 15.194 19 10.5 19C5.806 19 2 15.194 2 10.5C2 5.806 5.806 2 10.5 2C15.194 2 19 5.806 19 10.5Z" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <input 
+          type="text" 
+          placeholder="Search projects..." 
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+        >
+      </div>
+
+      <div class="status-filter">
+        <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()" aria-label="Filter by status">
+          <option value="all">All Status</option>
+          <option value="planning">Planning</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="on-hold">On Hold</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="project-list-content">
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="loading-spinner"></div>
+      <p>Loading projects...</p>
+    </div>
+
+    <div *ngIf="!isLoading && filteredProjects.length === 0" class="empty-state">
+      <div class="empty-icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#D1D5DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 17L12 22L22 17" stroke="#D1D5DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 12L12 17L22 12" stroke="#D1D5DB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h3>No projects found</h3>
+      <p>Create your first project to get started</p>
+      <button class="create-btn" routerLink="/project/create">Create Project</button>
+    </div>
+
+    <div *ngIf="!isLoading && filteredProjects.length > 0" class="projects-grid">
+      <div *ngFor="let project of filteredProjects" class="project-card" [routerLink]="['/project', project.id]">
+        <div class="project-header">
+          <div class="project-title">
+            <h3>{{ project.name }}</h3>
+            <span class="status-badge" [style.background-color]="getStatusColor(project.status)">
+              {{ getStatusText(project.status) }}
+            </span>
+          </div>
+          <div class="project-menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 12H12.01" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 6H12.01" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 18H12.01" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <p class="project-description">{{ project.description }}</p>
+
+        <div class="project-stats">
+          <div class="stat-item">
+            <span class="stat-label">Progress</span>
+            <div class="progress-bar">
+              <div class="progress-fill" 
+                   [style.width.%]="project.progress"
+                   [style.background-color]="getProgressColor(project.progress)">
+              </div>
+            </div>
+            <span class="stat-value">{{ project.progress }}%</span>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat">
+              <span class="stat-number">{{ project.totalTasks }}</span>
+              <span class="stat-label">Tasks</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">{{ project.milestones.length }}</span>
+              <span class="stat-label">Milestones</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">{{ project.members.length }}</span>
+              <span class="stat-label">Members</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="project-footer">
+          <div class="project-dates">
+            <span class="date-label">Start:</span>
+            <span class="date-value">{{ project.startDate | date:'MMM dd, yyyy' }}</span>
+          </div>
+          <div class="project-dates" *ngIf="project.endDate">
+            <span class="date-label">End:</span>
+            <span class="date-value">{{ project.endDate | date:'MMM dd, yyyy' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

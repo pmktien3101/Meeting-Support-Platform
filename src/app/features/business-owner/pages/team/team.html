@@ -1,0 +1,129 @@
+<div class="team-management">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Quản Lý Nhóm</h1>
+      <p>Quản lý thành viên nhóm và xem thông tin Project Manager</p>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <input 
+        type="text" 
+        placeholder="Tìm kiếm thành viên nhóm..." 
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+        class="search-input"
+      >
+      <span class="search-icon">🔍</span>
+    </div>
+    
+    <div class="filter-controls">
+      <select [(ngModel)]="roleFilter" (change)="onRoleFilterChange()" class="filter-select" title="Chọn vai trò" aria-label="Chọn vai trò">
+        <option value="all">Tất Cả Vai Trò</option>
+        <option value="member">Thành Viên</option>
+        <option value="project-manager">Project Manager</option>
+      </select>
+      
+      <select [(ngModel)]="statusFilter" (change)="onStatusFilterChange()" class="filter-select" title="Chọn trạng thái" aria-label="Chọn trạng thái">
+        <option value="all">Tất Cả Trạng Thái</option>
+        <option value="active">Hoạt Động</option>
+        <option value="inactive">Không Hoạt Động</option>
+        <option value="pending">Chờ Xử Lý</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Team Members List -->
+  <div class="team-content">
+    <div class="content-header">
+      <h2>Thành Viên Nhóm ({{ filteredMembers().length }})</h2>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading()" class="loading-state">
+      <div class="spinner"></div>
+      <p>Đang tải thành viên nhóm...</p>
+    </div>
+
+    <!-- Team Members Grid -->
+    <div *ngIf="!isLoading()" class="team-grid">
+      <div *ngFor="let member of filteredMembers()" class="member-card">
+        <div class="member-header">
+          <div class="member-avatar">
+            {{ member.avatar }}
+          </div>
+          <div class="member-info">
+            <h3 class="member-name">{{ member.name }}</h3>
+            <p class="member-position">{{ member.position }}</p>
+            <div class="member-badges">
+              <span class="badge" [class]="getRoleBadgeClass(member.role)">
+                {{ member.role === 'project-manager' ? 'PM' : member.role }}
+              </span>
+              <span class="badge" [class]="getStatusBadgeClass(member.status)">
+                {{ member.status }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="member-details">
+          <div class="detail-item">
+            <span class="label">Email:</span>
+            <span class="value">{{ member.email }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Điện Thoại:</span>
+            <span class="value">{{ member.phone }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Tham Gia:</span>
+            <span class="value">{{ member.joinDate | date:'MMM dd, yyyy' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Hoạt Động Cuối:</span>
+            <span class="value">{{ member.lastActive | date:'MMM dd, yyyy' }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Dự Án:</span>
+            <span class="value">{{ member.projectsCount }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Hiệu Suất:</span>
+            <span class="value" [class]="getPerformanceColor(member.performance)">
+              {{ member.performance }}%
+            </span>
+          </div>
+        </div>
+
+        <div class="member-actions">
+          <button class="btn btn-outline btn-sm">
+            <span class="icon">✏️</span>
+            Sửa
+          </button>
+          <button class="btn btn-outline btn-sm">
+            <span class="icon">📧</span>
+            Liên Hệ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading() && filteredMembers().length === 0" class="empty-state">
+      <div class="empty-icon">👥</div>
+      <h3>Không tìm thấy thành viên nhóm</h3>
+      <p>Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc để tìm thành viên nhóm.</p>
+    </div>
+  </div>
+</div>
+
+
+    
+
+
+
+
+

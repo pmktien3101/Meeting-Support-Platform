@@ -1,0 +1,285 @@
+<div class="pm-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.collapsed]="sidebarCollapsed()">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span class="logo-icon">📊</span>
+        <span class="logo-text" *ngIf="!sidebarCollapsed()">PM Portal</span>
+      </div>
+      <button class="sidebar-toggle" (click)="toggleSidebar()">
+        <span *ngIf="!sidebarCollapsed()">◀</span>
+        <span *ngIf="sidebarCollapsed()">▶</span>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul class="nav-list">
+        <li class="nav-item" *ngFor="let item of menuItems">
+          <a [routerLink]="item.route" 
+             routerLinkActive="active" 
+             class="nav-link"
+             [title]="item.label">
+            <span class="nav-icon">{{ item.icon }}</span>
+            <span class="nav-label" *ngIf="!sidebarCollapsed()">{{ item.label }}</span>
+            <span class="nav-badge" *ngIf="!sidebarCollapsed() && item.badge">{{ item.badge }}</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <h1 class="page-title">{{ getPageTitle() }}</h1>
+        <nav class="breadcrumb" *ngIf="getBreadcrumb()">
+          <a *ngFor="let item of getBreadcrumb()" 
+             [routerLink]="item.route" 
+             class="breadcrumb-item">
+            {{ item.label }}
+          </a>
+        </nav>
+      </div>
+
+      <div class="header-right">
+        <!-- Notifications -->
+        <div class="notifications-dropdown">
+          <button class="notifications-toggle" 
+                  (click)="toggleNotifications()"
+                  [class.has-unread]="hasUnreadNotifications()">
+            <span class="notifications-icon">🔔</span>
+            <span class="notifications-badge" *ngIf="getUnreadCount() > 0">
+              {{ getUnreadCount() }}
+            </span>
+          </button>
+          
+          <div class="notifications-panel" *ngIf="notificationsOpen()">
+            <div class="notifications-header">
+              <h3>Thông báo</h3>
+              <button class="mark-all-read" (click)="markAllAsRead()">
+                Đánh dấu tất cả đã đọc
+              </button>
+            </div>
+            <div class="notifications-list">
+              <div class="notification-item" 
+                   *ngFor="let notification of notifications"
+                   [class.unread]="!notification.read"
+                   (click)="markAsRead(notification.id)">
+                <span class="notification-icon">{{ notification.icon }}</span>
+                <div class="notification-content">
+                  <h4>{{ notification.title }}</h4>
+                  <p>{{ notification.message }}</p>
+                  <span class="notification-time">{{ notification.time }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Menu -->
+        <div class="user-menu">
+          <button class="user-toggle" (click)="toggleUserMenu()">
+            <div class="user-avatar">{{ currentUser().avatar }}</div>
+            <div class="user-info" *ngIf="!sidebarCollapsed()">
+              <span class="user-name">{{ currentUser().name }}</span>
+              <span class="user-role">{{ currentUser().role }}</span>
+            </div>
+            <span class="user-arrow">▼</span>
+          </button>
+          
+          <div class="user-panel" *ngIf="userMenuOpen()">
+            <div class="user-panel-header">
+              <div class="user-avatar">{{ currentUser().avatar }}</div>
+              <div class="user-info">
+                <span class="user-name">{{ currentUser().name }}</span>
+                <span class="user-email">{{ currentUser().email }}</span>
+              </div>
+            </div>
+            <ul class="user-menu-list">
+              <li><button (click)="openProfile()">👤 Hồ sơ</button></li>
+              <li><button (click)="openSettings()">⚙️ Cài đặt</button></li>
+              <li><button (click)="openHelp()">❓ Trợ giúp</button></li>
+              <li class="divider"></li>
+              <li><button (click)="logout()" class="logout-btn">🚪 Đăng xuất</button></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Content -->
+    <div class="page-content">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+
+  <!-- Modals -->
+  <!-- Create Project Modal -->
+  <div class="modal-overlay" *ngIf="showCreateProjectModal()" (click)="closeCreateProject()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>📁 Tạo Dự Án Mới</h3>
+        <button class="modal-close" (click)="closeCreateProject()">×</button>
+      </div>
+      <form [formGroup]="projectForm" (ngSubmit)="submitProject()" class="modal-form">
+        <div class="form-group">
+          <label for="projectName">Tên dự án *</label>
+          <input type="text" id="projectName" formControlName="name" placeholder="Nhập tên dự án">
+        </div>
+        <div class="form-group">
+          <label for="projectDescription">Mô tả</label>
+          <textarea id="projectDescription" formControlName="description" rows="3" placeholder="Mô tả dự án"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="startDate">Ngày bắt đầu *</label>
+            <input type="date" id="startDate" formControlName="startDate">
+          </div>
+          <div class="form-group">
+            <label for="endDate">Ngày kết thúc *</label>
+            <input type="date" id="endDate" formControlName="endDate">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="projectStatus">Trạng thái</label>
+          <select id="projectStatus" formControlName="status">
+            <option value="planning">Lập kế hoạch</option>
+            <option value="active">Đang thực hiện</option>
+            <option value="on-hold">Tạm dừng</option>
+            <option value="completed">Hoàn thành</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeCreateProject()">Hủy</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!projectForm.valid">Tạo dự án</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Meeting Modal -->
+  <div class="modal-overlay" *ngIf="showCreateMeetingModal()" (click)="closeCreateMeeting()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>📅 Tạo Cuộc Họp Mới</h3>
+        <button class="modal-close" (click)="closeCreateMeeting()">×</button>
+      </div>
+      <form [formGroup]="meetingForm" (ngSubmit)="submitMeeting()" class="modal-form">
+        <div class="form-group">
+          <label for="meetingTitle">Tiêu đề cuộc họp *</label>
+          <input type="text" id="meetingTitle" formControlName="title" placeholder="Nhập tiêu đề cuộc họp">
+        </div>
+        <div class="form-group">
+          <label for="meetingDescription">Mô tả</label>
+          <textarea id="meetingDescription" formControlName="description" rows="3" placeholder="Mô tả cuộc họp"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="meetingDate">Ngày *</label>
+            <input type="date" id="meetingDate" formControlName="date">
+          </div>
+          <div class="form-group">
+            <label for="meetingTime">Giờ *</label>
+            <input type="time" id="meetingTime" formControlName="time">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="meetingDuration">Thời lượng (phút) *</label>
+            <input type="number" id="meetingDuration" formControlName="duration" min="15" max="480">
+          </div>
+          <div class="form-group">
+            <label for="meetingType">Hình thức</label>
+            <select id="meetingType" formControlName="type">
+              <option value="online">Trực tuyến</option>
+              <option value="offline">Trực tiếp</option>
+              <option value="hybrid">Kết hợp</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Chọn người tham dự</label>
+          <div class="participants-grid">
+            <div class="participant-item" 
+                 *ngFor="let member of teamMembers"
+                 [class.selected]="isParticipantSelected(member.id)"
+                 (click)="toggleParticipant(member.id)">
+              <span class="participant-avatar">{{ member.avatar }}</span>
+              <span class="participant-name">{{ member.name }}</span>
+              <span class="participant-role">{{ member.role }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeCreateMeeting()">Hủy</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!meetingForm.valid">Tạo cuộc họp</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Create Task Modal -->
+  <div class="modal-overlay" *ngIf="showCreateTaskModal()" (click)="closeCreateTask()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>✅ Tạo Công Việc Mới</h3>
+        <button class="modal-close" (click)="closeCreateTask()">×</button>
+      </div>
+      <form [formGroup]="taskForm" (ngSubmit)="submitTask()" class="modal-form">
+        <div class="form-group">
+          <label for="taskTitle">Tiêu đề công việc *</label>
+          <input type="text" id="taskTitle" formControlName="title" placeholder="Nhập tiêu đề công việc">
+        </div>
+        <div class="form-group">
+          <label for="taskDescription">Mô tả</label>
+          <textarea id="taskDescription" formControlName="description" rows="3" placeholder="Mô tả công việc"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskAssignee">Người thực hiện</label>
+            <select id="taskAssignee" formControlName="assigneeId">
+              <option value="">Chọn người thực hiện</option>
+              <option *ngFor="let member of teamMembers" [value]="member.id">
+                {{ member.name }} - {{ member.role }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="taskPriority">Mức độ ưu tiên</label>
+            <select id="taskPriority" formControlName="priority">
+              <option value="low">Thấp</option>
+              <option value="medium">Trung bình</option>
+              <option value="high">Cao</option>
+              <option value="urgent">Khẩn cấp</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskStartDate">Ngày bắt đầu</label>
+            <input type="date" id="taskStartDate" formControlName="startDate">
+          </div>
+          <div class="form-group">
+            <label for="taskDueDate">Hạn hoàn thành</label>
+            <input type="date" id="taskDueDate" formControlName="dueDate">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="taskStatus">Trạng thái</label>
+          <select id="taskStatus" formControlName="status">
+            <option value="todo">To-do</option>
+            <option value="in-progress">Đang thực hiện</option>
+            <option value="review">Đang review</option>
+            <option value="done">Hoàn thành</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeCreateTask()">Hủy</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!taskForm.valid">Tạo công việc</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

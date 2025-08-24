@@ -1,0 +1,137 @@
+<div class="pm-dashboard">
+  <div class="dashboard-header">
+    <h2>📊 Bảng Điều Khiển</h2>
+    <p>Quản lý dự án và nhóm hiệu quả</p>
+  </div>
+  
+  <div class="dashboard-overview">
+    <div class="overview-card">
+      <div class="overview-icon">📁</div>
+      <div class="overview-content">
+        <h3>Dự Án Đang Thực Hiện</h3>
+        <p class="overview-number">{{ getProjects().length }}</p>
+        <p class="overview-label">Dự án đang hoạt động</p>
+      </div>
+    </div>
+    
+    <div class="overview-card">
+      <div class="overview-icon">👥</div>
+      <div class="overview-content">
+        <h3>Thành Viên Nhóm</h3>
+        <p class="overview-number">{{ getTeamMembers().length }}</p>
+        <p class="overview-label">Thành viên tích cực</p>
+      </div>
+    </div>
+    
+    <div class="overview-card">
+      <div class="overview-icon">✅</div>
+      <div class="overview-content">
+        <h3>Task Sắp Hạn</h3>
+        <p class="overview-number">23</p>
+        <p class="overview-label">Task hạn trong tuần này</p>
+      </div>
+    </div>
+    
+    <div class="overview-card">
+      <div class="overview-icon">🎯</div>
+      <div class="overview-content">
+        <h3>Tỷ Lệ Hoàn Thành</h3>
+        <p class="overview-number">78%</p>
+        <p class="overview-label">Trung bình hoàn thành</p>
+      </div>
+    </div>
+  </div>
+  
+  <div class="dashboard-content">
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h3>📁 Dự Án Gần Đây</h3>
+        <button class="btn btn-primary" (click)="openCreateProject()">
+          ➕ Tạo Dự Án Mới
+        </button>
+      </div>
+      <div class="project-list">
+        <div class="project-item" *ngFor="let project of getProjects()">
+          <div class="project-info">
+            <h4>{{ project.name }}</h4>
+            <p>{{ project.description }}</p>
+            <div class="project-meta">
+              <span class="meta-item">
+                <span class="meta-icon">📅</span>
+                {{ project.startDate | date:'dd/MM/yyyy' }} - {{ project.endDate | date:'dd/MM/yyyy' }}
+              </span>
+              <span class="meta-item">
+                <span class="meta-icon">👤</span>
+                {{ project.manager }}
+              </span>
+            </div>
+          </div>
+          <div class="project-status">
+            <span class="status-badge" [class]="project.status">
+              {{ getProjectStatusText(project.status) }}
+            </span>
+            <div class="progress">
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="project.progress"></div>
+              </div>
+              <span class="progress-text">{{ project.progress }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h3>🎯 Milestone Quan Trọng</h3>
+        <button class="btn btn-secondary" (click)="openCreateMeeting()">
+          📅 Tạo Cuộc Họp
+        </button>
+      </div>
+      <div class="milestone-list">
+        <div class="milestone-item" *ngFor="let milestone of getMilestones()">
+          <div class="milestone-info">
+            <h4>{{ milestone.name }}</h4>
+            <p>{{ milestone.description }}</p>
+            <div class="milestone-dates">
+              <span>{{ milestone.startDate | date:'dd/MM/yyyy' }} - {{ milestone.endDate | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+          <div class="milestone-status">
+            <span class="status-badge" [class]="milestone.status">
+              {{ getMilestoneStatusText(milestone.status) }}
+            </span>
+            <div class="progress">
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="milestone.progress"></div>
+              </div>
+              <span class="progress-text">{{ milestone.progress }}%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="dashboard-section">
+      <div class="section-header">
+        <h3>🔔 Thông Báo Gần Đây</h3>
+        <button class="btn btn-secondary" (click)="markAllAsRead()">
+          Đánh dấu tất cả đã đọc
+        </button>
+      </div>
+      <div class="notifications-list">
+        <div class="notification-item" 
+             *ngFor="let notification of getNotifications().slice(0, 5)"
+             [class.unread]="!notification.read"
+             (click)="markAsRead(notification.id)">
+          <span class="notification-icon">{{ notification.icon }}</span>
+          <div class="notification-content">
+            <h4>{{ notification.title }}</h4>
+            <p>{{ notification.message }}</p>
+            <span class="notification-time">{{ notification.time }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

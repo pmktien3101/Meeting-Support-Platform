@@ -1,0 +1,218 @@
+<div class="meeting-summary">
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading meeting summary...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error()" class="error-state">
+    <div class="error-icon">⚠️</div>
+    <h3>Error Loading Summary</h3>
+    <p>{{ error() }}</p>
+    <button class="btn btn-primary" (click)="loadMeetingSummary()">Try Again</button>
+  </div>
+
+  <!-- Summary Content -->
+  <div *ngIf="!isLoading() && meetingSummary()" class="summary-content">
+    <!-- Header -->
+    <div class="summary-header">
+      <div class="header-content">
+        <h1>Meeting Summary</h1>
+        <p class="meeting-title">{{ meetingSummary()!.title }}</p>
+        <div class="meeting-meta">
+          <span class="meta-item">
+            <span class="icon">📅</span>
+            {{ meetingSummary()!.date | date:'MMM dd, yyyy' }}
+          </span>
+          <span class="meta-item">
+            <span class="icon">⏰</span>
+            {{ formatDuration(meetingSummary()!.duration) }}
+          </span>
+          <span class="meta-item">
+            <span class="icon">👥</span>
+            {{ meetingSummary()!.participants.length }} participants
+          </span>
+          <span class="meta-item">
+            <span class="icon">{{ getSentimentIcon(meetingSummary()!.sentiment) }}</span>
+            <span [class]="getSentimentColor(meetingSummary()!.sentiment)">
+              {{ meetingSummary()!.sentiment | titlecase }}
+            </span>
+          </span>
+          <span class="meta-item">
+            <span class="icon">📊</span>
+            <span [class]="getEngagementColor(meetingSummary()!.engagement)">
+              {{ meetingSummary()!.engagement }}% engagement
+            </span>
+          </span>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="navigateToDetail()">
+          <span class="icon">📋</span>
+          Meeting Details
+        </button>
+        <button class="btn btn-primary" (click)="navigateToTranscript()">
+          <span class="icon">📝</span>
+          View Transcript
+        </button>
+      </div>
+    </div>
+
+    <!-- Summary Overview -->
+    <div class="summary-overview">
+      <div class="overview-card">
+        <h3>Executive Summary</h3>
+        <p class="summary-text">{{ meetingSummary()!.summary }}</p>
+      </div>
+    </div>
+
+    <!-- Summary Grid -->
+    <div class="summary-grid">
+      <!-- Key Points -->
+      <div class="summary-card">
+        <h3>Key Points</h3>
+        <div class="points-list">
+          <div 
+            *ngFor="let point of meetingSummary()!.keyPoints; let i = index" 
+            class="point-item"
+          >
+            <span class="point-number">{{ i + 1 }}</span>
+            <span class="point-text">{{ point }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Items -->
+      <div class="summary-card">
+        <h3>Action Items</h3>
+        <div class="action-items-list">
+          <div 
+            *ngFor="let item of meetingSummary()!.actionItems" 
+            class="action-item"
+          >
+            <div class="action-header">
+              <span class="action-description">{{ item.description }}</span>
+              <div class="action-badges">
+                <span class="badge" [class]="getPriorityColor(item.priority)">
+                  {{ item.priority }}
+                </span>
+                <span class="badge" [class]="getStatusColor(item.status)">
+                  {{ item.status }}
+                </span>
+              </div>
+            </div>
+            <div class="action-details">
+              <span class="assignee">👤 {{ item.assignee }}</span>
+              <span class="due-date">📅 {{ item.dueDate | date:'MMM dd' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Decisions -->
+      <div class="summary-card">
+        <h3>Decisions Made</h3>
+        <div class="decisions-list">
+          <div 
+            *ngFor="let decision of meetingSummary()!.decisions; let i = index" 
+            class="decision-item"
+          >
+            <span class="decision-number">{{ i + 1 }}</span>
+            <span class="decision-text">{{ decision }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next Steps -->
+      <div class="summary-card">
+        <h3>Next Steps</h3>
+        <div class="next-steps-list">
+          <div 
+            *ngFor="let step of meetingSummary()!.nextSteps; let i = index" 
+            class="step-item"
+          >
+            <span class="step-number">{{ i + 1 }}</span>
+            <span class="step-text">{{ step }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Topics Covered -->
+      <div class="summary-card">
+        <h3>Topics Covered</h3>
+        <div class="topics-list">
+          <div 
+            *ngFor="let topic of meetingSummary()!.topics" 
+            class="topic-item"
+          >
+            <div class="topic-header">
+              <span class="topic-name">{{ topic.name }}</span>
+              <span class="topic-duration">{{ formatDuration(topic.duration) }}</span>
+            </div>
+            <div class="topic-details">
+              <div class="importance-bar">
+                <div class="importance-fill" [style.width.%]="topic.importance * 10"></div>
+              </div>
+              <span class="importance-text">Importance: {{ topic.importance }}/10</span>
+            </div>
+            <div class="topic-participants">
+              <span class="participants-label">Key participants:</span>
+              <span class="participants-list">{{ topic.participants.join(', ') }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Meeting Analytics -->
+      <div class="summary-card">
+        <h3>Meeting Analytics</h3>
+        <div class="analytics-grid">
+          <div class="analytics-item">
+            <div class="analytics-icon">📊</div>
+            <div class="analytics-content">
+              <span class="analytics-label">Engagement</span>
+              <span class="analytics-value" [class]="getEngagementColor(meetingSummary()!.engagement)">
+                {{ meetingSummary()!.engagement }}%
+              </span>
+            </div>
+          </div>
+          <div class="analytics-item">
+            <div class="analytics-icon">⏱️</div>
+            <div class="analytics-content">
+              <span class="analytics-label">Duration</span>
+              <span class="analytics-value">{{ formatDuration(meetingSummary()!.duration) }}</span>
+            </div>
+          </div>
+          <div class="analytics-item">
+            <div class="analytics-icon">👥</div>
+            <div class="analytics-content">
+              <span class="analytics-label">Participants</span>
+              <span class="analytics-value">{{ meetingSummary()!.participants.length }}</span>
+            </div>
+          </div>
+          <div class="analytics-item">
+            <div class="analytics-icon">📋</div>
+            <div class="analytics-content">
+              <span class="analytics-label">Action Items</span>
+              <span class="analytics-value">{{ meetingSummary()!.actionItems.length }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="summary-actions">
+      <button class="btn btn-outline" (click)="copySummary()">
+        <span class="icon">📋</span>
+        Copy Summary
+      </button>
+      <button class="btn btn-outline" (click)="downloadSummary()">
+        <span class="icon">⬇️</span>
+        Download Summary
+      </button>
+    </div>
+  </div>
+</div>

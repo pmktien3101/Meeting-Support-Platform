@@ -1,0 +1,125 @@
+<div class="documents-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h2>📄 Quản Lý Tài Liệu</h2>
+      <p>Quản lý và chia sẻ tài liệu dự án</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="uploadDocument()">
+        📤 Tải Lên Tài Liệu
+      </button>
+      <button class="btn btn-secondary">
+        📁 Tạo Thư Mục
+      </button>
+    </div>
+  </div>
+
+  <div class="documents-filters">
+    <div class="filter-group">
+      <label>Loại tài liệu:</label>
+      <select class="filter-select" aria-label="Lọc theo loại tài liệu">
+        <option value="">Tất cả</option>
+        <option value="pdf">PDF</option>
+        <option value="figma">Figma</option>
+        <option value="drawio">Draw.io</option>
+        <option value="markdown">Markdown</option>
+        <option value="excel">Excel</option>
+        <option value="word">Word</option>
+        <option value="powerpoint">PowerPoint</option>
+        <option value="image">Hình ảnh</option>
+        <option value="video">Video</option>
+        <option value="audio">Âm thanh</option>
+        <option value="archive">Archive</option>
+        <option value="code">Code</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Dự án:</label>
+      <select class="filter-select" aria-label="Lọc theo dự án">
+        <option value="">Tất cả dự án</option>
+        <option value="1">Website E-commerce</option>
+        <option value="2">Mobile App</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Người tải lên:</label>
+      <select class="filter-select" aria-label="Lọc theo người tải lên">
+        <option value="">Tất cả</option>
+        <option value="Nguyễn Văn A">Nguyễn Văn A</option>
+        <option value="Trần Thị B">Trần Thị B</option>
+        <option value="Lê Văn C">Lê Văn C</option>
+        <option value="Phạm Thị D">Phạm Thị D</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Tìm kiếm:</label>
+      <input type="text" class="filter-input" placeholder="Tìm kiếm tài liệu...">
+    </div>
+  </div>
+
+  <div class="documents-content">
+    <div class="documents-grid">
+      <div class="document-card" *ngFor="let document of documents">
+        <div class="document-icon">
+          {{ getDocumentIcon(document.type) }}
+        </div>
+        <div class="document-info">
+          <h3>{{ document.name }}</h3>
+          <p class="document-description">{{ document.description }}</p>
+          <div class="document-meta">
+            <span class="meta-item">
+              <span class="meta-icon">📁</span>
+              {{ getProjectName(document.projectId) }}
+            </span>
+            <span class="meta-item">
+              <span class="meta-icon">👤</span>
+              {{ document.uploadedBy }}
+            </span>
+            <span class="meta-item">
+              <span class="meta-icon">📅</span>
+              {{ document.uploadDate | date:'dd/MM/yyyy' }}
+            </span>
+            <span class="meta-item">
+              <span class="meta-icon">📏</span>
+              {{ document.size }}
+            </span>
+          </div>
+        </div>
+        <div class="document-actions">
+          <button class="btn btn-primary" (click)="downloadDocument(document.id)">
+            📥 Tải xuống
+          </button>
+          <button class="btn btn-secondary" (click)="shareDocument(document.id)">
+            🔗 Chia sẻ
+          </button>
+          <button class="btn btn-outline" (click)="viewDocument(document.id)">
+            👁️ Xem
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="documents-summary">
+    <div class="summary-card">
+      <div class="summary-icon">📄</div>
+      <div class="summary-value">{{ documents.length }}</div>
+      <div class="summary-label">Tổng tài liệu</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">📁</div>
+      <div class="summary-value">{{ getProjectsCount() }}</div>
+      <div class="summary-label">Dự án</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">👥</div>
+      <div class="summary-value">{{ getUploadersCount() }}</div>
+      <div class="summary-label">Người tải lên</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">📊</div>
+      <div class="summary-value">{{ getTotalSize() }}</div>
+      <div class="summary-label">Tổng dung lượng</div>
+    </div>
+  </div>
+</div>

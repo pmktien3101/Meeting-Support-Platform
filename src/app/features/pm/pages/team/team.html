@@ -1,0 +1,136 @@
+<div class="team-page">
+  <div class="page-header">
+    <div class="header-content">
+      <h2>👥 Quản Lý Nhóm</h2>
+      <p>Quản lý thành viên và cấu trúc nhóm dự án</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="openInviteMember()">
+        ➕ Mời Thành Viên
+      </button>
+      <button class="btn btn-secondary">
+        📊 Xem Báo Cáo
+      </button>
+    </div>
+  </div>
+
+  <div class="team-filters">
+    <div class="filter-group">
+      <label>Vai trò:</label>
+      <select class="filter-select" aria-label="Lọc theo vai trò">
+        <option value="">Tất cả</option>
+        <option value="pm">Project Manager</option>
+        <option value="developer">Developer</option>
+        <option value="designer">Designer</option>
+        <option value="qa">QA Engineer</option>
+        <option value="analyst">Business Analyst</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Trạng thái:</label>
+      <select class="filter-select" aria-label="Lọc theo trạng thái">
+        <option value="">Tất cả</option>
+        <option value="active">Đang hoạt động</option>
+        <option value="inactive">Không hoạt động</option>
+        <option value="on-leave">Nghỉ phép</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Tìm kiếm:</label>
+      <input type="text" class="filter-input" placeholder="Tìm kiếm thành viên...">
+    </div>
+  </div>
+
+  <div class="team-grid">
+    <div class="member-card" *ngFor="let member of teamMembers">
+      <div class="member-header">
+        <div class="member-avatar">{{ member.avatar }}</div>
+        <div class="member-status">
+          <span class="status-badge" [class]="member.status">
+            {{ getStatusText(member.status) }}
+          </span>
+        </div>
+      </div>
+      
+      <div class="member-content">
+        <h3 class="member-name">{{ member.name }}</h3>
+        <p class="member-role">{{ getRoleText(member.role) }}</p>
+        <p class="member-email">{{ member.email }}</p>
+        
+        <div class="member-meta">
+          <div class="meta-item">
+            <span class="meta-icon">📁</span>
+            <span class="meta-text">{{ member.projects }} dự án</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-icon">✅</span>
+            <span class="meta-text">{{ member.completedTasks }} task hoàn thành</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-icon">📅</span>
+            <span class="meta-text">Tham gia từ {{ member.joinDate | date:'MM/yyyy' }}</span>
+          </div>
+        </div>
+        
+        <div class="member-skills">
+          <span class="skills-label">Kỹ năng:</span>
+          <div class="skills-list">
+            <span class="skill-tag" *ngFor="let skill of member.skills.slice(0, 3)">
+              {{ skill }}
+            </span>
+            <span class="more-skills" *ngIf="member.skills.length > 3">
+              +{{ member.skills.length - 3 }} khác
+            </span>
+          </div>
+        </div>
+        
+        <div class="member-performance">
+          <div class="performance-header">
+            <span class="performance-label">Hiệu suất</span>
+            <span class="performance-score">{{ member.performance }}%</span>
+          </div>
+          <div class="performance-bar">
+            <div class="performance-fill" [style.width.%]="member.performance"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="member-actions">
+        <button class="btn btn-primary btn-sm">Xem Chi Tiết</button>
+        <button class="btn btn-secondary btn-sm">Chỉnh Sửa</button>
+        <button class="btn btn-outline btn-sm">📊 Báo Cáo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="team-summary">
+    <div class="summary-card">
+      <div class="summary-icon">👥</div>
+      <div class="summary-content">
+        <h4>Tổng số thành viên</h4>
+        <p class="summary-number">{{ teamMembers.length }}</p>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">🚀</div>
+      <div class="summary-content">
+        <h4>Đang hoạt động</h4>
+        <p class="summary-number">{{ getActiveMembersCount() }}</p>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">📈</div>
+      <div class="summary-content">
+        <h4>Trung bình hiệu suất</h4>
+        <p class="summary-number">{{ getAveragePerformance() }}%</p>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon">🎯</div>
+      <div class="summary-content">
+        <h4>Vai trò chính</h4>
+        <p class="summary-number">{{ getMainRolesCount() }}</p>
+      </div>
+    </div>
+  </div>
+</div>

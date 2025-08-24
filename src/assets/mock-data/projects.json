@@ -1,0 +1,110 @@
+[
+  {
+    "id": 1,
+    "name": "E-commerce Platform Redesign",
+    "description": "Complete redesign of the company's e-commerce platform with modern UI/UX and improved performance",
+    "status": "active",
+    "startDate": "2024-01-01T00:00:00Z",
+    "endDate": "2024-06-30T00:00:00Z",
+    "businessOwnerId": 2,
+    "projectManagerId": 3,
+    "members": [5, 6, 7],
+    "createdAt": "2024-01-01T00:00:00Z",
+    "updatedAt": "2024-01-15T10:30:00Z",
+    "milestones": [
+      {
+        "id": 1,
+        "projectId": 1,
+        "name": "Design Phase",
+        "description": "Complete UI/UX design and wireframes",
+        "dueDate": "2024-02-15T00:00:00Z",
+        "status": "completed",
+        "progress": 100,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-02-15T00:00:00Z"
+      },
+      {
+        "id": 2,
+        "projectId": 1,
+        "name": "Frontend Development",
+        "description": "Implement the new frontend components and pages",
+        "dueDate": "2024-04-15T00:00:00Z",
+        "status": "in-progress",
+        "progress": 65,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-15T10:30:00Z"
+      },
+      {
+        "id": 3,
+        "projectId": 1,
+        "name": "Backend Integration",
+        "description": "Integrate frontend with backend APIs and database",
+        "dueDate": "2024-05-15T00:00:00Z",
+        "status": "pending",
+        "progress": 0,
+        "createdAt": "2024-01-01T00:00:00Z",
+        "updatedAt": "2024-01-01T00:00:00Z"
+      }
+    ],
+    "progress": 55,
+    "totalTasks": 24,
+    "completedTasks": 13
+  },
+  {
+    "id": 2,
+    "name": "Mobile App Development",
+    "description": "Develop a native mobile application for iOS and Android platforms",
+    "status": "active",
+    "startDate": "2024-02-01T00:00:00Z",
+    "endDate": "2024-08-31T00:00:00Z",
+    "businessOwnerId": 2,
+    "projectManagerId": 4,
+    "members": [5, 7],
+    "createdAt": "2024-02-01T00:00:00Z",
+    "updatedAt": "2024-01-15T11:20:00Z",
+    "milestones": [
+      {
+        "id": 4,
+        "projectId": 2,
+        "name": "Requirements Analysis",
+        "description": "Gather and document all requirements for the mobile app",
+        "dueDate": "2024-02-28T00:00:00Z",
+        "status": "completed",
+        "progress": 100,
+        "createdAt": "2024-02-01T00:00:00Z",
+        "updatedAt": "2024-02-28T00:00:00Z"
+      },
+      {
+        "id": 5,
+        "projectId": 2,
+        "name": "UI/UX Design",
+        "description": "Create mobile app designs and prototypes",
+        "dueDate": "2024-03-31T00:00:00Z",
+        "status": "in-progress",
+        "progress": 40,
+        "createdAt": "2024-02-01T00:00:00Z",
+        "updatedAt": "2024-01-15T11:20:00Z"
+      }
+    ],
+    "progress": 35,
+    "totalTasks": 18,
+    "completedTasks": 6
+  },
+  {
+    "id": 3,
+    "name": "Data Analytics Dashboard",
+    "description": "Build a comprehensive analytics dashboard for business intelligence",
+    "status": "planning",
+    "startDate": "2024-03-01T00:00:00Z",
+    "endDate": "2024-07-31T00:00:00Z",
+    "businessOwnerId": 2,
+    "projectManagerId": 3,
+    "members": [6],
+    "createdAt": "2024-03-01T00:00:00Z",
+    "updatedAt": "2024-01-15T09:15:00Z",
+    "milestones": [],
+    "progress": 0,
+    "totalTasks": 0,
+    "completedTasks": 0
+  }
+]

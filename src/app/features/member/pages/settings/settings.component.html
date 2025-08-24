@@ -1,0 +1,325 @@
+<div class="settings-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Cài Đặt</h1>
+      <p class="page-subtitle">Tùy chỉnh tài khoản và cài đặt hệ thống</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="resetSettings()">
+        <span class="btn-icon">🔄</span>
+        Khôi Phục Mặc Định
+      </button>
+      <button class="btn btn-primary" (click)="saveSettings()">
+        <span class="btn-icon">💾</span>
+        Lưu Cài Đặt
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings Grid -->
+  <div class="settings-grid">
+    <!-- Account Settings -->
+    <div class="settings-section">
+      <div class="section-header">
+        <h2 class="section-title">Tài Khoản</h2>
+        <span class="section-icon">👤</span>
+      </div>
+      
+      <div class="settings-content">
+        <div class="setting-item">
+          <div class="setting-info">
+            <label for="display-name" class="setting-label">Tên hiển thị</label>
+            <p class="setting-description">Tên sẽ hiển thị cho các thành viên khác</p>
+          </div>
+          <input 
+            type="text" 
+            id="display-name"
+            [(ngModel)]="accountSettings.displayName"
+            placeholder="Nhập tên hiển thị"
+            class="setting-input"
+          >
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <label for="email" class="setting-label">Email</label>
+            <p class="setting-description">Email chính để nhận thông báo</p>
+          </div>
+          <input 
+            type="email" 
+            id="email"
+            [(ngModel)]="accountSettings.email"
+            placeholder="Nhập email"
+            class="setting-input"
+          >
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <label for="phone" class="setting-label">Số điện thoại</label>
+            <p class="setting-description">Số điện thoại để liên lạc khẩn cấp</p>
+          </div>
+          <input 
+            type="tel" 
+            id="phone"
+            [(ngModel)]="accountSettings.phone"
+            placeholder="Nhập số điện thoại"
+            class="setting-input"
+          >
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <label class="setting-label">Múi giờ</label>
+            <p class="setting-description">Múi giờ địa phương của bạn</p>
+          </div>
+          <select [(ngModel)]="accountSettings.timezone" class="setting-select" title="Múi giờ" aria-label="Chọn múi giờ">
+            <option value="Asia/Ho_Chi_Minh">Việt Nam (GMT+7)</option>
+            <option value="Asia/Bangkok">Thái Lan (GMT+7)</option>
+            <option value="Asia/Singapore">Singapore (GMT+8)</option>
+            <option value="Asia/Tokyo">Nhật Bản (GMT+9)</option>
+            <option value="UTC">UTC (GMT+0)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Settings -->
+    <div class="settings-section">
+      <div class="section-header">
+        <h2 class="section-title">Thông Báo</h2>
+        <span class="section-icon">🔔</span>
+      </div>
+      
+      <div class="settings-content">
+        <div class="setting-item">
+          <div class="setting-info">
+            <label class="setting-label">Email thông báo</label>
+            <p class="setting-description">Nhận thông báo qua email</p>
+          </div>
+          <div class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="notificationSettings.email"
+              id="email-notifications"
+              class="toggle-input"
+              title="Email thông báo"
+            >
+            <label for="email-notifications" class="toggle-label"></label>
+          </div>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <label class="setting-label">Push thông báo</label>
+            <p class="setting-description">Nhận thông báo trên trình duyệt</p>
+          </div>
+          <div class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="notificationSettings.push"
+              id="push-notifications"
+              class="toggle-input"
+              title="Push thông báo"
+            >
+            <label for="push-notifications" class="toggle-label"></label>
+          </div>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <label class="setting-label">Thông báo cuộc họp</label>
+            <p class="setting-description">Nhắc nhở trước cuộc họp</p>
+          </div>
+          <select [(ngModel)]="notificationSettings.meetingReminder" class="setting-select" title="Thông báo cuộc họp" aria-label="Chọn thời gian nhắc nhở cuộc họp">
+            <option value="0">Không nhắc nhở</option>
+            <option value="5">5 phút trước</option>
+            <option value="15">15 phút trước</option>
+            <option value="30">30 phút trước</option>
+            <option value="60">1 giờ trước</option>
+          </select>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <label class="setting-label">Thông báo deadline</label>
+            <p class="setting-description">Nhắc nhở khi gần đến hạn</p>
+          </div>
+          <select [(ngModel)]="notificationSettings.deadlineReminder" class="setting-select" title="Thông báo deadline" aria-label="Chọn thời gian nhắc nhở deadline">
+            <option value="0">Không nhắc nhở</option>
+            <option value="1">1 ngày trước</option>
+            <option value="3">3 ngày trước</option>
+            <option value="7">1 tuần trước</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Appearance Settings -->
+    <div class="settings-section">
+      <div class="section-header">
+        <h2 class="section-title">Giao Diện</h2>
+        <span class="section-icon">🎨</span>
+      </div>
+      
+      <div class="settings-content">
+        <div class="setting-item">
+          <div class="setting-info">
+            <label class="setting-label">Chủ đề</label>
+            <p class="setting-description">Chọn giao diện sáng hoặc tối</p>
+          </div>
+          <div class="theme-options">
+            <label class="theme-option">
+              <input 
+                type="radio" 
+                [(ngModel)]="appearanceSettings.theme"
+                value="light"
+                name="theme"
+              >
+              <span class="theme-label">
+                <span class="theme-icon">☀️</span>
+                Sáng
+              </span>
+            </label>
+            <label class="theme-option">
+              <input 
+                type="radio" 
+                [(ngModel)]="appearanceSettings.theme"
+                value="dark"
+                name="theme"
+              >
+              <span class="theme-label">
+                <span class="theme-icon">🌙</span>
+                Tối
+              </span>
+            </label>
+            <label class="theme-option">
+              <input 
+                type="radio" 
+                [(ngModel)]="appearanceSettings.theme"
+                value="auto"
+                name="theme"
+              >
+              <span class="theme-label">
+                <span class="theme-icon">🔄</span>
+                Tự động
+              </span>
+            </label>
+          </div>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <label class="setting-label">Ngôn ngữ</label>
+            <p class="setting-description">Ngôn ngữ hiển thị của ứng dụng</p>
+          </div>
+          <select [(ngModel)]="appearanceSettings.language" class="setting-select" title="Ngôn ngữ" aria-label="Chọn ngôn ngữ hiển thị">
+            <option value="vi">Tiếng Việt</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+          </select>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <label class="setting-label">Mật độ hiển thị</label>
+            <p class="setting-description">Khoảng cách giữa các phần tử</p>
+          </div>
+          <select [(ngModel)]="appearanceSettings.density" class="setting-select" title="Mật độ hiển thị" aria-label="Chọn mật độ hiển thị">
+            <option value="compact">Gọn gàng</option>
+            <option value="comfortable">Thoải mái</option>
+            <option value="spacious">Rộng rãi</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy Settings -->
+    <div class="settings-section">
+      <div class="section-header">
+        <h2 class="section-title">Bảo Mật & Quyền Riêng Tư</h2>
+        <span class="section-icon">🔒</span>
+      </div>
+      
+      <div class="settings-content">
+        <div class="setting-item">
+          <div class="setting-info">
+            <label class="setting-label">Hiển thị trạng thái online</label>
+            <p class="setting-description">Cho phép người khác thấy bạn đang online</p>
+          </div>
+          <div class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="privacySettings.showOnlineStatus"
+              id="online-status"
+              class="toggle-input"
+              title="Hiển thị trạng thái online"
+            >
+            <label for="online-status" class="toggle-label"></label>
+          </div>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <label class="setting-label">Hiển thị email</label>
+            <p class="setting-description">Cho phép thành viên khác thấy email của bạn</p>
+          </div>
+          <div class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="privacySettings.showEmail"
+              id="show-email"
+              class="toggle-input"
+              title="Hiển thị email"
+            >
+            <label for="show-email" class="toggle-label"></label>
+          </div>
+        </div>
+        
+        <div class="setting-item">
+          <div class="setting-info">
+            <label class="setting-label">Hiển thị số điện thoại</label>
+            <p class="setting-description">Cho phép thành viên khác thấy số điện thoại</p>
+          </div>
+          <div class="toggle-switch">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="privacySettings.showPhone"
+              id="show-phone"
+              class="toggle-input"
+              title="Hiển thị số điện thoại"
+            >
+            <label for="show-phone" class="toggle-label"></label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions Panel -->
+  <div class="quick-actions-panel">
+    <div class="panel-header">
+      <h3>Thao Tác Nhanh</h3>
+    </div>
+    <div class="panel-content">
+      <button class="quick-action-btn" (click)="exportSettings()">
+        <span class="action-icon">📤</span>
+        <span class="action-text">Xuất Cài Đặt</span>
+      </button>
+      <button class="quick-action-btn" (click)="importSettings()">
+        <span class="action-icon">📥</span>
+        <span class="action-text">Nhập Cài Đặt</span>
+      </button>
+      <button class="quick-action-btn" (click)="viewAccountActivity()">
+        <span class="action-icon">📊</span>
+        <span class="action-text">Hoạt Động Tài Khoản</span>
+      </button>
+      <button class="quick-action-btn" (click)="manageDevices()">
+        <span class="action-icon">💻</span>
+        <span class="action-text">Quản Lý Thiết Bị</span>
+      </button>
+    </div>
+  </div>
+</div>

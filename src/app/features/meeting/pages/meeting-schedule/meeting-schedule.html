@@ -1,0 +1,294 @@
+<div class="meeting-schedule">
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-content">
+        <h1>Schedule Meeting</h1>
+        <p>Create a new meeting and invite participants</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" (click)="navigateToList()">
+          <span class="icon">←</span>
+          Back to Meetings
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Form -->
+    <div class="form-container">
+      <form (ngSubmit)="scheduleMeeting()" #meetingFormElement="ngForm">
+        
+        <!-- Basic Information -->
+        <div class="form-section">
+          <h2>Meeting Details</h2>
+          
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="title">Meeting Title *</label>
+              <input 
+                type="text" 
+                id="title"
+                name="title"
+                [(ngModel)]="meetingForm().title"
+                placeholder="Enter meeting title"
+                required
+                class="form-input"
+              >
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="description">Description</label>
+              <textarea 
+                id="description"
+                name="description"
+                [(ngModel)]="meetingForm().description"
+                placeholder="Enter meeting description"
+                rows="3"
+                class="form-textarea"
+              ></textarea>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="date">Date *</label>
+              <input 
+                type="date" 
+                id="date"
+                name="date"
+                [(ngModel)]="meetingForm().date"
+                [min]="getMinDate()"
+                required
+                class="form-input"
+              >
+            </div>
+            <div class="form-group">
+              <label for="time">Time *</label>
+              <input 
+                type="time" 
+                id="time"
+                name="time"
+                [(ngModel)]="meetingForm().time"
+                required
+                class="form-input"
+              >
+            </div>
+            <div class="form-group">
+              <label for="duration">Duration</label>
+              <select 
+                id="duration"
+                name="duration"
+                [(ngModel)]="meetingForm().duration"
+                class="form-select"
+              >
+                <option *ngFor="let option of durationOptions" [value]="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Meeting Type -->
+        <div class="form-section">
+          <h2>Meeting Platform</h2>
+          
+          <div class="meeting-type-options">
+            <div 
+              *ngFor="let type of meetingTypes" 
+              class="meeting-type-option"
+              [class.active]="meetingForm().meetingType === type.value"
+              (click)="selectMeetingType(type.value)"
+            >
+              <div class="type-icon">{{ type.icon }}</div>
+              <div class="type-label">{{ type.label }}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project Association -->
+        <div class="form-section">
+          <h2>Project (Optional)</h2>
+          
+          <div class="form-group">
+            <label for="project">Associate with Project</label>
+            <select 
+              id="project"
+              name="projectId"
+              [(ngModel)]="meetingForm().projectId"
+              class="form-select"
+            >
+              <option value="">No project association</option>
+              <option *ngFor="let project of projects" [value]="project.id">
+                {{ project.name }} ({{ project.status }})
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Attendees -->
+        <div class="form-section">
+          <h2>Attendees</h2>
+          
+          <div class="attendees-container">
+            <!-- Add Attendee -->
+            <div class="add-attendee">
+              <div class="input-group">
+                <input 
+                  type="email" 
+                  [(ngModel)]="newAttendeeEmail"
+                  placeholder="Enter email address"
+                  class="form-input"
+                  (keyup.enter)="addAttendee()"
+                >
+                <button 
+                  type="button" 
+                  class="btn btn-primary"
+                  (click)="addAttendee()"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+
+            <!-- Selected Attendees -->
+            <div class="selected-attendees" *ngIf="selectedAttendees.length > 0">
+              <h4>Invited Attendees ({{ selectedAttendees.length }})</h4>
+              <div class="attendee-list">
+                <div 
+                  *ngFor="let attendee of selectedAttendees" 
+                  class="attendee-item"
+                >
+                  <div class="attendee-info">
+                    <div class="attendee-avatar">{{ attendee.name.charAt(0) }}</div>
+                    <div class="attendee-details">
+                      <div class="attendee-name">{{ attendee.name }}</div>
+                      <div class="attendee-email">{{ attendee.email }}</div>
+                      <div class="attendee-role">{{ attendee.role }}</div>
+                    </div>
+                  </div>
+                  <button 
+                    type="button" 
+                    class="btn btn-icon btn-danger"
+                    (click)="removeAttendee(attendee)"
+                    title="Remove attendee"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Available Users -->
+            <div class="available-users" *ngIf="availableUsers.length > 0">
+              <h4>Quick Add from Team</h4>
+              <div class="user-list">
+                <div 
+                  *ngFor="let user of availableUsers" 
+                  class="user-item"
+                  [class.selected]="isUserSelected(user)"
+                  (click)="toggleUserSelection(user)"
+                >
+                  <div class="user-avatar">{{ user.name.charAt(0) }}</div>
+                  <div class="user-info">
+                    <div class="user-name">{{ user.name }}</div>
+                    <div class="user-role">{{ user.role }}</div>
+                  </div>
+                  <div class="user-status">
+                    <span *ngIf="isUserSelected(user)" class="status-added">✓ Added</span>
+                    <span *ngIf="!isUserSelected(user)" class="status-available">+ Add</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agenda -->
+        <div class="form-section">
+          <h2>Agenda</h2>
+          
+          <div class="form-group">
+            <label for="agenda">Meeting Agenda</label>
+            <textarea 
+              id="agenda"
+              name="agenda"
+              [(ngModel)]="meetingForm().agenda"
+              placeholder="Enter meeting agenda and topics to discuss..."
+              rows="5"
+              class="form-textarea"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Recurrence -->
+        <div class="form-section">
+          <h2>Recurrence</h2>
+          
+          <div class="recurrence-options">
+            <label class="checkbox-container">
+              <input 
+                type="checkbox" 
+                [(ngModel)]="meetingForm().isRecurring"
+                (change)="toggleRecurrenceOptions()"
+              >
+              <span class="checkmark"></span>
+              Make this a recurring meeting
+            </label>
+
+            <div class="recurrence-details" *ngIf="meetingForm().isRecurring">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="recurrencePattern">Repeat</label>
+                  <select 
+                    id="recurrencePattern"
+                    name="recurrencePattern"
+                    [(ngModel)]="meetingForm().recurrencePattern"
+                    class="form-select"
+                  >
+                    <option value="">Select pattern</option>
+                    <option *ngFor="let pattern of recurrencePatterns" [value]="pattern.value">
+                      {{ pattern.label }}
+                    </option>
+                  </select>
+                </div>
+                <div class="form-group" *ngIf="meetingForm().recurrencePattern">
+                  <label for="recurrenceEndDate">End Date</label>
+                  <input 
+                    type="date" 
+                    id="recurrenceEndDate"
+                    name="recurrenceEndDate"
+                    [(ngModel)]="meetingForm().recurrenceEndDate"
+                    [min]="meetingForm().date"
+                    class="form-input"
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button 
+            type="button" 
+            class="btn btn-secondary"
+            (click)="navigateToList()"
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary"
+            [disabled]="isSubmitting()"
+          >
+            <span *ngIf="isSubmitting()" class="loading-spinner"></span>
+            {{ isSubmitting() ? 'Scheduling...' : 'Schedule Meeting' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

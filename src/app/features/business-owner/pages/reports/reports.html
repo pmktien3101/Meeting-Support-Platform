@@ -1,0 +1,244 @@
+<div class="reports-page">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1>Báo Cáo & Phân Tích</h1>
+      <p>Xem báo cáo chi tiết và phân tích hiệu suất kinh doanh của bạn</p>
+    </div>
+    <div class="header-actions">
+      <select [(ngModel)]="selectedPeriod" class="period-select" title="Chọn khoảng thời gian" aria-label="Chọn khoảng thời gian">
+        <option value="week">Tuần này</option>
+        <option value="month">Tháng này</option>
+        <option value="quarter">Quý này</option>
+        <option value="year">Năm nay</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Analytics Overview -->
+  <div class="analytics-overview">
+    <h2>Chỉ Số Chính</h2>
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-icon">📁</div>
+        <div class="metric-content">
+          <h3>{{ analytics().totalProjects }}</h3>
+          <p>Tổng Dự Án</p>
+          <span class="metric-detail">{{ analytics().activeProjects }} Đang hoạt động</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">✅</div>
+        <div class="metric-content">
+          <h3>{{ formatPercentage(analytics().completionRate) }}</h3>
+          <p>Tỷ Lệ Hoàn Thành</p>
+          <span class="metric-detail">{{ analytics().completedProjects }} Đã hoàn thành</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">📅</div>
+        <div class="metric-content">
+          <h3>{{ analytics().totalMeetings }}</h3>
+          <p>Tổng Cuộc Họp</p>
+          <span class="metric-detail">{{ analytics().averageProjectDuration }} ngày trung bình</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">👥</div>
+        <div class="metric-content">
+          <h3>{{ analytics().totalTeamMembers }}</h3>
+          <p>Thành Viên Nhóm</p>
+          <span class="metric-detail">Đang đóng góp</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">💰</div>
+        <div class="metric-content">
+          <h3>{{ formatCurrency(analytics().revenue) }}</h3>
+          <p>Tổng Doanh Thu</p>
+          <span class="metric-detail">{{ formatCurrency(analytics().expenses) }} Chi phí</span>
+        </div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-icon">📊</div>
+        <div class="metric-content">
+          <h3>{{ formatCurrency(analytics().revenue - analytics().expenses) }}</h3>
+          <p>Lợi Nhuận Ròng</p>
+          <span class="metric-detail">Kỳ này</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Generation -->
+  <div class="report-generation">
+    <div class="section-header">
+      <h2>Tạo Báo Cáo</h2>
+      <p>Tạo báo cáo mới cho các khía cạnh khác nhau của kinh doanh</p>
+    </div>
+    
+    <div class="report-types-grid">
+      <div class="report-type-card" (click)="generateReport('project')">
+        <div class="report-icon">📁</div>
+        <h3>Báo Cáo Dự Án</h3>
+        <p>Phân tích chi tiết hiệu suất dự án, thời gian và milestone</p>
+        <button class="btn btn-primary">Tạo</button>
+      </div>
+
+      <div class="report-type-card" (click)="generateReport('team')">
+        <div class="report-icon">👥</div>
+        <h3>Báo Cáo Nhóm</h3>
+        <p>Chỉ số hiệu suất nhóm, phân tích năng suất và đóng góp cá nhân</p>
+        <button class="btn btn-primary">Tạo</button>
+      </div>
+
+      <div class="report-type-card" (click)="generateReport('meeting')">
+        <div class="report-icon">📅</div>
+        <h3>Báo Cáo Cuộc Họp</h3>
+        <p>Hiệu quả cuộc họp, tham dự và tỷ lệ hoàn thành công việc</p>
+        <button class="btn btn-primary">Tạo</button>
+      </div>
+
+      <div class="report-type-card" (click)="generateReport('financial')">
+        <div class="report-icon">💰</div>
+        <h3>Báo Cáo Tài Chính</h3>
+        <p>Doanh thu, chi phí, biên lợi nhuận và dự báo tài chính</p>
+        <button class="btn btn-primary">Tạo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reports List -->
+  <div class="reports-section">
+    <div class="section-header">
+      <h2>Báo Cáo Gần Đây</h2>
+      <div class="filter-controls">
+        <select [(ngModel)]="selectedReportType" (change)="onReportTypeChange()" class="filter-select" title="Chọn loại báo cáo" aria-label="Chọn loại báo cáo">
+          <option value="all">Tất Cả Loại</option>
+          <option value="project">Báo Cáo Dự Án</option>
+          <option value="team">Báo Cáo Nhóm</option>
+          <option value="meeting">Báo Cáo Cuộc Họp</option>
+          <option value="financial">Báo Cáo Tài Chính</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading()" class="loading-state">
+      <div class="spinner"></div>
+      <p>Đang tải báo cáo...</p>
+    </div>
+
+    <!-- Reports List -->
+    <div *ngIf="!isLoading()" class="reports-list">
+      <div *ngFor="let report of filteredReports()" class="report-item">
+        <div class="report-info">
+          <div class="report-header">
+            <div class="report-icon-small">
+              {{ getTypeIcon(report.type) }}
+            </div>
+            <div class="report-details">
+              <h3 class="report-title">{{ report.title }}</h3>
+              <div class="report-meta">
+                <span class="report-period">{{ report.period }}</span>
+                <span class="report-date">Tạo: {{ report.generatedDate | date:'MMM dd, yyyy' }}</span>
+                <span class="report-size">{{ report.size }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="report-status">
+            <span class="badge" [class]="getStatusBadgeClass(report.status)">
+              {{ report.status }}
+            </span>
+          </div>
+        </div>
+
+        <div class="report-actions">
+          <button 
+            *ngIf="report.status === 'completed'"
+            class="btn btn-secondary btn-sm" 
+            (click)="downloadReport(report)"
+          >
+            <span class="icon">⬇️</span>
+            Tải xuống
+          </button>
+          <button 
+            *ngIf="report.status === 'processing'"
+            class="btn btn-outline btn-sm" 
+            disabled
+          >
+            <span class="icon">⏳</span>
+            Đang xử lý...
+          </button>
+          <button class="btn btn-outline btn-sm">
+            <span class="icon">👁️</span>
+            Xem trước
+          </button>
+          <button class="btn btn-outline btn-sm">
+            <span class="icon">📧</span>
+            Chia sẻ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading() && filteredReports().length === 0" class="empty-state">
+      <div class="empty-icon">📊</div>
+      <h3>Không tìm thấy báo cáo</h3>
+      <p>Tạo báo cáo đầu tiên để bắt đầu với phân tích.</p>
+    </div>
+  </div>
+
+  <!-- Chart Placeholders -->
+  <div class="charts-section">
+    <div class="section-header">
+      <h2>Phân Tích Trực Quan</h2>
+      <p>Biểu đồ và đồ thị tương tác để có cái nhìn tốt hơn</p>
+    </div>
+    
+    <div class="charts-grid">
+      <div class="chart-card">
+        <h3>Tiến Độ Dự Án</h3>
+        <div class="chart-placeholder">
+          <div class="chart-icon">📈</div>
+          <p>Biểu đồ thời gian hoàn thành dự án</p>
+          <span class="coming-soon">Sắp có</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Hiệu Suất Nhóm</h3>
+        <div class="chart-placeholder">
+          <div class="chart-icon">👥</div>
+          <p>Chỉ số năng suất cá nhân và nhóm</p>
+          <span class="coming-soon">Sắp có</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Phân Tích Cuộc Họp</h3>
+        <div class="chart-placeholder">
+          <div class="chart-icon">📅</div>
+          <p>Xu hướng tần suất và hiệu quả cuộc họp</p>
+          <span class="coming-soon">Sắp có</span>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>Tổng Quan Tài Chính</h3>
+        <div class="chart-placeholder">
+          <div class="chart-icon">💰</div>
+          <p>Phân tích doanh thu và chi phí</p>
+          <span class="coming-soon">Sắp có</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

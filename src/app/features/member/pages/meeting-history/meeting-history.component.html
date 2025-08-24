@@ -1,0 +1,135 @@
+<div class="meeting-history-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Lịch Sử Cuộc Họp</h1>
+      <p class="page-subtitle">Xem lại các cuộc họp đã tham gia và tìm kiếm thông tin</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-outline" (click)="refreshHistory()">
+        <span class="btn-icon">🔄</span>
+        Làm Mới
+      </button>
+      <button class="btn btn-primary" (click)="exportHistory()">
+        <span class="btn-icon">📤</span>
+        Xuất Báo Cáo
+      </button>
+    </div>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="search-filters-section">
+    <div class="search-box">
+      <input 
+        type="text" 
+        placeholder="Tìm kiếm theo tên cuộc họp, dự án, từ khóa..."
+        [(ngModel)]="searchTerm"
+        (input)="filterMeetings()"
+        class="search-input"
+      >
+      <span class="search-icon">🔍</span>
+    </div>
+    
+    <div class="filter-options">
+      <select [(ngModel)]="projectFilter" (change)="filterMeetings()" class="filter-select" title="Dự án" aria-label="Lọc theo dự án">
+        <option value="">Tất cả dự án</option>
+        <option *ngFor="let project of projects()" [value]="project">{{ project }}</option>
+      </select>
+      
+      <select [(ngModel)]="dateFilter" (change)="filterMeetings()" class="filter-select" title="Thời gian" aria-label="Lọc theo thời gian">
+        <option value="">Tất cả thời gian</option>
+        <option value="today">Hôm nay</option>
+        <option value="week">Tuần này</option>
+        <option value="month">Tháng này</option>
+        <option value="quarter">Quý này</option>
+        <option value="year">Năm nay</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Meeting History Grid -->
+  <div class="meetings-grid">
+    <div *ngFor="let meeting of filteredMeetings()" class="meeting-card">
+      <div class="meeting-header">
+        <div class="meeting-date">
+          <div class="date">{{ meeting.date }}</div>
+          <div class="time">{{ meeting.time }}</div>
+        </div>
+        <div class="meeting-status" [class]="meeting.status">
+          {{ getStatusText(meeting.status) }}
+        </div>
+      </div>
+      
+      <div class="meeting-content">
+        <h3 class="meeting-title">{{ meeting.title }}</h3>
+        <p class="meeting-project">{{ meeting.project }}</p>
+        <p class="meeting-description">{{ meeting.description }}</p>
+        
+        <div class="meeting-meta">
+          <span class="organizer">👤 {{ meeting.organizer }}</span>
+          <span class="duration">⏱️ {{ meeting.duration }}</span>
+          <span class="participants">👥 {{ meeting.participants.length }} người</span>
+        </div>
+      </div>
+      
+      <div class="meeting-actions">
+        <button class="btn btn-sm btn-outline" (click)="viewTranscript(meeting)">
+          <span class="btn-icon">📝</span>
+          Transcript
+        </button>
+        <button class="btn btn-sm btn-outline" (click)="viewSummary(meeting)">
+          <span class="btn-icon">📋</span>
+          Summary
+        </button>
+        <button class="btn btn-sm btn-outline" (click)="viewTodoList(meeting)">
+          <span class="btn-icon">✅</span>
+          To-do List
+        </button>
+        <button class="btn btn-sm btn-primary" (click)="viewMeetingDetails(meeting)">
+          <span class="btn-icon">👁️</span>
+          Chi Tiết
+        </button>
+      </div>
+      
+      <div class="meeting-tags" *ngIf="meeting.tags.length > 0">
+        <span 
+          *ngFor="let tag of meeting.tags" 
+          class="meeting-tag"
+        >
+          {{ tag }}
+        </span>
+      </div>
+    </div>
+    
+    <div *ngIf="filteredMeetings().length === 0" class="empty-state">
+      <div class="empty-icon">📅</div>
+      <h3>Không có cuộc họp nào</h3>
+      <p>{{ searchTerm || projectFilter || dateFilter ? 'Thử thay đổi bộ lọc để xem kết quả khác' : 'Bạn chưa tham gia cuộc họp nào' }}</p>
+    </div>
+  </div>
+
+  <!-- Quick Actions Panel -->
+  <div class="quick-actions-panel">
+    <div class="panel-header">
+      <h3>Thao Tác Nhanh</h3>
+    </div>
+    <div class="panel-content">
+      <button class="quick-action-btn" (click)="viewTodayMeetings()">
+        <span class="action-icon">📅</span>
+        <span class="action-text">Họp Hôm Nay</span>
+      </button>
+      <button class="quick-action-btn" (click)="viewRecentMeetings()">
+        <span class="action-icon">🕒</span>
+        <span class="action-text">Họp Gần Đây</span>
+      </button>
+      <button class="quick-action-btn" (click)="searchByKeywords()">
+        <span class="action-icon">🔍</span>
+        <span class="action-text">Tìm Theo Từ Khóa</span>
+      </button>
+      <button class="quick-action-btn" (click)="viewProjectMeetings()">
+        <span class="action-icon">📊</span>
+        <span class="action-text">Họp Theo Dự Án</span>
+      </button>
+    </div>
+  </div>
+</div>
