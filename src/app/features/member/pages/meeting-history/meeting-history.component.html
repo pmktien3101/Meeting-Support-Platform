@@ -6,11 +6,11 @@
       <p class="page-subtitle">Xem lại các cuộc họp đã tham gia và tìm kiếm thông tin</p>
     </div>
     <div class="header-actions">
-      <button class="btn btn-outline" (click)="refreshHistory()">
+      <button type="button" class="btn btn-outline" (click)="refreshHistory()">
         <span class="btn-icon">🔄</span>
         Làm Mới
       </button>
-      <button class="btn btn-primary" (click)="exportHistory()">
+      <button type="button" class="btn btn-primary" (click)="exportHistory()">
         <span class="btn-icon">📤</span>
         Xuất Báo Cáo
       </button>
@@ -73,19 +73,19 @@
       </div>
       
       <div class="meeting-actions">
-        <button class="btn btn-sm btn-outline" (click)="viewTranscript(meeting)">
+        <button type="button" class="btn btn-sm btn-outline" (click)="viewTranscript(meeting)">
           <span class="btn-icon">📝</span>
           Transcript
         </button>
-        <button class="btn btn-sm btn-outline" (click)="viewSummary(meeting)">
+        <button type="button" class="btn btn-sm btn-outline" (click)="viewSummary(meeting)">
           <span class="btn-icon">📋</span>
           Summary
         </button>
-        <button class="btn btn-sm btn-outline" (click)="viewTodoList(meeting)">
+        <button type="button" class="btn btn-sm btn-outline" (click)="viewTodoList(meeting)">
           <span class="btn-icon">✅</span>
           To-do List
         </button>
-        <button class="btn btn-sm btn-primary" (click)="viewMeetingDetails(meeting)">
+        <button type="button" class="btn btn-sm btn-primary" (click)="viewMeetingDetails(meeting)">
           <span class="btn-icon">👁️</span>
           Chi Tiết
         </button>
@@ -114,22 +114,129 @@
       <h3>Thao Tác Nhanh</h3>
     </div>
     <div class="panel-content">
-      <button class="quick-action-btn" (click)="viewTodayMeetings()">
+      <button type="button" class="quick-action-btn" (click)="viewTodayMeetings()">
         <span class="action-icon">📅</span>
         <span class="action-text">Họp Hôm Nay</span>
       </button>
-      <button class="quick-action-btn" (click)="viewRecentMeetings()">
+      <button type="button" class="quick-action-btn" (click)="viewRecentMeetings()">
         <span class="action-icon">🕒</span>
         <span class="action-text">Họp Gần Đây</span>
       </button>
-      <button class="quick-action-btn" (click)="searchByKeywords()">
+      <button type="button" class="quick-action-btn" (click)="searchByKeywords()">
         <span class="action-icon">🔍</span>
         <span class="action-text">Tìm Theo Từ Khóa</span>
       </button>
-      <button class="quick-action-btn" (click)="viewProjectMeetings()">
+      <button type="button" class="quick-action-btn" (click)="viewProjectMeetings()">
         <span class="action-icon">📊</span>
         <span class="action-text">Họp Theo Dự Án</span>
       </button>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <!-- Transcript Modal -->
+  <div class="modal-backdrop" *ngIf="isTranscriptOpen" (click)="closeTranscript()"></div>
+  <div class="modal modal-lg" *ngIf="isTranscriptOpen" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h3>Transcript - {{ activeMeeting?.title }}</h3>
+      <button type="button" class="icon-btn" (click)="closeTranscript()">✖</button>
+    </div>
+    <div class="modal-body">
+      <div class="search-box" style="margin-bottom:12px;">
+        <input type="text" class="search-input" placeholder="Tìm trong transcript..." [(ngModel)]="transcriptQuery">
+      </div>
+      <div class="modal-body scrollable">
+        <div class="transcript-item" *ngFor="let line of filteredTranscript">
+          <div class="speaker">{{ line.speaker }}:</div>
+          <div class="speech">{{ line.text }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="copyTranscript()" [disabled]="filteredTranscript.length === 0" aria-label="Copy transcript" title="Sao chép transcript">
+        📋 Copy
+      </button>
+      <button type="button" class="btn btn-primary" (click)="exportTranscript()" [disabled]="filteredTranscript.length === 0" aria-label="Export transcript" title="Tải transcript">
+        ⬇️ Export
+      </button>
+    </div>
+  </div>
+
+  <!-- Summary Modal -->
+  <div class="modal-backdrop" *ngIf="isSummaryOpen" (click)="closeSummary()"></div>
+  <div class="modal modal-md" *ngIf="isSummaryOpen" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h3>Tóm tắt - {{ activeMeeting?.title }}</h3>
+      <button type="button" class="icon-btn" (click)="closeSummary()">✖</button>
+    </div>
+    <div class="modal-body">
+      <div class="summary-block" *ngFor="let block of summaryBlocks">
+        <div class="summary-title">{{ block.title }}</div>
+        <div class="summary-content">{{ block.content }}</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="copySummary()" [disabled]="summaryBlocks.length === 0" aria-label="Copy summary" title="Sao chép tóm tắt">
+        📋 Copy
+      </button>
+      <button type="button" class="btn btn-primary" (click)="exportSummary()" [disabled]="summaryBlocks.length === 0" aria-label="Export summary" title="Tải tóm tắt">
+        ⬇️ Export
+      </button>
+    </div>
+  </div>
+
+  <!-- Todo Modal -->
+  <div class="modal-backdrop" *ngIf="isTodoOpen" (click)="closeTodo()"></div>
+  <div class="modal modal-md" *ngIf="isTodoOpen" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h3>To-do - {{ activeMeeting?.title }}</h3>
+      <button type="button" class="icon-btn" (click)="closeTodo()">✖</button>
+    </div>
+    <div class="modal-body">
+      <div class="todo-item" *ngFor="let item of todoItems">
+        <input type="checkbox" [checked]="item.done" (change)="toggleTodoDone(item.id)">
+        <div class="todo-content">
+          <div class="todo-text" [class.done]="item.done">{{ item.text }}</div>
+          <div class="todo-meta">
+            <span *ngIf="item.assignee">👤 {{ item.assignee }}</span>
+            <span *ngIf="item.due">⏰ {{ item.due }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="copyTodos()" [disabled]="todoItems.length === 0" aria-label="Copy todos" title="Sao chép To-do">
+        📋 Copy
+      </button>
+      <button type="button" class="btn btn-primary" (click)="exportTodos()" [disabled]="todoItems.length === 0" aria-label="Export todos" title="Tải To-do">
+        ⬇️ Export
+      </button>
+    </div>
+  </div>
+
+  <!-- Details Modal -->
+  <div class="modal-backdrop" *ngIf="isDetailsOpen" (click)="closeDetails()"></div>
+  <div class="modal modal-md" *ngIf="isDetailsOpen" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h3>Chi tiết cuộc họp - {{ activeMeeting?.title }}</h3>
+      <button type="button" class="icon-btn" (click)="closeDetails()">✖</button>
+    </div>
+    <div class="modal-body">
+      <div class="details-grid">
+        <div><strong>Ngày:</strong> {{ activeMeeting?.date }}</div>
+        <div><strong>Giờ:</strong> {{ activeMeeting?.time }}</div>
+        <div><strong>Thời lượng:</strong> {{ activeMeeting?.duration }}</div>
+        <div><strong>Trạng thái:</strong> {{ activeMeeting ? getStatusText(activeMeeting.status) : '' }}</div>
+        <div><strong>Dự án:</strong> {{ activeMeeting?.project }}</div>
+        <div><strong>Người tổ chức:</strong> {{ activeMeeting?.organizer }}</div>
+        <div class="participants-list">
+          <strong>Tham dự:</strong> {{ (activeMeeting?.participants || []).join(', ') }}
+        </div>
+        <div><strong>Mô tả:</strong> {{ activeMeeting?.description }}</div>
+      </div>  
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeDetails()">Đóng</button>
     </div>
   </div>
 </div>

@@ -111,8 +111,19 @@ export class MemberTasksComponent {
   // Filtered tasks
   filteredTasks = signal<Task[]>([]);
 
+  // Edit status modal state
+  isEditModalOpen = false;
+  taskBeingEdited: Task | null = null;
+  editStatus: Task['status'] = 'todo';
+
+  // Note modal state
+  isNoteModalOpen = false;
+  taskBeingNoted: Task | null = null;
+  noteContent = '';
+
   constructor() {
     this.filterTasks();
+    this.updateStats();
   }
 
   // Filter tasks based on search and filters
@@ -180,46 +191,115 @@ export class MemberTasksComponent {
   // Action methods
   refreshTasks(): void {
     console.log('Refreshing tasks...');
-    // TODO: Implement API call to refresh tasks
   }
 
   createTask(): void {
     console.log('Create task clicked');
-    // TODO: Navigate to task creation page
   }
 
   startTask(task: Task): void {
-    console.log('Starting task:', task.title);
-    // TODO: Update task status to in-progress
+    this.updateTask(task.id, { status: 'in-progress' });
   }
 
   completeTask(task: Task): void {
-    console.log('Completing task:', task.title);
-    // TODO: Update task status to done
+    this.updateTask(task.id, { status: 'done' });
   }
 
   editTask(task: Task): void {
-    console.log('Editing task:', task.title);
-    // TODO: Navigate to task edit page
+    this.openEditStatusModal(task);
   }
 
   addComment(task: Task): void {
-    console.log('Adding comment to task:', task.title);
-    // TODO: Show comment input modal
+    this.openNoteModal(task);
   }
 
   viewMyTasks(): void {
     console.log('Viewing my tasks');
-    // TODO: Filter to show only current user's tasks
   }
 
   viewOverdueTasks(): void {
     console.log('Viewing overdue tasks');
-    // TODO: Filter to show only overdue tasks
   }
 
   exportTasks(): void {
     console.log('Exporting tasks');
-    // TODO: Implement export functionality
+  }
+
+  // Status Modal helpers
+  openEditStatusModal(task: Task): void {
+    this.taskBeingEdited = task;
+    this.editStatus = (task.status ?? 'todo');
+    this.isEditModalOpen = true;
+  }
+
+  closeEditStatusModal(): void {
+    this.isEditModalOpen = false;
+    this.taskBeingEdited = null;
+  }
+
+  confirmEditStatus(): void {
+    if (!this.taskBeingEdited) return;
+    const targetId = this.taskBeingEdited.id;
+    const newStatus = this.editStatus;
+    this.closeEditStatusModal();
+    if (this.taskBeingEdited.status !== newStatus) {
+      this.updateTask(targetId, { status: newStatus });
+    }
+  }
+
+  // Note Modal helpers
+  openNoteModal(task: Task): void {
+    this.taskBeingNoted = task;
+    this.noteContent = '';
+    this.isNoteModalOpen = true;
+  }
+
+  closeNoteModal(): void {
+    this.isNoteModalOpen = false;
+    this.taskBeingNoted = null;
+    this.noteContent = '';
+  }
+
+  confirmAddNote(): void {
+    if (!this.taskBeingNoted) return;
+    const content = this.noteContent.trim();
+    if (!content) { this.closeNoteModal(); return; }
+
+    const nowLabel = 'Vừa xong';
+    const newComment: Comment = {
+      id: this.generateCommentId(this.taskBeingNoted),
+      author: 'Bạn',
+      content,
+      timestamp: nowLabel
+    };
+
+    const updated = this.allTasks().map(t => {
+      if (t.id !== this.taskBeingNoted!.id) return t;
+      return { ...t, comments: [...t.comments, newComment] };
+    });
+    this.allTasks.set(updated);
+    this.filterTasks();
+    this.closeNoteModal();
+  }
+
+  private updateTask(taskId: number, changes: Partial<Task>): void {
+    const updated = this.allTasks().map(t => t.id === taskId ? { ...t, ...changes } : t);
+    this.allTasks.set(updated);
+    this.filterTasks();
+    this.updateStats();
+  }
+
+  private updateStats(): void {
+    const tasks = this.allTasks();
+    const total = tasks.length;
+    const inProgress = tasks.filter(t => t.status === 'in-progress').length;
+    const completed = tasks.filter(t => t.status === 'done').length;
+    const overdue = tasks.filter(t => this.isOverdue(t.dueDate)).length;
+    this.taskStats.set({ total, inProgress, completed, overdue });
+  }
+
+  private generateCommentId(task: Task): number {
+    if (task.comments.length === 0) return 1;
+    return Math.max(...task.comments.map(c => c.id)) + 1;
   }
 }

@@ -115,15 +115,15 @@
       </div>
       
       <div class="project-actions">
-        <button class="btn btn-sm btn-outline" (click)="viewProjectDetails(project)">
+        <button type="button" class="btn btn-sm btn-outline" (click)="viewProjectDetails(project)">
           <span class="btn-icon">👁️</span>
           Chi Tiết
         </button>
-        <button class="btn btn-sm btn-outline" (click)="viewProjectTasks(project)">
+        <button type="button" class="btn btn-sm btn-outline" (click)="viewProjectTasks(project)">
           <span class="btn-icon">📋</span>
           Nhiệm Vụ
         </button>
-        <button class="btn btn-sm btn-primary" (click)="viewProjectTimeline(project)">
+        <button type="button" class="btn btn-sm btn-primary" (click)="viewProjectTimeline(project)">
           <span class="btn-icon">📅</span>
           Timeline
         </button>
@@ -159,6 +159,80 @@
         <span class="action-icon">👥</span>
         <span class="action-text">Hiệu Suất Team</span>
       </button>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <!-- Details Modal -->
+  <div class="modal-backdrop" *ngIf="isDetailsOpen" (click)="closeDetails()"></div>
+  <div class="modal modal-md" *ngIf="isDetailsOpen" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h3>Chi tiết dự án - {{ activeProject?.name }}</h3>
+      <button type="button" class="icon-btn" (click)="closeDetails()">✖</button>
+    </div>
+    <div class="modal-body">
+      <div class="details-grid">
+        <div><strong>Trạng thái:</strong> {{ activeProject ? getStatusText(activeProject.status) : '' }}</div>
+        <div><strong>Độ ưu tiên:</strong> {{ activeProject ? getPriorityText(activeProject.priority) : '' }}</div>
+        <div><strong>Tiến độ:</strong> {{ activeProject?.progress }}%</div>
+        <div><strong>Quản lý:</strong> {{ activeProject?.manager }}</div>
+        <div><strong>Deadline:</strong> {{ activeProject?.deadline }}</div>
+        <div><strong>Team size:</strong> {{ activeProject?.teamSize }}</div>
+        <div><strong>Nhiệm vụ:</strong> {{ activeProject?.completedTasks }}/{{ activeProject?.totalTasks }}</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeDetails()">Đóng</button>
+    </div>
+  </div>
+
+  <!-- Tasks Modal -->
+  <div class="modal-backdrop" *ngIf="isTasksOpen" (click)="closeTasks()"></div>
+  <div class="modal modal-md" *ngIf="isTasksOpen" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h3>Nhiệm vụ - {{ activeProject?.name }}</h3>
+      <button type="button" class="icon-btn" (click)="closeTasks()">✖</button>
+    </div>
+    <div class="modal-body">
+      <div class="todo-item" *ngFor="let t of taskItems">
+        <input type="checkbox" [checked]="t.done" disabled>
+        <div class="todo-content">
+          <div class="todo-text" [class.done]="t.done">{{ t.title }}</div>
+          <div class="todo-meta">
+            <span *ngIf="t.assignee">👤 {{ t.assignee }}</span>
+            <span *ngIf="t.due">⏰ {{ t.due }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeTasks()">Đóng</button>
+    </div>
+  </div>
+
+  <!-- Timeline Modal -->
+  <div class="modal-backdrop" *ngIf="isTimelineOpen" (click)="closeTimeline()"></div>
+  <div class="modal modal-lg" *ngIf="isTimelineOpen" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h3>Timeline - {{ activeProject?.name }}</h3>
+      <button type="button" class="icon-btn" (click)="closeTimeline()">✖</button>
+    </div>
+    <div class="modal-body scrollable">
+      <div class="timeline-list">
+        <div class="timeline-item" *ngFor="let e of timelineEvents" [class]="e.type">
+          <div class="dot"></div>
+          <div class="content">
+            <div class="top">
+              <span class="badge" [class]="e.type">{{ e.type }}</span>
+              <span class="date">{{ e.date }}</span>
+            </div>
+            <div class="label">{{ e.label }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline" (click)="closeTimeline()">Đóng</button>
     </div>
   </div>
 </div>

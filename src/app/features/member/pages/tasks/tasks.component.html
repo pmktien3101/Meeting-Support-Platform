@@ -144,21 +144,15 @@
         <div class="task-actions">
           <div class="action-buttons">
             <button 
-              *ngIf="task.status === 'todo'"
-              class="btn btn-primary"
-              (click)="startTask(task)"
+              class="btn btn-status"
+              [class.todo]="task.status === 'todo'"
+              [class.in-progress]="task.status === 'in-progress'"
+              [class.done]="task.status === 'done'"
+              [attr.disabled]="true"
+              title="Trạng thái hiện tại"
             >
-              <span class="btn-icon">▶️</span>
-              Bắt Đầu
-            </button>
-            
-            <button 
-              *ngIf="task.status === 'in-progress'"
-              class="btn btn-primary"
-              (click)="completeTask(task)"
-            >
-              <span class="btn-icon">✅</span>
-              Hoàn Thành
+              <span class="btn-icon">📌</span>
+              {{ getStatusText(task.status) }}
             </button>
             
             <button 
@@ -166,7 +160,7 @@
               (click)="editTask(task)"
             >
               <span class="btn-icon">✏️</span>
-              Chỉnh Sửa
+              Chọn Trạng Thái
             </button>
             
             <button 
@@ -240,6 +234,51 @@
         <span class="action-icon">📤</span>
         <span class="action-text">Xuất Báo Cáo</span>
       </button>
+    </div>
+  </div>
+
+  <!-- Edit Status Modal -->
+  <div class="modal-backdrop" *ngIf="isEditModalOpen" (click)="closeEditStatusModal()"></div>
+  <div class="modal" *ngIf="isEditModalOpen" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h3>Chọn trạng thái</h3>
+      <button class="icon-btn" (click)="closeEditStatusModal()">✖</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-row">
+        <label class="radio-option">
+          <input type="radio" name="status" value="todo" [(ngModel)]="editStatus">
+          <span class="status-badge todo">Chưa bắt đầu</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="status" value="in-progress" [(ngModel)]="editStatus">
+          <span class="status-badge in-progress">Đang thực hiện</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="status" value="done" [(ngModel)]="editStatus">
+          <span class="status-badge done">Hoàn thành</span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeEditStatusModal()">Hủy</button>
+      <button class="btn btn-primary" (click)="confirmEditStatus()">Lưu</button>
+    </div>
+  </div>
+
+  <!-- Add Note Modal -->
+  <div class="modal-backdrop" *ngIf="isNoteModalOpen" (click)="closeNoteModal()"></div>
+  <div class="modal" *ngIf="isNoteModalOpen" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h3>Thêm ghi chú</h3>
+      <button class="icon-btn" (click)="closeNoteModal()">✖</button>
+    </div>
+    <div class="modal-body">
+      <textarea [(ngModel)]="noteContent" class="note-textarea" rows="6" placeholder="Nhập ghi chú của bạn..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeNoteModal()">Hủy</button>
+      <button class="btn btn-primary" (click)="confirmAddNote()" [disabled]="!noteContent.trim()">Lưu</button>
     </div>
   </div>
 </div>

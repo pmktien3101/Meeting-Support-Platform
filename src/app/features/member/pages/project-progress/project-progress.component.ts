@@ -23,6 +23,21 @@ interface Milestone {
   completed: boolean;
 }
 
+interface ProjectTaskItem {
+  id: number;
+  title: string;
+  assignee?: string;
+  done: boolean;
+  due?: string;
+}
+
+interface TimelineEvent {
+  id: number;
+  date: string;
+  label: string;
+  type: 'milestone' | 'task' | 'note';
+}
+
 @Component({
   selector: 'app-member-project-progress',
   standalone: true,
@@ -127,6 +142,15 @@ export class MemberProjectProgressComponent {
     }
   ]);
 
+  // Modal states + data
+  isDetailsOpen = false;
+  isTasksOpen = false;
+  isTimelineOpen = false;
+
+  activeProject: Project | null = null;
+  taskItems: ProjectTaskItem[] = [];
+  timelineEvents: TimelineEvent[] = [];
+
   // Helper methods
   getStatusText(status: string): string {
     const statusMap: { [key: string]: string } = {
@@ -163,38 +187,40 @@ export class MemberProjectProgressComponent {
     // TODO: Implement export functionality
   }
 
+  // Open modals
   viewProjectDetails(project: Project): void {
-    console.log('Viewing project details:', project.name);
-    // TODO: Navigate to project details page
+    this.activeProject = project;
+    this.isDetailsOpen = true;
   }
 
   viewProjectTasks(project: Project): void {
-    console.log('Viewing project tasks:', project.name);
-    // TODO: Navigate to project tasks page
+    this.activeProject = project;
+    this.taskItems = [
+      { id: 1, title: 'Xác định yêu cầu chi tiết', done: true, assignee: 'BA Trần C', due: 'Hôm qua' },
+      { id: 2, title: 'Xây dựng API Users', done: false, assignee: 'Dev A', due: 'Tuần này' },
+      { id: 3, title: 'Thiết kế UI Dashboard', done: false, assignee: 'Designer E', due: 'Thứ 6' }
+    ];
+    this.isTasksOpen = true;
   }
 
   viewProjectTimeline(project: Project): void {
-    console.log('Viewing project timeline:', project.name);
-    // TODO: Navigate to project timeline page
+    this.activeProject = project;
+    this.timelineEvents = [
+      { id: 1, date: '01/12', label: 'Milestone: Thiết kế UI/UX', type: 'milestone' },
+      { id: 2, date: '05/12', label: 'Task: Hoàn tất App Design', type: 'task' },
+      { id: 3, date: '10/12', label: 'Milestone: Frontend Development', type: 'milestone' }
+    ];
+    this.isTimelineOpen = true;
   }
 
-  viewActiveProjects(): void {
-    console.log('Viewing active projects');
-    // TODO: Filter to show only active projects
-  }
+  // Close modals
+  closeDetails(): void { this.isDetailsOpen = false; }
+  closeTasks(): void { this.isTasksOpen = false; }
+  closeTimeline(): void { this.isTimelineOpen = false; }
 
-  viewCompletedProjects(): void {
-    console.log('Viewing completed projects');
-    // TODO: Filter to show only completed projects
-  }
-
-  viewProjectReports(): void {
-    console.log('Viewing project reports');
-    // TODO: Navigate to project reports page
-  }
-
-  viewTeamPerformance(): void {
-    console.log('Viewing team performance');
-    // TODO: Navigate to team performance page
-  }
+  // Quick actions (stubs)
+  viewActiveProjects(): void { console.log('QuickAction: Active projects'); }
+  viewCompletedProjects(): void { console.log('QuickAction: Completed projects'); }
+  viewProjectReports(): void { console.log('QuickAction: Project reports'); }
+  viewTeamPerformance(): void { console.log('QuickAction: Team performance'); }
 }
