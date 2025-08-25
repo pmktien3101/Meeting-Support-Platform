@@ -82,8 +82,11 @@ export class AuthService {
 
   /** Getters */
   getAccessToken(): string | null {
+  if (typeof window !== 'undefined' && window.localStorage) {
     return localStorage.getItem('accessToken');
   }
+  return null;
+}
   getRefreshToken(): string | null {
     return localStorage.getItem('refreshToken');
   }

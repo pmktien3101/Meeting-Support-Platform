@@ -10,7 +10,6 @@ import { PmLayoutComponent } from '../../layout/pm-layout.component';
   styleUrls: ['./milestones.scss']
 })
 export class PmMilestones {
-  private layoutComponent = inject(PmLayoutComponent);
 
   milestones = [
     {

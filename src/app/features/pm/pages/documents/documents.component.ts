@@ -10,7 +10,6 @@ import { PmLayoutComponent } from '../../layout/pm-layout.component';
   styleUrls: ['./documents.scss']
 })
 export class PmDocuments {
-  private layoutComponent = inject(PmLayoutComponent);
 
   documents = [
     {
