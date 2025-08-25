@@ -1,62 +1,47 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
-  imports: [],
-  template: `
-    <div class="admin-dashboard">
-      <h2>Admin Dashboard</h2>
-      <p>Welcome to the admin dashboard. Here you can manage users, projects, and system settings.</p>
-      
-      <div class="dashboard-stats">
-        <div class="stat-card">
-          <h3>Total Users</h3>
-          <p class="stat-number">1,234</p>
-        </div>
-        <div class="stat-card">
-          <h3>Active Projects</h3>
-          <p class="stat-number">56</p>
-        </div>
-        <div class="stat-card">
-          <h3>System Status</h3>
-          <p class="stat-status">Healthy</p>
-        </div>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .admin-dashboard {
-      padding: 2rem;
-    }
-    
-    .dashboard-stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-    
-    .stat-card {
-      background: white;
-      padding: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    
-    .stat-number {
-      font-size: 2rem;
-      font-weight: bold;
-      color: #0066cc;
-      margin: 0;
-    }
-    
-    .stat-status {
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: #28a745;
-      margin: 0;
-    }
-  `]
+  imports: [CommonModule],
+  templateUrl: './dashboard.html',
+  styleUrls: ['./dashboard.scss']
 })
-export class AdminDashboard {}
+export class AdminDashboard {
+  kpis = signal({
+    revenue: 1250000000,
+    companies: 1247,
+    activeUsers: 15832,
+    projects: 3456,
+    liveMeetings: 89
+  });
+
+  recentRegs = signal([
+    { company: 'TechCorp Inc.', contact: 'admin@techcorp.com', date: '15/01/2024', status: 'active' },
+    { company: 'DataFlow Ltd.', contact: 'info@dataflow.com', date: '14/01/2024', status: 'pending' },
+    { company: 'CloudSync Pro', contact: 'hello@cloudsync.com', date: '13/01/2024', status: 'active' },
+    { company: 'InnovateTech', contact: 'contact@innovate.com', date: '12/01/2024', status: 'active' }
+  ]);
+
+  bars = signal([
+    { label: 'TechCorp', value: 30 },
+    { label: 'DataFlow', value: 28 },
+    { label: 'CloudSync', value: 26 },
+    { label: 'Innovate', value: 24 },
+    { label: 'Khác', value: 60 }
+  ]);
+
+  linePoints(): string {
+    const points = [
+      { x: 10, y: 80 },
+      { x: 60, y: 60 },
+      { x: 110, y: 90 },
+      { x: 160, y: 50 },
+      { x: 210, y: 35 },
+      { x: 260, y: 80 },
+      { x: 300, y: 60 }
+    ];
+    return points.map(p => `${p.x},${p.y}`).join(' ');
+  }
+}

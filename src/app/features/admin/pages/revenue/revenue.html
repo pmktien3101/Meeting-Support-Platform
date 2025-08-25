@@ -1,0 +1,100 @@
+<div class="revenue-page">
+  <div class="header">
+    <h1>Doanh thu</h1>
+    <p>Tổng quan doanh thu MSP theo thời gian</p>
+  </div>
+
+  <div class="kpis">
+    <div class="kpi">
+      <div class="icon">💰</div>
+      <div class="content">
+        <div class="number">{{ total() | number }} đ</div>
+        <div class="label">Tổng doanh thu</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="icon">📆</div>
+      <div class="content">
+        <div class="number">{{ monthly() | number }} đ</div>
+        <div class="label">Tháng này</div>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="icon">📈</div>
+      <div class="content">
+        <div class="number">+{{ growth() }}%</div>
+        <div class="label">Tăng trưởng</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <section class="card">
+      <div class="card-title">Doanh thu 7 ngày</div>
+      <div class="chart">
+        <svg viewBox="0 0 600 160" preserveAspectRatio="none">
+          <polyline fill="none" stroke="#FF5E13" stroke-width="3" [attr.points]="linePoints()"></polyline>
+        </svg>
+      </div>
+      <div class="days">
+        <span *ngFor="let d of last7Days()">{{ d.date }}</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-title">Tỷ trọng theo doanh nghiệp</div>
+      <div class="bars">
+        <div class="bar" *ngFor="let b of byCompany()" [style.height.%]="b.value">
+          <span class="bar-label">{{ b.label }}</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card table-card">
+    <div class="card-title">Doanh thu theo công ty</div>
+
+    <div class="table-filters">
+      <input class="input" type="text" placeholder="Tìm công ty..." [ngModel]="searchTerm()" (ngModelChange)="searchTerm.set($event)">
+      <select class="select" aria-label="Lọc theo gói" [ngModel]="planFilter()" (ngModelChange)="planFilter.set($event)">
+        <option value="">Tất cả gói</option>
+        <option>Basic</option>
+        <option>Pro</option>
+        <option>Enterprise</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Công ty</th>
+            <th>Gói</th>
+            <th>Seats</th>
+            <th>Phí (MRR)</th>
+            <th>Trạng thái</th>
+            <th>Gia hạn</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of filteredCompanies()">
+            <td>{{ c.name }}</td>
+            <td><span class="badge" [class.basic]="c.plan==='Basic'" [class.pro]="c.plan==='Pro'" [class.enterprise]="c.plan==='Enterprise'">{{ c.plan }}</span></td>
+            <td>{{ c.seats | number }}</td>
+            <td>{{ c.price | number }} đ</td>
+            <td>{{ c.status }}</td>
+            <td>{{ c.renewal }}</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3" class="right muted">Tổng MRR</td>
+            <td colspan="3" class="strong">{{ totalMRR() | number }} đ</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+</div>
+
+

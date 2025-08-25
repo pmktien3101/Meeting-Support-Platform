@@ -1,0 +1,254 @@
+<div class="business-management">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Quản Lý Đăng Ký Doanh Nghiệp</h1>
+      <p class="page-description">Phê duyệt hoặc từ chối các yêu cầu đăng ký doanh nghiệp mới</p>
+    </div>
+  </div>
+
+
+  <!-- Filters and Search -->
+  <div class="filters-section">
+    <div class="search-box">
+      <input 
+        type="text" 
+        placeholder="Tìm kiếm doanh nghiệp, email..." 
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        class="search-input"
+      >
+      <span class="search-icon">🔍</span>
+    </div>
+    
+    <div class="filter-controls">
+      <select [(ngModel)]="statusFilter" (change)="onFilterChange()" class="filter-select" aria-label="Lọc theo trạng thái">
+        <option value="">Tất cả trạng thái</option>
+        <option value="pending">Chờ phê duyệt</option>
+        <option value="active">Hoạt động</option>
+        <option value="inactive">Đã khóa</option>
+        <option value="rejected">Đã từ chối</option>
+      </select>
+      
+      <select [(ngModel)]="sortBy" (change)="onSortChange()" class="filter-select" aria-label="Sắp xếp">
+        <option value="registrationDate">Sắp xếp theo ngày đăng ký</option>
+        <option value="name">Sắp xếp theo tên</option>
+        <option value="userCount">Sắp xếp theo số người dùng</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Business List -->
+  <div class="business-list">
+    <div class="table-container">
+      <table class="business-table">
+        <thead>
+          <tr>
+            <th>Logo</th>
+            <th>Tên Doanh Nghiệp</th>
+            <th>Chủ Sở Hữu</th>
+            <th>Email</th>
+            <th>Trạng Thái</th>
+            <th>Số Người Dùng</th>
+            <th>Ngày Đăng Ký</th>
+            <th>Thao Tác</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let business of filteredBusinesses()" class="business-row">
+            <td class="business-logo">
+              <div class="logo-placeholder">{{ business.name.charAt(0) }}</div>
+            </td>
+            <td class="business-name">
+              <div class="name-info">
+                <div class="primary-name">{{ business.name }}</div>
+                <div class="secondary-info">{{ business.industry }}</div>
+              </div>
+            </td>
+            <td class="owner-info">
+              <div class="owner-name">{{ business.ownerName }}</div>
+              <div class="owner-email">{{ business.ownerEmail }}</div>
+            </td>
+            <td class="business-email">{{ business.email }}</td>
+            <td class="business-status">
+              <span class="status-badge" [class]="getStatusClass(business.status)">
+                {{ getStatusText(business.status) }}
+              </span>
+              <div *ngIf="business.rejectionReason" class="rejection-reason">
+                {{ business.rejectionReason }}
+              </div>
+            </td>
+            <td class="user-count">
+              <div class="user-count-info">
+                <div class="user-count-number">{{ business.userCount }}</div>
+                <div class="user-count-max">/ {{ business.maxUsers }}</div>
+              </div>
+            </td>
+            <td class="registration-date">{{ business.registrationDate | date:'dd/MM/yyyy' }}</td>
+            <td class="actions">
+              <div class="action-buttons">
+                <button 
+                  class="btn-icon" 
+                  (click)="viewBusiness(business)"
+                  title="Xem chi tiết"
+                >
+                  👁️
+                </button>
+                
+                <!-- Approval buttons for pending businesses -->
+                <ng-container *ngIf="business.status === 'pending'">
+                  <button 
+                    class="btn-icon approve" 
+                    (click)="openApprovalModal(business, 'approve')"
+                    title="Phê duyệt"
+                  >
+                    ✅
+                  </button>
+                  <button 
+                    class="btn-icon reject" 
+                    (click)="openApprovalModal(business, 'reject')"
+                    title="Từ chối"
+                  >
+                    ❌
+                  </button>
+                </ng-container>
+
+                <!-- Management buttons for active businesses -->
+                <ng-container *ngIf="business.status === 'active'">
+                  <button 
+                    class="btn-icon" 
+                    (click)="editBusiness(business)"
+                    title="Chỉnh sửa"
+                  >
+                    ✏️
+                  </button>
+                  <button 
+                    class="btn-icon" 
+                    (click)="manageQuota(business)"
+                    title="Quản lý quota"
+                  >
+                    📊
+                  </button>
+                  <button 
+                    class="btn-icon danger" 
+                    (click)="toggleBusinessStatus(business)"
+                    title="Khóa doanh nghiệp"
+                  >
+                    🔒
+                  </button>
+                </ng-container>
+
+                <!-- Reactivate button for inactive businesses -->
+                <ng-container *ngIf="business.status === 'inactive'">
+                  <button 
+                    class="btn-icon approve" 
+                    (click)="toggleBusinessStatus(business)"
+                    title="Kích hoạt lại"
+                  >
+                    🔓
+                  </button>
+                </ng-container>
+
+                <!-- View rejection reason for rejected businesses -->
+                <ng-container *ngIf="business.status === 'rejected'">
+                  <button 
+                    class="btn-icon" 
+                    (click)="viewBusiness(business)"
+                    title="Xem lý do từ chối"
+                  >
+                    📋
+                  </button>
+                </ng-container>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="totalPages() > 1">
+    <button 
+      class="pagination-btn" 
+      [disabled]="currentPage() === 1"
+      (click)="goToPage(currentPage() - 1)"
+    >
+      ←
+    </button>
+    
+    <div class="page-numbers">
+      <button 
+        *ngFor="let page of getPageNumbers()" 
+        class="page-number"
+        [class.active]="page === currentPage()"
+        (click)="goToPage(page)"
+      >
+        {{ page }}
+      </button>
+    </div>
+    
+    <button 
+      class="pagination-btn" 
+      [disabled]="currentPage() === totalPages()"
+      (click)="goToPage(currentPage() + 1)"
+    >
+      →
+    </button>
+  </div>
+</div>
+
+<!-- Approval Modal -->
+<div class="modal-overlay" *ngIf="showApprovalModal()" (click)="closeApprovalModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ approvalAction() === 'approve' ? 'Phê Duyệt Doanh Nghiệp' : 'Từ Chối Doanh Nghiệp' }}</h3>
+      <button class="modal-close" (click)="closeApprovalModal()">×</button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="business-info" *ngIf="selectedBusiness()">
+        <h4>{{ selectedBusiness()?.name }}</h4>
+        <p><strong>Chủ sở hữu:</strong> {{ selectedBusiness()?.ownerName }}</p>
+        <p><strong>Email:</strong> {{ selectedBusiness()?.ownerEmail }}</p>
+        <p><strong>Ngành nghề:</strong> {{ selectedBusiness()?.industry }}</p>
+        <p><strong>Ngày đăng ký:</strong> {{ selectedBusiness()?.registrationDate | date:'dd/MM/yyyy' }}</p>
+      </div>
+
+      <div *ngIf="approvalAction() === 'reject'" class="form-group">
+        <label for="rejectionReason">Lý do từ chối *</label>
+        <textarea 
+          id="rejectionReason"
+          [(ngModel)]="rejectionReason"
+          placeholder="Nhập lý do từ chối đăng ký..."
+          class="form-textarea"
+          rows="3"
+          required
+        ></textarea>
+      </div>
+
+      <div *ngIf="approvalAction() === 'approve'" class="approval-message">
+        <p>Bạn có chắc chắn muốn phê duyệt doanh nghiệp này?</p>
+        <p>Doanh nghiệp sẽ được kích hoạt và có thể sử dụng hệ thống.</p>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeApprovalModal()">Hủy</button>
+      <button 
+        *ngIf="approvalAction() === 'approve'"
+        class="btn btn-success" 
+        (click)="approveBusiness()"
+      >
+        Phê Duyệt
+      </button>
+      <button 
+        *ngIf="approvalAction() === 'reject'"
+        class="btn btn-danger" 
+        (click)="rejectBusiness()"
+        [disabled]="!rejectionReason().trim()"
+      >
+        Từ Chối
+      </button>
+    </div>
+  </div>
+</div>

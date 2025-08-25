@@ -11,15 +11,15 @@ export const ADMIN_ROUTES: Routes = [
     loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.AdminDashboard)
   },
   {
-    path: 'users',
-    loadComponent: () => import('./pages/users/users').then(m => m.Users)
+    path: 'business',
+    loadComponent: () => import('./pages/business/business').then(m => m.BusinessManagement)
   },
   {
-    path: 'projects',
-    loadComponent: () => import('./pages/projects/projects').then(m => m.AdminProjects)
+    path: 'system',
+    loadComponent: () => import('./pages/system/system').then(m => m.SystemManagement)
   },
   {
-    path: 'settings',
-    loadComponent: () => import('./pages/settings/settings').then(m => m.Settings)
-  }
+    path: 'revenue',
+    loadComponent: () => import('./pages/revenue/revenue').then(m => m.AdminRevenue)
+  },
 ];

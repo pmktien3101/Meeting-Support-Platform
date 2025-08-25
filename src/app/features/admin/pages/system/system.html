@@ -1,0 +1,538 @@
+<div class="system-management">
+  <div class="page-header">
+    <div class="header-content">
+      <h1 class="page-title">Hệ Thống & Cấu Hình</h1>
+      <p class="page-description">Quản lý cấu hình hệ thống, API keys, email server và các thiết lập chung</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="saveAllSettings()">
+        <span class="btn-icon">💾</span>
+        Lưu Tất Cả Cài Đặt
+      </button>
+    </div>
+  </div>
+
+  <!-- Settings Tabs -->
+  <div class="settings-container">
+    <div class="settings-tabs">
+      <button 
+        *ngFor="let tab of tabs" 
+        class="tab-button"
+        [class.active]="activeTab() === tab.id"
+        (click)="setActiveTab(tab.id)"
+      >
+        <span class="tab-icon">{{ tab.icon }}</span>
+        <span class="tab-label">{{ tab.label }}</span>
+      </button>
+    </div>
+
+    <div class="settings-content">
+      <!-- Email Server Settings -->
+      <div *ngIf="activeTab() === 'email'" class="settings-section">
+        <div class="section-header">
+          <h2>📧 Cấu Hình Email Server</h2>
+          <p>Thiết lập SMTP server cho gửi email OTP, thông báo và reminder</p>
+        </div>
+
+        <div class="settings-grid">
+          <div class="setting-card">
+            <div class="setting-header">
+              <h3>SMTP Configuration</h3>
+              <div class="setting-status" [class]="emailStatus()">
+                {{ getStatusText(emailStatus()) }}
+              </div>
+            </div>
+            
+            <form [formGroup]="emailForm" class="setting-form">
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="smtpHost">SMTP Host *</label>
+                  <input 
+                    type="text" 
+                    id="smtpHost"
+                    formControlName="smtpHost"
+                    placeholder="smtp.gmail.com"
+                    class="form-input"
+                  >
+                </div>
+                
+                <div class="form-group">
+                  <label for="smtpPort">SMTP Port *</label>
+                  <input 
+                    type="number" 
+                    id="smtpPort"
+                    formControlName="smtpPort"
+                    placeholder="587"
+                    class="form-input"
+                  >
+                </div>
+              </div>
+              
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="smtpUsername">Username *</label>
+                  <input 
+                    type="text" 
+                    id="smtpUsername"
+                    formControlName="smtpUsername"
+                    placeholder="your-email@gmail.com"
+                    class="form-input"
+                  >
+                </div>
+                
+                <div class="form-group">
+                  <label for="smtpPassword">Password *</label>
+                  <input 
+                    type="password" 
+                    id="smtpPassword"
+                    formControlName="smtpPassword"
+                    placeholder="App password"
+                    class="form-input"
+                  >
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="smtpFromEmail">From Email *</label>
+                <input 
+                  type="email" 
+                  id="smtpFromEmail"
+                  formControlName="smtpFromEmail"
+                  placeholder="noreply@yourcompany.com"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="smtpFromName">From Name *</label>
+                <input 
+                  type="text" 
+                  id="smtpFromName"
+                  formControlName="smtpFromName"
+                  placeholder="Your Company Name"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-actions">
+                <button 
+                  type="button" 
+                  class="btn btn-secondary"
+                  (click)="testEmailConnection()"
+                  [disabled]="emailForm.invalid"
+                >
+                  🧪 Test Connection
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-primary"
+                  (click)="saveEmailSettings()"
+                  [disabled]="emailForm.invalid"
+                >
+                  💾 Save Email Settings
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI API Settings -->
+      <div *ngIf="activeTab() === 'ai'" class="settings-section">
+        <div class="section-header">
+          <h2>🤖 Cấu Hình AI API</h2>
+          <p>Thiết lập API keys cho Whisper, NLP và các dịch vụ AI khác</p>
+        </div>
+
+        <div class="settings-grid">
+          <div class="setting-card">
+            <div class="setting-header">
+              <h3>OpenAI Configuration</h3>
+              <div class="setting-status" [class]="openaiStatus()">
+                {{ getStatusText(openaiStatus()) }}
+              </div>
+            </div>
+            
+            <form [formGroup]="openaiForm" class="setting-form">
+              <div class="form-group">
+                <label for="openaiApiKey">OpenAI API Key *</label>
+                <input 
+                  type="password" 
+                  id="openaiApiKey"
+                  formControlName="openaiApiKey"
+                  placeholder="sk-..."
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="openaiModel">Default Model</label>
+                <select id="openaiModel" formControlName="openaiModel" class="form-select">
+                  <option value="gpt-4">GPT-4</option>
+                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                  <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                </select>
+              </div>
+              
+              <div class="form-actions">
+                <button 
+                  type="button" 
+                  class="btn btn-secondary"
+                  (click)="testOpenAIConnection()"
+                  [disabled]="openaiForm.invalid"
+                >
+                  🧪 Test OpenAI
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-primary"
+                  (click)="saveOpenAISettings()"
+                  [disabled]="openaiForm.invalid"
+                >
+                  💾 Save OpenAI Settings
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="setting-card">
+            <div class="setting-header">
+              <h3>Whisper Configuration</h3>
+              <div class="setting-status" [class]="whisperStatus()">
+                {{ getStatusText(whisperStatus()) }}
+              </div>
+            </div>
+            
+            <form [formGroup]="whisperForm" class="setting-form">
+              <div class="form-group">
+                <label for="whisperApiKey">Whisper API Key</label>
+                <input 
+                  type="password" 
+                  id="whisperApiKey"
+                  formControlName="whisperApiKey"
+                  placeholder="Whisper API key"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="whisperModel">Whisper Model</label>
+                <select id="whisperModel" formControlName="whisperModel" class="form-select">
+                  <option value="whisper-1">Whisper-1</option>
+                  <option value="whisper-large-v3">Whisper Large V3</option>
+                </select>
+              </div>
+              
+              <div class="form-actions">
+                <button 
+                  type="button" 
+                  class="btn btn-secondary"
+                  (click)="testWhisperConnection()"
+                >
+                  🧪 Test Whisper
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-primary"
+                  (click)="saveWhisperSettings()"
+                >
+                  💾 Save Whisper Settings
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zoom API Settings -->
+      <div *ngIf="activeTab() === 'zoom'" class="settings-section">
+        <div class="section-header">
+          <h2>📹 Cấu Hình Zoom API</h2>
+          <p>Thiết lập Zoom API để host meetings và tích hợp video call</p>
+        </div>
+
+        <div class="settings-grid">
+          <div class="setting-card">
+            <div class="setting-header">
+              <h3>Zoom API Configuration</h3>
+              <div class="setting-status" [class]="zoomStatus()">
+                {{ getStatusText(zoomStatus()) }}
+              </div>
+            </div>
+            
+            <form [formGroup]="zoomForm" class="setting-form">
+              <div class="form-group">
+                <label for="zoomApiKey">Zoom API Key *</label>
+                <input 
+                  type="password" 
+                  id="zoomApiKey"
+                  formControlName="zoomApiKey"
+                  placeholder="Zoom API Key"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="zoomApiSecret">Zoom API Secret *</label>
+                <input 
+                  type="password" 
+                  id="zoomApiSecret"
+                  formControlName="zoomApiSecret"
+                  placeholder="Zoom API Secret"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="zoomSdkKey">Zoom SDK Key</label>
+                <input 
+                  type="password" 
+                  id="zoomSdkKey"
+                  formControlName="zoomSdkKey"
+                  placeholder="Zoom SDK Key"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="zoomSdkSecret">Zoom SDK Secret</label>
+                <input 
+                  type="password" 
+                  id="zoomSdkSecret"
+                  formControlName="zoomSdkSecret"
+                  placeholder="Zoom SDK Secret"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-actions">
+                <button 
+                  type="button" 
+                  class="btn btn-secondary"
+                  (click)="testZoomConnection()"
+                  [disabled]="zoomForm.invalid"
+                >
+                  🧪 Test Zoom API
+                </button>
+                <button 
+                  type="button" 
+                  class="btn btn-primary"
+                  (click)="saveZoomSettings()"
+                  [disabled]="zoomForm.invalid"
+                >
+                  💾 Save Zoom Settings
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Email Templates -->
+      <div *ngIf="activeTab() === 'templates'" class="settings-section">
+        <div class="section-header">
+          <h2>📝 Quản Lý Email Templates</h2>
+          <p>Tùy chỉnh template email cho OTP, thông báo và biên bản họp</p>
+        </div>
+
+        <div class="settings-grid">
+          <div class="setting-card">
+            <div class="setting-header">
+              <h3>Email Templates</h3>
+            </div>
+            
+            <div class="template-list">
+              <div *ngFor="let template of emailTemplates()" class="template-item">
+                <div class="template-header">
+                  <h4>{{ template.name }}</h4>
+                  <button 
+                    class="btn-icon"
+                    (click)="editTemplate(template)"
+                    title="Chỉnh sửa template"
+                  >
+                    ✏️
+                  </button>
+                </div>
+                
+                <div class="template-preview">
+                  <div class="template-subject">
+                    <strong>Subject:</strong> {{ template.subject }}
+                  </div>
+                  <div class="template-content">
+                    {{ template.content.substring(0, 100) }}...
+                  </div>
+                </div>
+                
+                <div class="template-variables">
+                  <strong>Variables:</strong> {{ template.variables.join(', ') }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Settings -->
+      <div *ngIf="activeTab() === 'system'" class="settings-section">
+        <div class="section-header">
+          <h2>⚙️ Cài Đặt Hệ Thống</h2>
+          <p>Cấu hình chung hệ thống, backup/restore và các thiết lập khác</p>
+        </div>
+
+        <div class="settings-grid">
+          <div class="setting-card">
+            <div class="setting-header">
+              <h3>General Settings</h3>
+            </div>
+            
+            <form [formGroup]="systemForm" class="setting-form">
+              <div class="form-group">
+                <label for="systemName">System Name</label>
+                <input 
+                  type="text" 
+                  id="systemName"
+                  formControlName="systemName"
+                  placeholder="Meeting Support Platform"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label for="timezone">Default Timezone</label>
+                <select id="timezone" formControlName="timezone" class="form-select">
+                  <option value="Asia/Ho_Chi_Minh">Asia/Ho_Chi_Minh (GMT+7)</option>
+                  <option value="UTC">UTC (GMT+0)</option>
+                  <option value="America/New_York">America/New_York (GMT-5)</option>
+                  <option value="Europe/London">Europe/London (GMT+0)</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="dateFormat">Date Format</label>
+                <select id="dateFormat" formControlName="dateFormat" class="form-select">
+                  <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                  <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                  <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label for="sessionTimeout">Session Timeout (minutes)</label>
+                <input 
+                  type="number" 
+                  id="sessionTimeout"
+                  formControlName="sessionTimeout"
+                  min="15"
+                  max="480"
+                  class="form-input"
+                >
+              </div>
+              
+              <div class="form-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" formControlName="enableAuditLog">
+                  <span class="checkmark"></span>
+                  Enable Audit Logging
+                </label>
+              </div>
+              
+              <div class="form-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" formControlName="enableNotifications">
+                  <span class="checkmark"></span>
+                  Enable Email Notifications
+                </label>
+              </div>
+              
+              <div class="form-actions">
+                <button 
+                  type="button" 
+                  class="btn btn-primary"
+                  (click)="saveSystemSettings()"
+                >
+                  💾 Save System Settings
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="setting-card">
+            <div class="setting-header">
+              <h3>Backup & Restore</h3>
+            </div>
+            
+            <div class="backup-actions">
+              <button class="btn btn-secondary" (click)="createBackup()">
+                💾 Create Backup
+              </button>
+              <button class="btn btn-secondary" (click)="restoreBackup()">
+                📂 Restore Backup
+              </button>
+            </div>
+            
+            <div class="backup-info">
+              <h4>Last Backup</h4>
+              <p>{{ lastBackupDate || 'No backup created yet' }}</p>
+              
+              <h4>Backup Size</h4>
+              <p>{{ lastBackupSize || 'N/A' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Template Editor Modal -->
+<div class="modal-overlay" *ngIf="showTemplateModal()" (click)="closeTemplateModal()">
+  <div class="modal-content template-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Edit Template - {{ selectedTemplate()?.name }}</h3>
+      <button class="modal-close" (click)="closeTemplateModal()">×</button>
+    </div>
+    
+    <form [formGroup]="templateForm" class="modal-body">
+      <div class="form-group">
+        <label for="templateSubject">Subject *</label>
+        <input 
+          type="text" 
+          id="templateSubject"
+          formControlName="subject"
+          class="form-input"
+        >
+      </div>
+      
+      <div class="form-group">
+        <label for="templateContent">Content *</label>
+        <textarea 
+          id="templateContent"
+          formControlName="content"
+          rows="10"
+          class="form-textarea"
+          placeholder="Enter email template content..."
+        ></textarea>
+      </div>
+      
+      <div class="template-variables-help">
+        <h4>Available Variables:</h4>
+        <div class="variables-list">
+          <span *ngFor="let variable of (selectedTemplate()?.variables || [])" class="variable-tag">
+            {{ variable }}
+          </span>
+        </div>
+      </div>
+    </form>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeTemplateModal()">Cancel</button>
+      <button 
+        class="btn btn-primary" 
+        (click)="saveTemplate()"
+        [disabled]="templateForm.invalid"
+      >
+        Save Template
+      </button>
+    </div>
+  </div>
+</div>

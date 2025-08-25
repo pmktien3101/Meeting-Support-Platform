@@ -14,7 +14,7 @@
         <p>Quản lý dự án, milestone và cuộc họp của tổ chức</p>
       </div>
                    <div class="header-actions">
-               <button class="btn-primary" (click)="openCreatePMModal()">
+               <button class="btn-primary" (click)="openCreatePMModal()" [disabled]="showCreatePMModal() || isSubmitting()">
                  <span class="icon">👤</span>
                  Tạo PM Mới
                </button>
@@ -27,7 +27,7 @@
 
     <!-- Quick Actions -->
                  <div class="quick-actions">
-               <div class="action-card" (click)="openCreatePMModal()">
+               <div class="action-card" (click)="openCreatePMModal()" [class.disabled]="showCreatePMModal() || isSubmitting()">
                  <div class="action-icon">👤</div>
                  <h3>Tạo PM Mới</h3>
                  <p>Thêm Project Manager</p>
@@ -95,7 +95,9 @@
                          <div class="card-header">
                    <h2>Quản Lý Dự Án</h2>
                    <div class="header-actions">
-                     <button class="btn-small" (click)="openCreatePMModal()">+ Tạo PM</button>
+                     <button class="btn-small" (click)="openCreatePMModal()" [disabled]="showCreatePMModal() || isSubmitting()">
+                       + Tạo PM
+                     </button>
                      <button class="btn-small" (click)="onViewAllMilestones()">Xem Tất Cả</button>
                    </div>
                  </div>
@@ -104,64 +106,49 @@
             <div class="project-item" *ngFor="let project of projects()">
               <div class="project-header">
                 <div class="project-info">
-                  <h3 class="project-name">{{ project.name }}</h3>
+                  <div class="project-name">{{ project.name }}</div>
                   <div class="project-meta">
-                    <span class="project-status" [style.background-color]="getStatusColor(project.status)">
+                    <span class="project-status" [style.background]="getStatusColor(project.status)">
                       {{ getStatusText(project.status) }}
                     </span>
-                    <span class="project-priority" [style.background-color]="getPriorityColor(project.priority)">
+                    <span class="project-priority" [style.background]="getPriorityColor(project.priority)">
                       {{ getPriorityText(project.priority) }}
                     </span>
-                    <span class="project-budget">${{ project.budget.toLocaleString() }}</span>
+                    <span class="project-budget">Ngân sách: {{ project.budget | number }}₫</span>
                   </div>
                 </div>
                 <div class="project-actions">
-                  <button class="btn-small" (click)="onViewProjectDetails(project.id)">
-                    <span class="icon">👁️</span>
-                    Chi Tiết
-                  </button>
-                  <button class="btn-small" (click)="onEditProject(project.id)">
-                    <span class="icon">✏️</span>
-                    Sửa
-                  </button>
-                  <button 
-                    class="btn-small" 
-                    *ngIf="!project.manager"
-                    (click)="onAssignPM(project.id)"
-                  >
-                    <span class="icon">👤</span>
-                    Gán PM
-                  </button>
+                  <button class="btn-small" (click)="onViewProjectDetails(project.id)">Chi tiết</button>
+                  <button class="btn-small" (click)="onAssignPM(project.id)">Gán PM</button>
                 </div>
               </div>
-              
               <div class="project-details">
                 <div class="project-progress">
                   <div class="progress-bar">
                     <div class="progress-fill" [style.width.%]="project.progress"></div>
                   </div>
-                  <span class="progress-text">{{ project.progress }}%</span>
+                  <div class="progress-text">{{ project.progress }}%</div>
                 </div>
-                
                 <div class="project-stats">
                   <div class="stat">
                     <span class="stat-label">PM:</span>
-                    <span class="stat-value">{{ project.manager || 'Chưa gán' }}</span>
+                    <span class="stat-value" [class.pm-unassigned]="!project.manager" [class.pm-assigned]="project.manager">
+                      {{ project.manager || 'Chưa gán' }}
+                    </span>
                   </div>
                   <div class="stat">
-                    <span class="stat-label">Team:</span>
-                    <span class="stat-value">{{ project.teamSize }} người</span>
+                    <span class="stat-label">Nhóm:</span>
+                    <span class="stat-value">{{ project.teamSize }}</span>
                   </div>
                   <div class="stat">
                     <span class="stat-label">Milestone:</span>
                     <span class="stat-value">{{ project.completedMilestones }}/{{ project.totalMilestones }}</span>
                   </div>
                   <div class="stat">
-                    <span class="stat-label">Tasks:</span>
+                    <span class="stat-label">Task:</span>
                     <span class="stat-value">{{ project.completedTasks }}/{{ project.totalTasks }}</span>
                   </div>
                 </div>
-
                 <div class="project-timeline">
                   <div class="timeline-item">
                     <span class="timeline-label">Bắt đầu:</span>
@@ -190,24 +177,24 @@
           <div class="milestones-list">
             <div class="milestone-item" *ngFor="let milestone of milestones()">
               <div class="milestone-header">
-                <h4 class="milestone-name">{{ milestone.name }}</h4>
-                <span class="milestone-status" [style.background-color]="getMilestoneStatusColor(milestone.status)">
+                <span class="milestone-name">{{ milestone.name }}</span>
+                <span class="milestone-status" [style.background]="getMilestoneStatusColor(milestone.status)">
                   {{ getMilestoneStatusText(milestone.status) }}
                 </span>
               </div>
-              <p class="milestone-description">{{ milestone.description }}</p>
+              <div class="milestone-description">{{ milestone.description }}</div>
               <div class="milestone-meta">
                 <div class="meta-item">
                   <span class="meta-label">Dự án:</span>
                   <span class="meta-value">{{ getProjectName(milestone.projectId) }}</span>
                 </div>
                 <div class="meta-item">
-                  <span class="meta-label">Người thực hiện:</span>
-                  <span class="meta-value">{{ milestone.assignedTo }}</span>
+                  <span class="meta-label">Deadline:</span>
+                  <span class="meta-value">{{ formatDate(milestone.dueDate) }}</span>
                 </div>
                 <div class="meta-item">
-                  <span class="meta-label">Hạn:</span>
-                  <span class="meta-value">{{ formatDate(milestone.dueDate) }}</span>
+                  <span class="meta-label">Người phụ trách:</span>
+                  <span class="meta-value">{{ milestone.assignedTo }}</span>
                 </div>
                 <div class="meta-item">
                   <span class="meta-label">Tiến độ:</span>
@@ -408,97 +395,34 @@
     <div class="modal-body">
       <form (ngSubmit)="createNewPM()" #pmForm="ngForm">
         <div class="form-row">
-          <div class="form-group">
-            <label for="name">Họ Tên Đầy Đủ *</label>
-            <input 
-              type="text" 
-              id="name"
-              [(ngModel)]="newPMForm().name" 
-              name="name"
-              class="form-input"
-              [class.error]="formErrors()['name']"
-              placeholder="Nhập họ tên đầy đủ"
-            >
-            <span *ngIf="formErrors()['name']" class="error-message">{{ formErrors()['name'] }}</span>
-          </div>
-          
-          <div class="form-group">
-            <label for="email">Địa Chỉ Email *</label>
-            <input 
-              type="email" 
-              id="email"
-              [(ngModel)]="newPMForm().email" 
-              name="email"
-              class="form-input"
-              [class.error]="formErrors()['email']"
-              placeholder="Nhập địa chỉ email"
-            >
-            <span *ngIf="formErrors()['email']" class="error-message">{{ formErrors()['email'] }}</span>
-          </div>
+          <label>Họ tên</label>
+          <input type="text" [(ngModel)]="newPMForm().name" name="name" required />
+          <div class="error" *ngIf="formErrors().name">{{ formErrors().name }}</div>
         </div>
-
         <div class="form-row">
-          <div class="form-group">
-            <label for="phone">Số Điện Thoại *</label>
-            <input 
-              type="tel" 
-              id="phone"
-              [(ngModel)]="newPMForm().phone" 
-              name="phone"
-              class="form-input"
-              [class.error]="formErrors()['phone']"
-              placeholder="Nhập số điện thoại"
-            >
-            <span *ngIf="formErrors()['phone']" class="error-message">{{ formErrors()['phone'] }}</span>
-          </div>
-          
-          <div class="form-group">
-            <label for="position">Chức Vụ *</label>
-            <input 
-              type="text" 
-              id="position"
-              [(ngModel)]="newPMForm().position" 
-              name="position"
-              class="form-input"
-              [class.error]="formErrors()['position']"
-              placeholder="Nhập chức vụ"
-            >
-            <span *ngIf="formErrors()['position']" class="error-message">{{ formErrors()['position'] }}</span>
-          </div>
+          <label>Email</label>
+          <input type="email" [(ngModel)]="newPMForm().email" name="email" required />
+          <div class="error" *ngIf="formErrors().email">{{ formErrors().email }}</div>
         </div>
-
         <div class="form-row">
-          <div class="form-group">
-            <label for="department">Phòng Ban *</label>
-            <input 
-              type="text" 
-              id="department"
-              [(ngModel)]="newPMForm().department" 
-              name="department"
-              class="form-input"
-              [class.error]="formErrors()['department']"
-              placeholder="Nhập phòng ban"
-            >
-            <span *ngIf="formErrors()['department']" class="error-message">{{ formErrors()['department'] }}</span>
-          </div>
-          
-          <div class="form-group">
-            <label for="startDate">Ngày Bắt Đầu *</label>
-            <input 
-              type="date" 
-              id="startDate"
-              [(ngModel)]="newPMForm().startDate" 
-              name="startDate"
-              class="form-input"
-              [class.error]="formErrors()['startDate']"
-            >
-            <span *ngIf="formErrors()['startDate']" class="error-message">{{ formErrors()['startDate'] }}</span>
-          </div>
+          <label>Số điện thoại</label>
+          <input type="text" [(ngModel)]="newPMForm().phone" name="phone" required />
+          <div class="error" *ngIf="formErrors().phone">{{ formErrors().phone }}</div>
         </div>
-
-        <div class="form-info">
-          <p>📧 Email kích hoạt sẽ được gửi đến địa chỉ email đã cung cấp để thiết lập tài khoản.</p>
-          <p>🔐 Tài khoản mới sẽ được tạo với vai trò Project Manager và trạng thái chờ xử lý.</p>
+        <div class="form-row">
+          <label>Chức vụ</label>
+          <input type="text" [(ngModel)]="newPMForm().position" name="position" required />
+          <div class="error" *ngIf="formErrors().position">{{ formErrors().position }}</div>
+        </div>
+        <div class="form-row">
+          <label>Phòng ban</label>
+          <input type="text" [(ngModel)]="newPMForm().department" name="department" required />
+          <div class="error" *ngIf="formErrors().department">{{ formErrors().department }}</div>
+        </div>
+        <div class="form-row">
+          <label>Ngày bắt đầu</label>
+          <input type="date" [(ngModel)]="newPMForm().startDate" name="startDate" required />
+          <div class="error" *ngIf="formErrors().startDate">{{ formErrors().startDate }}</div>
         </div>
       </form>
     </div>

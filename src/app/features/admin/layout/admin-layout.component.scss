@@ -195,9 +195,9 @@ $off-white: #F9F4EE;
   // Main Content
   .main-content {
     flex: 1;
-    margin-left: 280px;
+    margin-left: 250px;
     transition: margin-left 0.3s ease;
-
+    width: 75%;
     .sidebar.collapsed + & {
       margin-left: 80px;
     }

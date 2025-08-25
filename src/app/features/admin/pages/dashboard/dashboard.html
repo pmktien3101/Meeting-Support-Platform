@@ -1,0 +1,96 @@
+<div class="admin-dashboard">
+  <div class="dashboard-header">
+    <h1>Bảng điều khiển quản trị</h1>
+    <p>Theo dõi tổng quan hệ thống MSP và hoạt động theo thời gian thực</p>
+  </div>
+
+  <div class="dashboard-stats">
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ kpis().revenue | number }}</div>
+        <div class="stat-label">Doanh thu (VNĐ)</div>
+      </div>
+      <div class="stat-trend up">+6%</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🏢</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ kpis().companies | number }}</div>
+        <div class="stat-label">Doanh nghiệp</div>
+      </div>
+      <div class="stat-trend up">+12%</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ kpis().activeUsers | number }}</div>
+        <div class="stat-label">Người dùng hoạt động</div>
+      </div>
+      <div class="stat-trend up">+8%</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📁</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ kpis().projects | number }}</div>
+        <div class="stat-label">Dự án hoạt động</div>
+      </div>
+      <div class="stat-trend up">+15%</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">🎥</div>
+      <div class="stat-content">
+        <div class="stat-number">{{ kpis().liveMeetings | number }}</div>
+        <div class="stat-label">Cuộc họp đang diễn ra</div>
+      </div>
+      <div class="stat-trend live">Live</div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <section class="card">
+      <div class="card-title">Đăng ký doanh nghiệp gần đây</div>
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Doanh nghiệp</th>
+              <th>Liên hệ</th>
+              <th>Ngày</th>
+              <th>Trạng thái</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of recentRegs()">
+              <td>{{ r.company }}</td>
+              <td class="muted">{{ r.contact }}</td>
+              <td>{{ r.date }}</td>
+              <td>
+                <span class="badge" [class.active]="r.status==='active'" [class.pending]="r.status==='pending'">{{ r.status==='active' ? 'Hoạt động' : 'Chờ duyệt' }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-title">Phân tích sử dụng hệ thống</div>
+      <div class="chart">
+        <svg viewBox="0 0 300 120" preserveAspectRatio="none">
+          <polyline fill="none" stroke="#FF5E13" stroke-width="3"
+            [attr.points]="linePoints()" />
+        </svg>
+      </div>
+
+      <div class="bars">
+        <div class="bar" *ngFor="let b of bars()" [style.height.%]="b.value" >
+          <span class="bar-label">{{ b.label }}</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

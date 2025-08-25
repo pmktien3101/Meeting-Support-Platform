@@ -1,0 +1,553 @@
+// Color variables from landing page
+$primary-orange: #FF5E13;
+$secondary-orange: #FFA463;
+$light-orange: #FFDBBD;
+$cream: #FDF0D2;
+$off-white: #F9F4EE;
+
+.system-management {
+  padding: 24px;
+  min-height: 100vh;
+
+  .page-header {
+    background: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    padding: 32px;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    margin-bottom: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    .header-content {
+      h1 {
+        font-size: 32px;
+        font-weight: 800;
+        background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0 0 12px 0;
+        letter-spacing: -0.5px;
+      }
+
+      p {
+        color: #64748b;
+        font-size: 18px;
+        margin: 0;
+        font-weight: 500;
+      }
+    }
+
+    .header-actions {
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &.btn-primary {
+          background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+          color: white;
+
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 94, 19, 0.4);
+          }
+        }
+
+        .btn-icon {
+          font-size: 1.1rem;
+        }
+      }
+    }
+  }
+
+  .settings-container {
+    background: rgba(255, 255, 255, 0.95);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+
+    .settings-tabs {
+      display: flex;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-bottom: 1px solid #e2e8f0;
+
+      .tab-button {
+        flex: 1;
+        padding: 1rem;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        color: #64748b;
+        transition: all 0.2s ease;
+        border-bottom: 3px solid transparent;
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.8);
+          color: $primary-orange;
+        }
+
+        &.active {
+          background: rgba(255, 255, 255, 0.95);
+          color: $primary-orange;
+          border-bottom-color: $primary-orange;
+        }
+
+        .tab-icon {
+          font-size: 1.2rem;
+        }
+
+        .tab-label {
+          font-size: 0.9rem;
+        }
+      }
+    }
+
+    .settings-content {
+      padding: 2rem;
+
+      .settings-section {
+        margin-bottom: 2rem;
+
+        .section-header {
+          margin-bottom: 1rem;
+
+          h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0 0 0.5rem 0;
+          }
+
+          p {
+            color: #64748b;
+            margin: 0;
+            font-size: 0.9rem;
+          }
+        }
+
+        // Unify legacy class names used in template: .setting-form and .settings-form
+        .settings-form, .setting-form {
+          .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+          }
+          .form-group {
+            margin-bottom: 1.5rem;
+
+            label {
+              display: block;
+              margin-bottom: 0.5rem;
+              font-weight: 500;
+              color: #1e293b;
+            }
+
+            input, select, textarea, .form-input, .form-select, .form-textarea {
+              width: 100%;
+              padding: 0.75rem;
+              border: 2px solid #e2e8f0;
+              border-radius: 8px;
+              font-size: 0.9rem;
+              transition: all 0.2s ease;
+              background: rgba(255, 255, 255, 0.8);
+              -webkit-backdrop-filter: blur(10px);
+              backdrop-filter: blur(10px);
+
+              &:focus {
+                outline: none;
+                border-color: $primary-orange;
+                box-shadow: 0 0 0 3px rgba(255, 94, 19, 0.1);
+                background: white;
+              }
+            }
+
+            textarea {
+              resize: vertical;
+              min-height: 100px;
+            }
+          }
+
+          .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+
+            .btn {
+              padding: 0.75rem 1.5rem;
+              border: none;
+              border-radius: 8px;
+              font-weight: 500;
+              cursor: pointer;
+              transition: all 0.2s ease;
+
+              &.btn-primary {
+                background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+                color: white;
+
+                &:hover {
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 12px rgba(255, 94, 19, 0.4);
+                }
+              }
+
+              &.btn-secondary {
+                background: #f1f5f9;
+                color: #64748b;
+
+                &:hover {
+                  background: #e2e8f0;
+                  color: #1e293b;
+                }
+              }
+            }
+          }
+        }
+
+        .settings-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          gap: 1.5rem;
+
+          .setting-card {
+            background: rgba(255, 255, 255, 0.8);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+
+            &:hover {
+              transform: translateY(-2px);
+              box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            }
+
+            .card-header {
+              display: flex;
+              align-items: center;
+              gap: 0.75rem;
+              margin-bottom: 1rem;
+
+              .card-icon {
+                width: 40px;
+                height: 40px;
+                background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+                color: white;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.2rem;
+              }
+
+              .card-title {
+                font-weight: 600;
+                color: #1e293b;
+                margin: 0;
+              }
+            }
+
+            .card-content {
+              color: #64748b;
+              font-size: 0.9rem;
+              line-height: 1.5;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Template list styles
+  .template-list {
+    display: grid;
+    gap: 1rem;
+
+    .template-item {
+      background: white;
+      border: 1px solid #e9ecef;
+      border-radius: 8px;
+      padding: 1rem;
+
+      .template-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        h4 {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: #2c3e50;
+          margin: 0;
+        }
+
+        .btn-icon {
+          background: none;
+          border: none;
+          font-size: 1.2rem;
+          cursor: pointer;
+          padding: 0.25rem;
+          border-radius: 4px;
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background: #f8f9fa;
+          }
+        }
+      }
+
+      .template-preview {
+        margin-bottom: 1rem;
+
+        .template-subject {
+          font-weight: 500;
+          color: #495057;
+          margin-bottom: 0.5rem;
+        }
+
+        .template-content {
+          color: #6c757d;
+          font-size: 0.9rem;
+          line-height: 1.4;
+        }
+      }
+
+      .template-variables {
+        font-size: 0.8rem;
+        color: #6c757d;
+
+        strong {
+          color: #495057;
+        }
+      }
+    }
+  }
+
+  // Backup section styles
+  .backup-actions {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .backup-info {
+    h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin: 0 0 0.5rem 0;
+    }
+
+    p {
+      color: #6c757d;
+      margin: 0 0 1rem 0;
+    }
+  }
+}
+
+// Modal styles
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  .modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+
+    &.template-modal {
+      max-width: 800px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem;
+      border-bottom: 1px solid #e9ecef;
+
+      h3 {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: #6c757d;
+        padding: 0.25rem;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+
+        &:hover {
+          background: #f8f9fa;
+        }
+      }
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+
+      .template-variables-help {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 6px;
+
+        h4 {
+          font-size: 1rem;
+          font-weight: 600;
+          color: #2c3e50;
+          margin: 0 0 1rem 0;
+        }
+
+        .variables-list {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+
+          .variable-tag {
+            background: #667eea;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      padding: 1.5rem;
+      border-top: 1px solid #e9ecef;
+
+      .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &.btn-primary {
+          background: #667eea;
+          color: white;
+
+          &:hover {
+            background: #5a6fd8;
+          }
+
+          &:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+          }
+        }
+
+        &.btn-secondary {
+          background: #6c757d;
+          color: white;
+
+          &:hover {
+            background: #5a6268;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .system-management {
+    padding: 16px;
+
+    .page-header {
+      padding: 24px;
+      margin-bottom: 24px;
+
+      .header-content {
+        h1 {
+          font-size: 24px;
+        }
+
+        p {
+          font-size: 16px;
+        }
+      }
+    }
+
+    .settings-container {
+      .settings-tabs {
+        flex-direction: column;
+
+        .tab-button {
+          border-bottom: none;
+          border-right: 3px solid transparent;
+
+          &.active {
+            border-bottom: none;
+            border-right-color: $primary-orange;
+          }
+        }
+      }
+
+      .settings-content {
+        padding: 1rem;
+
+        .settings-section {
+          .settings-form, .setting-form {
+            .form-row {
+              grid-template-columns: 1fr;
+            }
+          }
+          .settings-grid {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+
+            .setting-card {
+              padding: 1rem;
+            }
+          }
+        }
+      }
+    }
+  }
+}

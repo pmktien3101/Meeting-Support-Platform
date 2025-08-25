@@ -409,6 +409,7 @@ export class BusinessOwnerDashboard implements OnInit {
   }
 
   openCreatePMModal(): void {
+    if (this.showCreatePMModal() || this.isSubmitting()) return;
     this.showCreatePMModal.set(true);
     this.resetPMForm();
   }
@@ -426,15 +427,16 @@ export class BusinessOwnerDashboard implements OnInit {
   }
 
   async createNewPM(): Promise<void> {
+    if (this.isSubmitting()) return;
     this.isSubmitting.set(true);
     this.formErrors.set({});
 
-    // Validate form
     const errors: {[key: string]: string} = {};
     const form = this.newPMForm();
 
     if (!form.name.trim()) errors['name'] = 'Họ tên là bắt buộc';
-    if (!form.email.trim()) errors['name'] = 'Email là bắt buộc';
+    if (!form.email.trim()) errors['email'] = 'Email là bắt buộc';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors['email'] = 'Email không hợp lệ';
     if (!form.phone.trim()) errors['phone'] = 'Số điện thoại là bắt buộc';
     if (!form.position.trim()) errors['position'] = 'Chức vụ là bắt buộc';
     if (!form.department.trim()) errors['department'] = 'Phòng ban là bắt buộc';
