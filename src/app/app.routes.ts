@@ -60,13 +60,6 @@ export const routes: Routes = [
     canActivate: [roleGuard(['pm', 'admin'])],
     loadChildren: () => import('./features/project/project.routes').then(m => m.PROJECT_ROUTES)
   },
-  // Task routes - Using feature routes
-  {
-    path: 'task',
-    canActivate: [roleGuard(['member', 'pm', 'admin'])],
-    loadChildren: () => import('./features/task/task.routes').then(m => m.TASK_ROUTES)
-  },
-
   // Catch all route
   {
     path: '**',
