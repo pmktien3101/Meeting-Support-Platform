@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { PmLayoutComponent } from '../../layout/pm-layout.component';
 
 interface ProjectMember {
@@ -24,10 +25,25 @@ interface Project {
   members: ProjectMember[];
 }
 
+interface Meeting {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  duration: number;
+  location: string;
+  type: 'offline' | 'online' | 'hybrid';
+  projectId: string;
+  participants: string[];
+  status: 'scheduled' | 'in-progress' | 'completed' | 'cancelled';
+  createdAt: string;
+}
+
 @Component({
   selector: 'app-pm-projects',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './projects.html',
   styleUrls: ['./projects.scss']
 })
@@ -40,6 +56,29 @@ export class PmProjects {
   showEditProjectModal = false;
   selectedProject: Project | null = null;
   editProjectForm!: FormGroup;
+  
+  // Meeting modal state
+  showAddMeetingModal = false;
+  selectedProjectForMeeting: Project | null = null;
+  newMeeting: {
+    title: string;
+    description: string;
+    date: string;
+    time: string;
+    duration: number;
+    location: string;
+    type: 'offline' | 'online' | 'hybrid';
+    participants: string[];
+  } = {
+    title: '',
+    description: '',
+    date: '',
+    time: '',
+    duration: 60,
+    location: '',
+    type: 'offline',
+    participants: []
+  };
 
   // Available team members for adding to projects
   availableMembers: ProjectMember[] = [
@@ -262,5 +301,69 @@ export class PmProjects {
   getAverageProgress(): number {
     const totalProgress = this.projects.reduce((sum, p) => sum + p.progress, 0);
     return Math.round(totalProgress / this.projects.length);
+  }
+
+  // Meeting methods
+  openAddMeeting(project: Project) {
+    this.selectedProjectForMeeting = project;
+    this.resetMeetingForm();
+    this.showAddMeetingModal = true;
+  }
+
+  closeAddMeeting() {
+    this.showAddMeetingModal = false;
+    this.selectedProjectForMeeting = null;
+    this.resetMeetingForm();
+  }
+
+  resetMeetingForm() {
+    this.newMeeting = {
+      title: '',
+      description: '',
+      date: '',
+      time: '',
+      duration: 60,
+      location: '',
+      type: 'offline',
+      participants: []
+    };
+  }
+
+  isParticipantSelected(memberId: string): boolean {
+    return this.newMeeting.participants.includes(memberId);
+  }
+
+  toggleParticipant(memberId: string) {
+    const index = this.newMeeting.participants.indexOf(memberId);
+    if (index > -1) {
+      this.newMeeting.participants.splice(index, 1);
+    } else {
+      this.newMeeting.participants.push(memberId);
+    }
+  }
+
+  submitAddMeeting() {
+    if (!this.selectedProjectForMeeting || !this.newMeeting.title || !this.newMeeting.date || !this.newMeeting.time) {
+      return;
+    }
+
+    const meeting: Meeting = {
+      id: Date.now().toString(),
+      title: this.newMeeting.title,
+      description: this.newMeeting.description,
+      date: this.newMeeting.date,
+      time: this.newMeeting.time,
+      duration: this.newMeeting.duration,
+      location: this.newMeeting.location,
+      type: this.newMeeting.type,
+      projectId: this.selectedProjectForMeeting.id,
+      participants: this.newMeeting.participants,
+      status: 'scheduled',
+      createdAt: new Date().toISOString()
+    };
+
+    console.log('New meeting created:', meeting);
+    // TODO: Call API to save meeting
+    this.closeAddMeeting();
   }
 }

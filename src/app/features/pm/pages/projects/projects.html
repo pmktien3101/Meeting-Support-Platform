@@ -85,6 +85,7 @@
       <div class="project-actions">
         <button class="btn btn-primary btn-sm" (click)="viewProjectMilestones(project.id)">Xem Chi Tiết</button>
         <button class="btn btn-secondary btn-sm" (click)="openEditProject(project)">Chỉnh Sửa</button>
+        <button class="btn btn-outline btn-sm" (click)="openAddMeeting(project)">📅 Tạo Meeting</button>
         <button class="btn btn-outline btn-sm">📊 Báo Cáo</button>
       </div>
     </div>
@@ -278,6 +279,182 @@
                 [disabled]="!editProjectForm.valid || editProjectForm.pristine">
           <span class="btn-icon">💾</span>
           Cập nhật dự án
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add Meeting Modal -->
+<div class="modal-overlay" *ngIf="showAddMeetingModal" (click)="closeAddMeeting()">
+  <div class="modal add-meeting-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="header-content">
+        <div class="header-icon">📅</div>
+        <div class="header-text">
+          <h3>Tạo Meeting Mới</h3>
+          <p>Tạo meeting cho dự án {{ selectedProjectForMeeting?.name }}</p>
+        </div>
+      </div>
+      <button class="modal-close" (click)="closeAddMeeting()" title="Đóng">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <form (ngSubmit)="submitAddMeeting()" class="modal-form">
+      <div class="form-section">
+        <h4 class="section-title">📋 Thông tin Meeting</h4>
+        
+        <div class="form-group">
+          <label for="meetingTitle">
+            <span class="label-icon">📝</span>
+            Tiêu đề Meeting <span class="required">*</span>
+          </label>
+          <input type="text" 
+                 id="meetingTitle" 
+                 [(ngModel)]="newMeeting.title" 
+                 name="meetingTitle"
+                 placeholder="Nhập tiêu đề meeting"
+                 class="form-input"
+                 required>
+        </div>
+        
+        <div class="form-group">
+          <label for="meetingDescription">
+            <span class="label-icon">📄</span>
+            Mô tả Meeting
+          </label>
+          <textarea id="meetingDescription" 
+                    [(ngModel)]="newMeeting.description" 
+                    name="meetingDescription"
+                    rows="3" 
+                    placeholder="Mô tả nội dung meeting..."
+                    class="form-textarea"></textarea>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h4 class="section-title">📅 Thời gian Meeting</h4>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="meetingDate">
+              <span class="label-icon">📅</span>
+              Ngày Meeting <span class="required">*</span>
+            </label>
+            <input type="date" 
+                   id="meetingDate" 
+                   [(ngModel)]="newMeeting.date"
+                   name="meetingDate"
+                   class="form-input"
+                   required>
+          </div>
+          <div class="form-group">
+            <label for="meetingTime">
+              <span class="label-icon">⏰</span>
+              Giờ Meeting <span class="required">*</span>
+            </label>
+            <input type="time" 
+                   id="meetingTime" 
+                   [(ngModel)]="newMeeting.time"
+                   name="meetingTime"
+                   class="form-input"
+                   required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="meetingDuration">
+            <span class="label-icon">⏱️</span>
+            Thời lượng (phút) <span class="required">*</span>
+          </label>
+          <select id="meetingDuration" 
+                  [(ngModel)]="newMeeting.duration" 
+                  name="meetingDuration"
+                  class="form-select"
+                  required>
+            <option value="30">30 phút</option>
+            <option value="60">1 giờ</option>
+            <option value="90">1.5 giờ</option>
+            <option value="120">2 giờ</option>
+            <option value="180">3 giờ</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h4 class="section-title">👥 Người tham gia</h4>
+        
+        <div class="form-group">
+          <label for="meetingParticipants">
+            <span class="label-icon">👥</span>
+            Chọn người tham gia
+          </label>
+          <div class="participants-list">
+            <div class="participant-item" *ngFor="let member of selectedProjectForMeeting?.members">
+              <label class="participant-checkbox">
+                <input type="checkbox" 
+                       [value]="member.id"
+                       [checked]="isParticipantSelected(member.id)"
+                       (change)="toggleParticipant(member.id)"
+                       class="checkbox-input">
+                <span class="checkbox-custom"></span>
+                <div class="participant-info">
+                  <span class="participant-name">{{ member.name }}</span>
+                  <span class="participant-role">{{ member.role }}</span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <h4 class="section-title">📍 Địa điểm Meeting</h4>
+        
+        <div class="form-group">
+          <label for="meetingLocation">
+            <span class="label-icon">📍</span>
+            Địa điểm
+          </label>
+          <input type="text" 
+                 id="meetingLocation" 
+                 [(ngModel)]="newMeeting.location" 
+                 name="meetingLocation"
+                 placeholder="Nhập địa điểm meeting (phòng họp, online, etc.)"
+                 class="form-input">
+        </div>
+        
+        <div class="form-group">
+          <label for="meetingType">
+            <span class="label-icon">💻</span>
+            Loại Meeting <span class="required">*</span>
+          </label>
+          <select id="meetingType" 
+                  [(ngModel)]="newMeeting.type" 
+                  name="meetingType"
+                  class="form-select"
+                  required>
+            <option value="offline">Offline</option>
+            <option value="online">Online</option>
+            <option value="hybrid">Hybrid</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="closeAddMeeting()">
+          <span class="btn-icon">❌</span>
+          Hủy bỏ
+        </button>
+        <button type="submit" 
+                class="btn btn-primary" 
+                [disabled]="!newMeeting.title || !newMeeting.date || !newMeeting.time">
+          <span class="btn-icon">📅</span>
+          Tạo Meeting
         </button>
       </div>
     </form>

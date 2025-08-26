@@ -936,3 +936,458 @@ $off-white: #F9F4EE;
     }
   }
 }
+
+// Add Meeting Modal Styles
+.modal-overlay {
+  .modal {
+    &.add-meeting-modal {
+      max-width: 800px;
+      width: 95%;
+      min-width: 320px;
+
+      .modal-header {
+        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        border-radius: 20px 20px 0 0;
+        padding: 24px 32px;
+        border-bottom: 1px solid #e2e8f0;
+        position: relative;
+
+        .header-content {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          padding-right: 40px;
+
+          .header-icon {
+            font-size: 32px;
+            color: white;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+          }
+
+          .header-text {
+            h3 {
+              margin: 0 0 4px 0;
+              font-size: 24px;
+              font-weight: 700;
+              color: white;
+              text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            p {
+              margin: 0;
+              font-size: 14px;
+              color: rgba(255, 255, 255, 0.9);
+            }
+          }
+        }
+
+        .modal-close {
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          background: rgba(255, 255, 255, 0.2);
+          border: none;
+          border-radius: 50%;
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          backdrop-filter: blur(10px);
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+          }
+
+          svg {
+            color: white;
+            width: 20px;
+            height: 20px;
+          }
+        }
+      }
+
+      .modal-form {
+        padding: 32px;
+        max-height: 70vh;
+        overflow-y: auto;
+
+        // Hide scrollbar
+        &::-webkit-scrollbar { display: none; }
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+
+        .form-section {
+          margin-bottom: 32px;
+
+          .section-title {
+            margin: 0 0 20px 0;
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
+          }
+
+          .form-group {
+            margin-bottom: 20px;
+
+            label {
+              display: block;
+              margin-bottom: 8px;
+              font-size: 14px;
+              font-weight: 600;
+              color: #374151;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+
+              .label-icon {
+                font-size: 16px;
+              }
+
+              .required {
+                color: #ef4444;
+                font-weight: 700;
+              }
+            }
+
+            .form-input,
+            .form-textarea,
+            .form-select {
+              width: 100%;
+              padding: 12px 16px;
+              border: 2px solid #e2e8f0;
+              border-radius: 12px;
+              font-size: 14px;
+              transition: all 0.2s ease;
+              box-sizing: border-box;
+              background: #f8fafc;
+
+              &:focus {
+                outline: none;
+                border-color: #3b82f6;
+                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                background: white;
+              }
+
+              &:hover {
+                border-color: #cbd5e1;
+                background: white;
+              }
+
+              &::placeholder {
+                color: #9ca3af;
+              }
+            }
+
+            .form-textarea {
+              resize: vertical;
+              min-height: 100px;
+              line-height: 1.5;
+            }
+
+            .form-select {
+              cursor: pointer;
+              background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+              background-position: right 12px center;
+              background-repeat: no-repeat;
+              background-size: 16px;
+              padding-right: 40px;
+            }
+
+            .participants-list {
+              max-height: 200px;
+              overflow-y: auto;
+              border: 2px solid #e2e8f0;
+              border-radius: 12px;
+              padding: 8px;
+
+              .participant-item {
+                margin-bottom: 8px;
+
+                &:last-child {
+                  margin-bottom: 0;
+                }
+
+                .participant-checkbox {
+                  display: flex;
+                  align-items: center;
+                  gap: 12px;
+                  padding: 12px;
+                  border-radius: 8px;
+                  cursor: pointer;
+                  transition: all 0.2s ease;
+
+                  &:hover {
+                    background: #f8fafc;
+                  }
+
+                  .checkbox-input {
+                    display: none;
+                  }
+
+                  .checkbox-custom {
+                    width: 20px;
+                    height: 20px;
+                    border: 2px solid #d1d5db;
+                    border-radius: 4px;
+                    background: white;
+                    position: relative;
+                    transition: all 0.2s ease;
+                    flex-shrink: 0;
+
+                    &::after {
+                      content: '✓';
+                      position: absolute;
+                      top: 50%;
+                      left: 50%;
+                      transform: translate(-50%, -50%);
+                      color: white;
+                      font-size: 12px;
+                      font-weight: bold;
+                      opacity: 0;
+                      transition: opacity 0.2s ease;
+                    }
+                  }
+
+                  .checkbox-input:checked + .checkbox-custom {
+                    background: #3b82f6;
+                    border-color: #3b82f6;
+
+                    &::after {
+                      opacity: 1;
+                    }
+                  }
+
+                  .participant-info {
+                    flex: 1;
+                    min-width: 0;
+
+                    .participant-name {
+                      display: block;
+                      font-size: 14px;
+                      font-weight: 600;
+                      color: #1e293b;
+                      margin-bottom: 2px;
+                    }
+
+                    .participant-role {
+                      display: block;
+                      font-size: 12px;
+                      color: #64748b;
+                    }
+                  }
+                }
+              }
+            }
+          }
+
+          .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+
+            @media (max-width: 768px) {
+              grid-template-columns: 1fr;
+              gap: 16px;
+            }
+          }
+        }
+
+        .modal-actions {
+          display: flex;
+          gap: 16px;
+          justify-content: flex-end;
+          padding-top: 24px;
+          border-top: 2px solid #f1f5f9;
+          margin-top: 32px;
+
+          .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+
+            &.btn-secondary {
+              background: #f1f5f9;
+              color: #64748b;
+              border: 2px solid #e2e8f0;
+
+              &:hover {
+                background: #e2e8f0;
+                color: #475569;
+                transform: translateY(-1px);
+              }
+
+              .btn-icon {
+                font-size: 16px;
+              }
+            }
+
+            &.btn-primary {
+              background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+              color: white;
+              box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+
+              &:hover:not(:disabled) {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+              }
+
+              &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none;
+              }
+
+              .btn-icon {
+                font-size: 16px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design for Add Meeting Modal
+@media (max-width: 768px) {
+  .modal-overlay {
+    .modal {
+      &.add-meeting-modal {
+        width: 98%;
+        min-width: 280px;
+
+        .modal-header {
+          padding: 20px 24px;
+
+          .header-content {
+            padding-right: 32px;
+
+            .header-icon {
+              font-size: 28px;
+            }
+
+            .header-text {
+              h3 {
+                font-size: 20px;
+              }
+            }
+          }
+
+          .modal-close {
+            top: 16px;
+            right: 16px;
+            width: 32px;
+            height: 32px;
+
+            svg {
+              width: 18px;
+              height: 18px;
+            }
+          }
+        }
+
+        .modal-form {
+          padding: 24px;
+
+          .form-section {
+            margin-bottom: 24px;
+
+            .section-title {
+              font-size: 16px;
+            }
+          }
+
+          .modal-actions {
+            flex-direction: column;
+
+            .btn {
+              width: 100%;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-overlay {
+    .modal {
+      &.add-meeting-modal {
+        width: 100%;
+        min-width: 260px;
+
+        .modal-header {
+          padding: 16px 20px;
+
+          .header-content {
+            padding-right: 28px;
+
+            .header-icon {
+              font-size: 24px;
+            }
+
+            .header-text {
+              h3 {
+                font-size: 18px;
+              }
+
+              p {
+                font-size: 13px;
+              }
+            }
+          }
+
+          .modal-close {
+            top: 12px;
+            right: 12px;
+            width: 28px;
+            height: 28px;
+
+            svg {
+              width: 16px;
+              height: 16px;
+            }
+          }
+        }
+
+        .modal-form {
+          padding: 20px;
+
+          .form-section {
+            margin-bottom: 20px;
+
+            .section-title {
+              font-size: 15px;
+            }
+
+            .form-group {
+              .form-input,
+              .form-textarea,
+              .form-select {
+                padding: 10px 14px;
+                font-size: 13px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

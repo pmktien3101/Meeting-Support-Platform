@@ -164,6 +164,11 @@
     </div>
   </div>
 
+  <div class="milestones-section-header">
+    <h3>🎯 Các milestones hiện tại</h3>
+    <p>Quản lý và theo dõi tiến độ các milestones của dự án</p>
+  </div>
+
   <div class="milestones-filters">
     <div class="filter-group">
       <label>Trạng thái:</label>
@@ -175,7 +180,7 @@
         <option value="delayed">Bị trễ</option>
       </select>
     </div>
-    <div class="filter-group" *ngIf="!isProjectSpecific">
+    <div class="filter-group" *ngIf="isProjectSpecific">
       <label>Dự án:</label>
       <select class="filter-select" aria-label="Lọc theo dự án">
         <option value="">Tất cả dự án</option>
