@@ -11,6 +11,10 @@ export const BUSINESS_OWNER_ROUTES: Routes = [
     loadComponent: () => import('./pages/dashboard/dashboard').then(m => m.BusinessOwnerDashboard)
   },
   {
+    path: 'analytics',
+    loadComponent: () => import('./pages/analytics/analytics').then(m => m.BusinessOwnerAnalytics)
+  },
+  {
     path: 'reports',
     loadComponent: () => import('./pages/reports/reports').then(m => m.BusinessOwnerReports)
   },

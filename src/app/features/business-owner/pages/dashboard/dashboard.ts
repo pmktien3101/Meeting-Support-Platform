@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ElementRef, ViewChild } from '@angular/core';
 
 interface ProjectOverview {
   id: number;
@@ -82,6 +83,8 @@ interface NewPMForm {
   styleUrls: ['./dashboard.scss']
 })
 export class BusinessOwnerDashboard implements OnInit {
+  @ViewChild('milestonesSection') milestonesSectionRef?: ElementRef<HTMLElement>;
+  @ViewChild('meetingsSection') meetingsSectionRef?: ElementRef<HTMLElement>;
   // Dashboard data
   projects = signal<ProjectOverview[]>([]);
   milestones = signal<Milestone[]>([]);
@@ -603,13 +606,17 @@ export class BusinessOwnerDashboard implements OnInit {
   }
 
   onViewAllMilestones(): void {
-    console.log('View all milestones clicked');
-    // Navigate to milestones page
+    const el = this.milestonesSectionRef?.nativeElement;
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   onViewAllMeetings(): void {
-    console.log('View all meetings clicked');
-    // Navigate to meetings page
+    const el = this.meetingsSectionRef?.nativeElement;
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   // Utility methods

@@ -46,6 +46,11 @@ export class BusinessOwnerLayoutComponent {
       route: '/business-owner/dashboard'
     },
     {
+      label: 'Dashboard Thống Kê',
+      icon: '📈',
+      route: '/business-owner/analytics'
+    },
+    {
       label: 'Báo Cáo AI & Phân Tích',
       icon: '🤖',
       route: '/business-owner/reports'
