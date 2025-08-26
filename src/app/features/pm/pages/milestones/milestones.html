@@ -1,3 +1,18 @@
+  <!-- Confirm Delete Milestone Modal -->
+  <div class="modal-overlay" *ngIf="showDeleteConfirmModal" (click)="cancelDeleteMilestone()">
+    <div class="modal" style="max-width: 400px; width: 100%;" (click)="$event.stopPropagation()">
+      <div class="modal-header" style="padding: 24px 24px 0 24px;">
+        <h3 style="margin: 0; color: #ef4444; font-size: 20px;">Xác nhận xóa milestone</h3>
+      </div>
+      <div class="modal-content" style="padding: 24px;">
+        <p>Bạn có chắc chắn muốn xóa milestone <b>{{ milestoneToDelete?.name }}</b> không?</p>
+      </div>
+      <div class="modal-actions" style="padding: 0 24px 24px 24px; display: flex; gap: 12px; justify-content: flex-end;">
+        <button class="btn btn-secondary" (click)="cancelDeleteMilestone()">Hủy</button>
+        <button class="btn btn-primary" style="background: #ef4444;" (click)="deleteMilestoneConfirmed()">Xóa</button>
+      </div>
+    </div>
+  </div>
 <div class="milestones-page">
   <div class="page-header">
     <div class="header-content">
@@ -165,8 +180,15 @@
   </div>
 
   <div class="milestones-section-header">
-    <h3>🎯 Các milestones hiện tại</h3>
-    <p>Quản lý và theo dõi tiến độ các milestones của dự án</p>
+    <div class="milestones-section-header-content" style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+      <div>
+        <h3 style="margin-bottom: 4px;">🎯 Các milestones hiện tại</h3>
+        <p style="margin: 0;">Quản lý và theo dõi tiến độ các milestones của dự án</p>
+      </div>
+      <button class="btn btn-primary" (click)="openCreateMilestone()">
+        ➕ Thêm Milestone
+      </button>
+    </div>
   </div>
 
   <div class="milestones-filters">
@@ -196,7 +218,8 @@
   </div>
 
   <div class="milestones-grid">
-    <div class="milestone-card" *ngFor="let milestone of milestones">
+    <div class="milestone-card" *ngFor="let milestone of milestones" style="position: relative;">
+      <button class="milestone-delete-btn" style="position: absolute; top: 12px; right: 12px; background: transparent; border: none; font-size: 18px; color: #ef4444; cursor: pointer; z-index: 2;" (click)="confirmDeleteMilestone(milestone)">×</button>
       <div class="milestone-header">
         <div class="milestone-icon">🎯</div>
         <div class="milestone-status">

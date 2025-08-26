@@ -2838,6 +2838,30 @@ $off-white: #F9F4EE;
   }
 }
 
+.btn {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &.btn-primary {
+    background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+    color: white;
+
+    &:hover {
+      background: linear-gradient(135deg, color.adjust($primary-orange, $lightness: -10%), color.adjust($secondary-orange, $lightness: -10%));
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(255, 94, 19, 0.3);
+    }
+  }
+}
+
 .priority-badge {
   display: inline-block;
   padding: 8px 16px;

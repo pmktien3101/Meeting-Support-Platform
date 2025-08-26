@@ -73,6 +73,24 @@ interface Milestone {
   styleUrls: ['./milestones.scss']
 })
 export class PmMilestones implements OnInit {
+  milestoneToDelete: Milestone | null = null;
+  showDeleteConfirmModal: boolean = false;
+
+  confirmDeleteMilestone(milestone: Milestone) {
+    this.milestoneToDelete = milestone;
+    this.showDeleteConfirmModal = true;
+  }
+
+  cancelDeleteMilestone() {
+    this.milestoneToDelete = null;
+    this.showDeleteConfirmModal = false;
+  }
+
+  deleteMilestoneConfirmed() {
+    if (!this.milestoneToDelete) return;
+    this.milestones = this.milestones.filter(m => m.id !== this.milestoneToDelete!.id);
+    this.cancelDeleteMilestone();
+  }
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
@@ -938,8 +956,16 @@ export class PmMilestones implements OnInit {
   }
 
   openCreateMilestone(): void {
-    console.log('Opening create milestone modal...');
-    // TODO: Implement create milestone modal
+    this.selectedMilestoneForEdit = null;
+    this.editMilestoneForm = {
+      name: '',
+      description: '',
+      startDate: '',
+      endDate: '',
+      status: 'pending',
+      priority: 'medium'
+    };
+    this.showEditMilestoneModal = true;
   }
 
   getInProgressCount(): number {
@@ -1176,10 +1202,29 @@ export class PmMilestones implements OnInit {
   }
 
   saveMilestoneEdit() {
-    if (!this.selectedMilestoneForEdit || !this.editMilestoneForm.name.trim()) {
+    if (!this.editMilestoneForm.name.trim()) {
       return;
     }
-
+    if (!this.selectedMilestoneForEdit) {
+      // Tạo mới milestone
+      const newMilestone: Milestone = {
+        id: Date.now().toString(),
+        name: this.editMilestoneForm.name.trim(),
+        description: this.editMilestoneForm.description.trim(),
+        startDate: this.editMilestoneForm.startDate,
+        endDate: this.editMilestoneForm.endDate,
+        status: this.editMilestoneForm.status,
+        priority: this.editMilestoneForm.priority,
+        progress: 0,
+        projectId: this.currentProject?.id || '',
+        createdAt: new Date().toISOString().split('T')[0],
+        updatedAt: new Date().toISOString().split('T')[0],
+        projectName: this.currentProject?.name || ''
+      };
+      this.milestones.push(newMilestone);
+      this.closeEditMilestone();
+      return;
+    }
     // Update milestone data
     const milestoneIndex = this.milestones.findIndex(m => m.id === this.selectedMilestoneForEdit!.id);
     if (milestoneIndex !== -1) {
@@ -1188,7 +1233,6 @@ export class PmMilestones implements OnInit {
         ...this.editMilestoneForm
       };
     }
-
     this.closeEditMilestone();
   }
 
