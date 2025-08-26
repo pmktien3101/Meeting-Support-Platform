@@ -5,6 +5,74 @@
     <p>Đang tải dữ liệu dashboard...</p>
   </div>
 
+  <!-- Create Project Modal -->
+  <div class="modal-overlay" *ngIf="showCreateProjectModal()" (click)="closeCreateProjectModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Tạo Dự Án Mới</h3>
+        <button class="modal-close" (click)="closeCreateProjectModal()">×</button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="createNewProject()" #projectForm="ngForm">
+          <div class="form-row">
+            <label>Tên dự án</label>
+            <input type="text" [(ngModel)]="newProjectForm().name" name="projectName" required />
+            <div class="error" *ngIf="formErrors()['project.name']">{{ formErrors()['project.name'] }}</div>
+          </div>
+          <div class="form-row">
+            <label>Mô tả</label>
+            <textarea [(ngModel)]="newProjectForm().description" name="projectDescription" rows="3" required></textarea>
+            <div class="error" *ngIf="formErrors()['project.description']">{{ formErrors()['project.description'] }}</div>
+          </div>
+          <div class="form-row two-cols">
+            <div>
+              <label>Ngày bắt đầu</label>
+              <input type="date" [(ngModel)]="newProjectForm().startDate" name="projectStart" required />
+              <div class="error" *ngIf="formErrors()['project.startDate']">{{ formErrors()['project.startDate'] }}</div>
+            </div>
+            <div>
+              <label>Ngày kết thúc</label>
+              <input type="date" [(ngModel)]="newProjectForm().endDate" name="projectEnd" required />
+              <div class="error" *ngIf="formErrors()['project.endDate']">{{ formErrors()['project.endDate'] }}</div>
+            </div>
+          </div>
+          <div class="error" *ngIf="formErrors()['project.dateRange']">{{ formErrors()['project.dateRange'] }}</div>
+          <div class="form-row two-cols">
+            <div>
+              <label>Ngân sách (₫)</label>
+              <input type="number" min="0" [(ngModel)]="newProjectForm().budget" name="projectBudget" required />
+              <div class="error" *ngIf="formErrors()['project.budget']">{{ formErrors()['project.budget'] }}</div>
+            </div>
+            <div>
+              <label>Ưu tiên</label>
+              <select [(ngModel)]="newProjectForm().priority" name="projectPriority">
+                <option value="high">Cao</option>
+                <option value="medium">Trung bình</option>
+                <option value="low">Thấp</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <label>Gán PM (tùy chọn)</label>
+            <select [(ngModel)]="newProjectForm().pmId" name="projectPm">
+              <option [ngValue]="null">-- Không gán --</option>
+              <option *ngFor="let pm of projectManagers()" [ngValue]="pm.id">
+                {{ pm.name }} ({{ pm.managedProjects }}/{{ pm.maxProjects }})
+              </option>
+            </select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeCreateProjectModal()">Hủy</button>
+        <button class="btn btn-primary" (click)="createNewProject()" [disabled]="isSubmitting()">
+          <span *ngIf="isSubmitting()" class="spinner-small"></span>
+          {{ isSubmitting() ? 'Đang tạo...' : 'Tạo Dự Án' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Dashboard Content -->
   <div class="dashboard-content" *ngIf="!isLoading()">
     <!-- Header -->
@@ -14,6 +82,10 @@
         <p>Quản lý dự án, milestone và cuộc họp của tổ chức</p>
       </div>
                    <div class="header-actions">
+               <button class="btn-primary" (click)="openCreateProjectModal()" [disabled]="showCreateProjectModal() || isSubmitting()">
+                 <span class="icon">➕</span>
+                 Tạo Dự Án
+               </button>
                <button class="btn-primary" (click)="openCreatePMModal()" [disabled]="showCreatePMModal() || isSubmitting()">
                  <span class="icon">👤</span>
                  Tạo PM Mới
@@ -27,6 +99,11 @@
 
     <!-- Quick Actions -->
                  <div class="quick-actions">
+               <div class="action-card" (click)="openCreateProjectModal()" [class.disabled]="showCreateProjectModal() || isSubmitting()">
+                 <div class="action-icon">➕</div>
+                 <h3>Tạo Dự Án</h3>
+                 <p>Khởi tạo dự án mới</p>
+               </div>
                <div class="action-card" (click)="openCreatePMModal()" [class.disabled]="showCreatePMModal() || isSubmitting()">
                  <div class="action-icon">👤</div>
                  <h3>Tạo PM Mới</h3>
@@ -118,8 +195,14 @@
                   </div>
                 </div>
                 <div class="project-actions">
-                  <button class="btn-small" (click)="onViewProjectDetails(project.id)">Chi tiết</button>
-                  <button class="btn-small" (click)="onAssignPM(project.id)">Gán PM</button>
+                  <button class="btn-small btn-outline" (click)="onViewProjectDetails(project.id)">
+                    <span class="icon">ℹ️</span>
+                    Chi tiết
+                  </button>
+                  <button class="btn-small btn-primary" (click)="onAssignPM(project.id)">
+                    <span class="icon">👤</span>
+                    Gán PM
+                  </button>
                 </div>
               </div>
               <div class="project-details">
@@ -274,6 +357,12 @@
                 <div class="pm-capacity">
                   <span class="capacity-label">Dự án:</span>
                   <span class="capacity-value">{{ pm.managedProjects }}/{{ pm.maxProjects }}</span>
+                  <span class="pm-availability" [class.available]="pm.status === 'available'" [class.busy]="pm.status !== 'available'">
+                    {{ pm.status === 'available' ? 'Có sẵn' : 'Bận' }}
+                  </span>
+                  <div class="capacity-meter">
+                    <div class="capacity-fill" [style.width.%]="(pm.managedProjects / pm.maxProjects) * 100"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -349,8 +438,8 @@
           <div class="milestones-grid">
             <div class="milestone-card" *ngFor="let milestone of getProjectMilestones(selectedProject()?.id || 0)">
               <div class="milestone-header">
-                <h6>{{ milestone.name }}</h6>
-                <span class="milestone-status" [style.background-color]="getMilestoneStatusColor(milestone.status)">
+                <h6 class="milestone-name">{{ milestone.name }}</h6>
+                <span class="milestone-status" [ngClass]="milestone.status">
                   {{ getMilestoneStatusText(milestone.status) }}
                 </span>
               </div>
