@@ -2,7 +2,7 @@
   <!-- Loading State -->
   <div class="loading-container" *ngIf="isLoading()">
     <div class="loading-spinner"></div>
-    <p>Đang tải dữ liệu dashboard...</p>
+    <p>Đang tải dữ liệu quản lý dự án...</p>
   </div>
 
   <!-- Create Project Modal -->
@@ -81,103 +81,41 @@
         <h1>Tổng Quan Dự Án</h1>
         <p>Quản lý dự án, milestone và cuộc họp của tổ chức</p>
       </div>
-                   <div class="header-actions">
-               <button class="btn-primary" (click)="openCreateProjectModal()" [disabled]="showCreateProjectModal() || isSubmitting()">
-                 <span class="icon">➕</span>
-                 Tạo Dự Án
-               </button>
-               <button class="btn-primary" (click)="openCreatePMModal()" [disabled]="showCreatePMModal() || isSubmitting()">
-                 <span class="icon">👤</span>
-                 Tạo PM Mới
-               </button>
-               <button class="btn-secondary" (click)="onViewAllMilestones()">
-                 <span class="icon">🎯</span>
-                 Xem Tất Cả Milestone
-               </button>
-             </div>
     </div>
 
     <!-- Quick Actions -->
-                 <div class="quick-actions">
-               <div class="action-card" (click)="openCreateProjectModal()" [class.disabled]="showCreateProjectModal() || isSubmitting()">
-                 <div class="action-icon">➕</div>
-                 <h3>Tạo Dự Án</h3>
-                 <p>Khởi tạo dự án mới</p>
-               </div>
-               <div class="action-card" (click)="openCreatePMModal()" [class.disabled]="showCreatePMModal() || isSubmitting()">
-                 <div class="action-icon">👤</div>
-                 <h3>Tạo PM Mới</h3>
-                 <p>Thêm Project Manager</p>
-               </div>
-               <div class="action-card" (click)="onViewAllMilestones()">
-                 <div class="action-icon">🎯</div>
-                 <h3>Xem Milestone</h3>
-                 <p>Theo dõi tiến độ</p>
-               </div>
-               <div class="action-card" (click)="onViewAllMeetings()">
-                 <div class="action-icon">📅</div>
-                 <h3>Lịch Họp</h3>
-                 <p>Xem cuộc họp</p>
-               </div>
-               <div class="action-card" (click)="onViewAllMeetings()">
-                 <div class="action-icon">👥</div>
-                 <h3>Quản Lý PM</h3>
-                 <p>Gán PM cho dự án</p>
-               </div>
-             </div>
+                <div class="quick-actions">
+              <div class="action-card" (click)="openCreateProjectModal()" [class.disabled]="showCreateProjectModal() || isSubmitting()">
+                <div class="action-icon">➕</div>
+                <h3>Tạo Dự Án</h3>
+                <p>Khởi tạo dự án mới</p>
+              </div>
+              <div class="action-card" (click)="openCreatePMModal()" [class.disabled]="showCreatePMModal() || isSubmitting()">
+                <div class="action-icon">👤</div>
+                <h3>Tạo PM Mới</h3>
+                <p>Thêm Project Manager</p>
+              </div>
+              <div class="action-card" (click)="onViewAllMilestones()">
+                <div class="action-icon">🎯</div>
+                <h3>Xem Milestone</h3>
+                <p>Theo dõi tiến độ</p>
+              </div>
+              <div class="action-card" (click)="onViewAllMeetings()">
+                <div class="action-icon">📅</div>
+                <h3>Lịch Họp</h3>
+                <p>Xem cuộc họp</p>
+              </div>
+            </div>
 
-    <!-- Summary Stats -->
-    <div class="summary-stats">
-      <div class="stat-card">
-        <div class="stat-icon">📁</div>
-        <div class="stat-content">
-          <div class="stat-value">{{ summaryStats().totalProjects }}</div>
-          <div class="stat-label">Tổng Dự Án</div>
-          <div class="stat-detail">{{ summaryStats().activeProjects }} đang hoạt động</div>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon">🎯</div>
-        <div class="stat-content">
-          <div class="stat-value">{{ summaryStats().totalMilestones }}</div>
-          <div class="stat-label">Tổng Milestone</div>
-          <div class="stat-detail">{{ summaryStats().completedMilestones }} hoàn thành</div>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon">👨‍💼</div>
-        <div class="stat-content">
-          <div class="stat-value">{{ summaryStats().totalPMs }}</div>
-          <div class="stat-label">Project Manager</div>
-          <div class="stat-detail">{{ summaryStats().availablePMs }} có sẵn</div>
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon">📅</div>
-        <div class="stat-content">
-          <div class="stat-value">{{ summaryStats().upcomingMeetings }}</div>
-          <div class="stat-label">Cuộc Họp Sắp Tới</div>
-          <div class="stat-detail">Trong tuần này</div>
-        </div>
-      </div>
-    </div>
+    
 
     <!-- Main Content Grid -->
     <div class="dashboard-grid">
       <!-- Project Management -->
       <div class="dashboard-card project-management">
-                         <div class="card-header">
-                   <h2>Quản Lý Dự Án</h2>
-                   <div class="header-actions">
-                     <button class="btn-small" (click)="openCreatePMModal()" [disabled]="showCreatePMModal() || isSubmitting()">
-                       + Tạo PM
-                     </button>
-                     <button class="btn-small" (click)="onViewAllMilestones()">Xem Tất Cả</button>
-                   </div>
-                 </div>
+                        <div class="card-header">
+                  <h2>Quản Lý Dự Án</h2>
+                </div>
         <div class="card-content">
           <div class="projects-list">
             <div class="project-item" *ngFor="let project of projects()">
@@ -249,12 +187,9 @@
       </div>
 
       <!-- Milestones Overview -->
-      <div class="dashboard-card milestones-overview">
+      <div class="dashboard-card milestones-overview" #milestonesSection>
         <div class="card-header">
           <h2>Tổng Quan Milestone</h2>
-          <div class="header-actions">
-            <button class="btn-small" (click)="onViewAllMilestones()">Xem Tất Cả</button>
-          </div>
         </div>
         <div class="card-content">
           <div class="milestones-list">
@@ -290,12 +225,9 @@
       </div>
 
       <!-- Upcoming Meetings -->
-      <div class="dashboard-card upcoming-meetings">
+      <div class="dashboard-card upcoming-meetings" #meetingsSection>
         <div class="card-header">
           <h2>Cuộc Họp Sắp Tới</h2>
-          <div class="header-actions">
-            <button class="btn-small" (click)="onViewAllMeetings()">Xem Tất Cả</button>
-          </div>
         </div>
         <div class="card-content">
           <div class="meetings-list">
