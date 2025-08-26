@@ -15,6 +15,10 @@ export const PM_ROUTES: Routes = [
     loadComponent: () => import('./pages/projects/projects').then(m => m.PmProjects)
   },
   {
+    path: 'projects/:projectId/milestones',
+    loadComponent: () => import('./pages/milestones/milestones.component').then(m => m.PmMilestones)
+  },
+  {
     path: 'milestones',
     loadComponent: () => import('./pages/milestones/milestones.component').then(m => m.PmMilestones)
   },

@@ -1,8 +1,15 @@
 <div class="milestones-page">
   <div class="page-header">
     <div class="header-content">
-      <h2>🎯 Quản Lý Milestone</h2>
-      <p>Theo dõi và quản lý các milestone của dự án</p>
+      <div class="header-title-section">
+        <button *ngIf="isProjectSpecific" class="btn btn-outline btn-sm back-btn" (click)="backToProjects()">
+          ← Quay lại Dự Án
+        </button>
+        <h2 *ngIf="!isProjectSpecific">🎯 Quản Lý Milestone</h2>
+        <h2 *ngIf="isProjectSpecific">🎯 Milestones - {{ currentProject?.name }}</h2>
+        <p *ngIf="!isProjectSpecific">Theo dõi và quản lý các milestone của dự án</p>
+        <p *ngIf="isProjectSpecific">Quản lý milestones cho dự án {{ currentProject?.name }}</p>
+      </div>
     </div>
     <div class="header-actions">
       <button class="btn btn-primary" (click)="openCreateMilestone()">
@@ -11,6 +18,82 @@
       <button class="btn btn-secondary">
         📊 Xem Báo Cáo
       </button>
+    </div>
+  </div>
+
+  <!-- Project Info Section (only for project-specific view) -->
+  <div *ngIf="isProjectSpecific && currentProject" class="project-info-section">
+    <div class="project-info-card">
+      <div class="project-info-header">
+        <div class="project-icon">📁</div>
+        <div class="project-info">
+          <h3>{{ currentProject.name }}</h3>
+          <p>{{ currentProject.description }}</p>
+        </div>
+        <div class="project-status">
+          <span class="status-badge" [class]="currentProject.status">
+            {{ currentProject.status === 'active' ? 'Đang thực hiện' : 
+               currentProject.status === 'planning' ? 'Lập kế hoạch' : 
+               currentProject.status === 'completed' ? 'Hoàn thành' : currentProject.status }}
+          </span>
+        </div>
+      </div>
+      <div class="project-info-meta">
+        <div class="meta-item">
+          <span class="meta-icon">📅</span>
+          <span class="meta-text">
+            {{ currentProject.startDate | date:'dd/MM/yyyy' }} - {{ currentProject.endDate | date:'dd/MM/yyyy' }}
+          </span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-icon">👤</span>
+          <span class="meta-text">{{ currentProject.manager }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-icon">⏰</span>
+          <span class="meta-text">Tiến độ: {{ currentProject.progress }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Members Section -->
+    <div class="project-members-section">
+      <div class="section-header">
+        <h4>👥 Thành viên dự án</h4>
+        <span class="member-count">{{ currentProject.members.length }} thành viên</span>
+      </div>
+      
+      <div class="members-grid">
+        <div class="member-card" *ngFor="let member of currentProject.members">
+          <div class="member-avatar">{{ member.avatar }}</div>
+          <div class="member-info">
+            <h5 class="member-name">{{ member.name }}</h5>
+            <p class="member-role">{{ member.role }}</p>
+            <p class="member-email">{{ member.email }}</p>
+          </div>
+          <button class="remove-member-btn" 
+                  (click)="removeMemberFromProject(currentProject, member.id)"
+                  title="Xóa thành viên">
+            ×
+          </button>
+        </div>
+        
+        <!-- Add Member Card -->
+        <div class="add-member-card">
+          <div class="add-member-content">
+            <div class="add-member-icon">+</div>
+            <h5>Thêm thành viên</h5>
+            <select class="add-member-select" 
+                    (change)="onMemberSelect(currentProject, $event)">
+              <option value="">Chọn thành viên...</option>
+              <option *ngFor="let member of getAvailableMembersForProject(currentProject)" 
+                      [value]="member.id">
+                {{ member.name }} - {{ member.role }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -25,7 +108,7 @@
         <option value="delayed">Bị trễ</option>
       </select>
     </div>
-    <div class="filter-group">
+    <div class="filter-group" *ngIf="!isProjectSpecific">
       <label>Dự án:</label>
       <select class="filter-select" aria-label="Lọc theo dự án">
         <option value="">Tất cả dự án</option>
@@ -56,9 +139,9 @@
         <p class="milestone-description">{{ milestone.description }}</p>
         
         <div class="milestone-meta">
-          <div class="meta-item">
+          <div class="meta-item" *ngIf="!isProjectSpecific">
             <span class="meta-icon">📁</span>
-            <span class="meta-text">Website E-commerce</span>
+            <span class="meta-text">{{ milestone.projectName }}</span>
           </div>
           <div class="meta-item">
             <span class="meta-icon">📅</span>
