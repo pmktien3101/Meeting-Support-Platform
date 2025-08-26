@@ -10,10 +10,10 @@
         <span class="btn-icon">🔄</span>
         Làm Mới
       </button>
-      <button class="btn btn-primary" (click)="createTask()">
+      <!-- <button class="btn btn-primary" (click)="createTask()">
         <span class="btn-icon">➕</span>
         Tạo Nhiệm Vụ
-      </button>
+      </button> -->
     </div>
   </div>
 
@@ -84,142 +84,97 @@
     </div>
   </div>
 
-  <!-- Tasks List -->
-  <div class="tasks-container">
-    <div class="tasks-list">
-      <div 
-        *ngFor="let task of filteredTasks()" 
-        class="task-card"
-        [class]="'priority-' + task.priority + ' status-' + task.status"
-      >
-        <div class="task-header">
-          <div class="task-title-section">
-            <h3 class="task-title">{{ task.title }}</h3>
-            <span class="task-project">{{ task.project }}</span>
-          </div>
-          <div class="task-meta">
-            <span class="task-priority" [class]="'priority-' + task.priority">
-              {{ getPriorityText(task.priority) }}
-            </span>
-            <span class="task-status" [class]="task.status">
-              {{ getStatusText(task.status) }}
-            </span>
-          </div>
-        </div>
-        
-        <div class="task-details">
-          <p class="task-description">{{ task.description }}</p>
-          
-          <div class="task-info-grid">
-            <div class="info-item">
-              <span class="info-label">👤 Người thực hiện:</span>
-              <span class="info-value">{{ task.assignee }}</span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">⏰ Đến hạn:</span>
-              <span class="info-value" [class.overdue]="isOverdue(task.dueDate)">
-                {{ task.dueDate }}
-              </span>
-            </div>
-            <div class="info-item">
-              <span class="info-label">⏱️ Ước tính:</span>
-              <span class="info-value">{{ task.estimatedHours }}h</span>
-            </div>
-            <div class="info-item" *ngIf="task.actualHours">
-              <span class="info-label">⏱️ Thực tế:</span>
-              <span class="info-value">{{ task.actualHours }}h</span>
-            </div>
-          </div>
-          
-          <div class="task-tags" *ngIf="task.tags.length > 0">
-            <span 
-              *ngFor="let tag of task.tags" 
-              class="task-tag"
-            >
-              {{ tag }}
-            </span>
-          </div>
-        </div>
-        
-        <div class="task-actions">
-          <div class="action-buttons">
-            <button 
-              *ngIf="task.status === 'todo'"
-              class="btn btn-primary"
-              (click)="startTask(task)"
-            >
-              <span class="btn-icon">▶️</span>
-              Bắt Đầu
-            </button>
-            
-            <button 
-              *ngIf="task.status === 'in-progress'"
-              class="btn btn-primary"
-              (click)="completeTask(task)"
-            >
-              <span class="btn-icon">✅</span>
-              Hoàn Thành
-            </button>
-            
-            <button 
-              class="btn btn-outline"
-              (click)="editTask(task)"
-            >
-              <span class="btn-icon">✏️</span>
-              Chỉnh Sửa
-            </button>
-            
-            <button 
-              class="btn btn-outline"
-              (click)="addComment(task)"
-            >
-              <span class="btn-icon">💬</span>
-              Thêm Ghi Chú
-            </button>
-          </div>
-          
-          <div class="task-progress">
-            <div class="progress-info">
-              <span class="progress-text">Tiến độ</span>
-              <span class="progress-percentage">{{ getProgressPercentage(task) }}%</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill" [style.width.%]="getProgressPercentage(task)"></div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Task Comments -->
-        <div *ngIf="task.comments.length > 0" class="task-comments">
-          <div class="comments-header">
-            <h4>Ghi Chú ({{ task.comments.length }})</h4>
-          </div>
-          
-          <div class="comments-list">
-            <div 
-              *ngFor="let comment of task.comments.slice(-3)" 
-              class="comment-item"
-            >
-              <div class="comment-header">
-                <span class="comment-author">{{ comment.author }}</span>
-                <span class="comment-time">{{ comment.timestamp }}</span>
-              </div>
-              <p class="comment-content">{{ comment.content }}</p>
-            </div>
-          </div>
-        </div>
+  <!-- Kanban Board -->
+  <div class="kanban-board">
+    <!-- To Do Column -->
+    <div class="kanban-column">
+      <div class="kanban-header">
+        <h3>To Do</h3>
+        <span class="count">{{ todoTasks().length }}</span>
       </div>
-      
-      <div *ngIf="filteredTasks().length === 0" class="empty-state">
-        <div class="empty-icon">✅</div>
-        <h3>Không có nhiệm vụ nào</h3>
-        <p>{{ searchTerm || statusFilter || priorityFilter || projectFilter ? 'Thử thay đổi bộ lọc để xem kết quả khác' : 'Bạn chưa có nhiệm vụ nào được giao' }}</p>
-        <button class="btn btn-primary" (click)="createTask()">
-          <span class="btn-icon">➕</span>
-          Tạo Nhiệm Vụ Đầu Tiên
-        </button>
+      <div cdkDropList #todoList="cdkDropList" [cdkDropListData]="todoTasks()" [cdkDropListConnectedTo]="[inProgressList, reviewList, doneList]" class="kanban-list" (cdkDropListDropped)="onDrop($event, 'todo')">
+        <div class="simple-card" *ngFor="let task of todoTasks()" cdkDrag>
+          <div class="top">
+            <div class="title">{{ task.title }}</div>
+            <span class="pill" [class]="'priority-' + task.priority">{{ getPriorityText(task.priority) }}</span>
+          </div>
+          <div class="meta">
+            <span class="date" [class.overdue]="isOverdue(task.dueDate)">⏰ {{ task.dueDate }}</span>
+            <button class="btn btn-outline" (click)="openDetail(task)">Chi tiết</button>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- In Progress Column -->
+    <div class="kanban-column">
+      <div class="kanban-header">
+        <h3>In Progress</h3>
+        <span class="count">{{ inProgressTasks().length }}</span>
+      </div>
+      <div cdkDropList #inProgressList="cdkDropList" [cdkDropListData]="inProgressTasks()" [cdkDropListConnectedTo]="[todoList, reviewList, doneList]" class="kanban-list" (cdkDropListDropped)="onDrop($event, 'in-progress')">
+        <div class="simple-card" *ngFor="let task of inProgressTasks()" cdkDrag>
+          <div class="top">
+            <div class="title">{{ task.title }}</div>
+            <span class="pill" [class]="'priority-' + task.priority">{{ getPriorityText(task.priority) }}</span>
+          </div>
+          <div class="meta">
+            <span class="date" [class.overdue]="isOverdue(task.dueDate)">⏰ {{ task.dueDate }}</span>
+            <button class="btn btn-outline" (click)="openDetail(task)">Chi tiết</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Column -->
+    <div class="kanban-column">
+      <div class="kanban-header">
+        <h3>Review</h3>
+        <span class="count">{{ reviewTasks().length }}</span>
+      </div>
+      <div cdkDropList #reviewList="cdkDropList" [cdkDropListData]="reviewTasks()" [cdkDropListConnectedTo]="[todoList, inProgressList, doneList]" class="kanban-list" (cdkDropListDropped)="onDrop($event, 'review')">
+        <div class="simple-card" *ngFor="let task of reviewTasks()" cdkDrag>
+          <div class="top">
+            <div class="title">{{ task.title }}</div>
+            <span class="pill" [class]="'priority-' + task.priority">{{ getPriorityText(task.priority) }}</span>
+          </div>
+          <div class="meta">
+            <span class="date" [class.overdue]="isOverdue(task.dueDate)">⏰ {{ task.dueDate }}</span>
+            <button class="btn btn-outline" (click)="openDetail(task)">Chi tiết</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Done Column -->
+    <div class="kanban-column">
+      <div class="kanban-header">
+        <h3>Done</h3>
+        <span class="count">{{ doneTasks().length }}</span>
+      </div>
+      <div cdkDropList #doneList="cdkDropList" [cdkDropListData]="doneTasks()" [cdkDropListConnectedTo]="[todoList, inProgressList, reviewList]" class="kanban-list" (cdkDropListDropped)="onDrop($event, 'done')">
+        <div class="simple-card" *ngFor="let task of doneTasks()" cdkDrag>
+          <div class="top">
+            <div class="title">{{ task.title }}</div>
+            <span class="pill" [class]="'priority-' + task.priority">{{ getPriorityText(task.priority) }}</span>
+          </div>
+          <div class="meta">
+            <span class="date" [class.overdue]="isOverdue(task.dueDate)">⏰ {{ task.dueDate }}</span>
+            <button class="btn btn-outline" (click)="openDetail(task)">Chi tiết</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="filteredTasks().length === 0" class="empty-state">
+    <div class="empty-icon">✅</div>
+    <h3>Không có nhiệm vụ nào</h3>
+    <p>{{ searchTerm || statusFilter || priorityFilter || projectFilter ? 'Thử thay đổi bộ lọc để xem kết quả khác' : 'Bạn chưa có nhiệm vụ nào được giao' }}</p>
+    <button class="btn btn-primary" (click)="createTask()">
+      <span class="btn-icon">➕</span>
+      Tạo Nhiệm Vụ Đầu Tiên
+    </button>
   </div>
 
   <!-- Quick Actions Panel -->
@@ -240,6 +195,98 @@
         <span class="action-icon">📤</span>
         <span class="action-text">Xuất Báo Cáo</span>
       </button>
+    </div>
+  </div>
+
+  <!-- Edit Status Modal -->
+  <div class="modal-backdrop" *ngIf="isEditModalOpen" (click)="closeEditStatusModal()"></div>
+  <div class="modal" *ngIf="isEditModalOpen" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h3>Chọn trạng thái</h3>
+      <button class="icon-btn" (click)="closeEditStatusModal()">✖</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-row">
+        <label class="radio-option">
+          <input type="radio" name="status" value="todo" [(ngModel)]="editStatus">
+          <span class="status-badge todo">Chưa bắt đầu</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="status" value="in-progress" [(ngModel)]="editStatus">
+          <span class="status-badge in-progress">Đang thực hiện</span>
+        </label>
+        <label class="radio-option">
+          <input type="radio" name="status" value="done" [(ngModel)]="editStatus">
+          <span class="status-badge done">Hoàn thành</span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeEditStatusModal()">Hủy</button>
+      <button class="btn btn-primary" (click)="confirmEditStatus()">Lưu</button>
+    </div>
+  </div>
+
+  <!-- Add Note Modal -->
+  <div class="modal-backdrop" *ngIf="isNoteModalOpen" (click)="closeNoteModal()"></div>
+  <div class="modal" *ngIf="isNoteModalOpen" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h3>Thêm ghi chú</h3>
+      <button class="icon-btn" (click)="closeNoteModal()">✖</button>
+    </div>
+    <div class="modal-body">
+      <textarea [(ngModel)]="noteContent" class="note-textarea" rows="6" placeholder="Nhập ghi chú của bạn..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeNoteModal()">Hủy</button>
+      <button class="btn btn-primary" (click)="confirmAddNote()" [disabled]="!noteContent.trim()">Lưu</button>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="modal-backdrop" *ngIf="isDetailModalOpen" (click)="closeDetail()"></div>
+  <div class="modal detail-modal" *ngIf="isDetailModalOpen" role="dialog" aria-modal="true">
+    <div class="modal-header">
+      <h3>Chi tiết nhiệm vụ - {{ detailTask?.title }}</h3>
+      <button class="icon-btn" (click)="closeDetail()">✖</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-grid">
+        <div class="detail-row"><strong>Deadline:</strong> {{ detailTask?.dueDate }}</div>
+        <div class="detail-row"><strong>Dự án:</strong> {{ detailTask?.project }}</div>
+      </div>
+
+      <div class="section-title">Files</div>
+      <div class="detail-row" *ngIf="detailTask?.attachments?.length">
+        <ul class="attach-list">
+          <li *ngFor="let f of detailTask?.attachments">📎 {{ f }}</li>
+        </ul>
+      </div>
+      <div class="detail-actions">
+        <label class="upload-btn">
+          <input type="file" (change)="onSelectFile($event)" hidden>
+          <span>+ Add file</span>
+        </label>
+      </div>
+
+      <div class="section-title">Ghi chú</div>
+      <div class="add-note">
+        <textarea class="note-area" [(ngModel)]="detailNoteContent" rows="5" placeholder="Thêm ghi chú..."></textarea>
+        <div class="note-actions">
+          <button class="btn btn-primary" (click)="addDetailNote()" [disabled]="!detailNoteContent.trim()">Thêm note</button>
+        </div>
+      </div>
+
+      <div class="section-title" *ngIf="(detailTask?.comments || []).length">Lịch sử ghi chú</div>
+      <div class="notes-list" *ngIf="(detailTask?.comments || []).length">
+        <div class="note-item" *ngFor="let c of (detailTask?.comments || []).slice().reverse()">
+          <div class="note-head"><span class="author">{{ c.author }}</span><span class="time">{{ c.timestamp }}</span></div>
+          <div class="note-content">{{ c.content }}</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="closeDetail()">Đóng</button>
     </div>
   </div>
 </div>

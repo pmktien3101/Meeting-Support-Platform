@@ -85,6 +85,20 @@ export class MemberMeetingHistoryComponent {
   // Filtered meetings
   filteredMeetings = signal<MeetingHistory[]>([]);
 
+  // Modal states and data
+  isTranscriptOpen = false;
+  isSummaryOpen = false;
+  isTodoOpen = false;
+  isDetailsOpen = false;
+
+  activeMeeting: MeetingHistory | null = null;
+  transcriptSections: { speaker: string; text: string }[] = [];
+  summaryBlocks: { title: string; content: string }[] = [];
+  todoItems: { id: number; text: string; done: boolean; assignee?: string; due?: string }[] = [];
+
+  // Transcript filter
+  transcriptQuery = '';
+
   constructor() {
     this.filterMeetings();
   }
@@ -106,7 +120,6 @@ export class MemberMeetingHistoryComponent {
     }
 
     if (this.dateFilter) {
-      // TODO: Implement date filtering logic
       console.log('Date filter:', this.dateFilter);
     }
 
@@ -126,51 +139,120 @@ export class MemberMeetingHistoryComponent {
   // Action methods
   refreshHistory(): void {
     console.log('Refreshing meeting history...');
-    // TODO: Implement API call to refresh meeting history
   }
 
   exportHistory(): void {
     console.log('Exporting meeting history...');
-    // TODO: Implement export functionality
   }
 
+  // Openers
   viewTranscript(meeting: MeetingHistory): void {
-    console.log('Viewing transcript for:', meeting.title);
-    // TODO: Navigate to transcript view
+    this.activeMeeting = meeting;
+    this.transcriptSections = [
+      { speaker: meeting.organizer, text: 'Xin chào mọi người, chúng ta bắt đầu họp.' },
+      { speaker: 'Nguyễn Văn A', text: 'Tiến độ sprint hiện 80%, còn 2 ticket.' },
+      { speaker: 'Trần Thị C', text: 'UI đã xong phần header và landing.' }
+    ];
+    this.transcriptQuery = '';
+    this.isTranscriptOpen = true;
   }
 
   viewSummary(meeting: MeetingHistory): void {
-    console.log('Viewing summary for:', meeting.title);
-    // TODO: Navigate to summary view
+    this.activeMeeting = meeting;
+    this.summaryBlocks = [
+      { title: 'Mục tiêu', content: 'Đánh giá kết quả sprint và lập kế hoạch sprint tiếp theo.' },
+      { title: 'Kết luận chính', content: 'Hoàn thành 80% backlog; cần tập trung vào tính năng thanh toán.' },
+      { title: 'Hành động tiếp theo', content: 'Tạo task tối ưu API, cập nhật thiết kế mobile.' }
+    ];
+    this.isSummaryOpen = true;
   }
 
   viewTodoList(meeting: MeetingHistory): void {
-    console.log('Viewing todo list for:', meeting.title);
-    // TODO: Navigate to todo list view
+    this.activeMeeting = meeting;
+    this.todoItems = [
+      { id: 1, text: 'Viết test cho endpoint /orders', done: false, assignee: 'Nguyễn Văn A', due: 'Tuần này' },
+      { id: 2, text: 'Cập nhật UI màn hình thanh toán', done: true, assignee: 'Trần Thị C', due: 'Hôm qua' },
+      { id: 3, text: 'Chuẩn bị tài liệu release', done: false, assignee: 'PM Nguyễn Văn B', due: 'Thứ 6' }
+    ];
+    this.isTodoOpen = true;
   }
 
   viewMeetingDetails(meeting: MeetingHistory): void {
-    console.log('Viewing details for:', meeting.title);
-    // TODO: Navigate to meeting details
+    this.activeMeeting = meeting;
+    this.isDetailsOpen = true;
   }
 
+  // Quick actions (stubs to avoid template errors)
   viewTodayMeetings(): void {
     console.log('Viewing today\'s meetings');
-    // TODO: Filter to show today's meetings
   }
 
   viewRecentMeetings(): void {
     console.log('Viewing recent meetings');
-    // TODO: Filter to show recent meetings
   }
 
   searchByKeywords(): void {
     console.log('Searching by keywords');
-    // TODO: Show keyword search modal
   }
 
   viewProjectMeetings(): void {
     console.log('Viewing project meetings');
-    // TODO: Show project filter
+  }
+
+  // Modal close helpers
+  closeTranscript(): void { this.isTranscriptOpen = false; }
+  closeSummary(): void { this.isSummaryOpen = false; }
+  closeTodo(): void { this.isTodoOpen = false; }
+  closeDetails(): void { this.isDetailsOpen = false; }
+
+  // Interactions
+  toggleTodoDone(id: number): void {
+    this.todoItems = this.todoItems.map(i => i.id === id ? { ...i, done: !i.done } : i);
+  }
+
+  get filteredTranscript() {
+    const q = this.transcriptQuery.trim().toLowerCase();
+    if (!q) return this.transcriptSections;
+    return this.transcriptSections.filter(x =>
+      x.text.toLowerCase().includes(q) || x.speaker.toLowerCase().includes(q)
+    );
+  }
+
+  async copyTranscript(): Promise<void> {
+    const text = this.transcriptSections.map(l => `${l.speaker}: ${l.text}`).join('\n');
+    await navigator.clipboard.writeText(text);
+  }
+
+  async copySummary(): Promise<void> {
+    const text = this.summaryBlocks.map(b => `# ${b.title}\n${b.content}`).join('\n\n');
+    await navigator.clipboard.writeText(text);
+  }
+
+  async copyTodos(): Promise<void> {
+    const text = this.todoItems.map(t => `- [${t.done ? 'x' : ' '}] ${t.text}${t.assignee ? ' @' + t.assignee : ''}${t.due ? ' (' + t.due + ')' : ''}`).join('\n');
+    await navigator.clipboard.writeText(text);
+  }
+
+  exportAsFile(filename: string, content: string): void {
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  exportTranscript(): void {
+    const text = this.transcriptSections.map(l => `${l.speaker}: ${l.text}`).join('\n');
+    this.exportAsFile('transcript.txt', text);
+  }
+
+  exportSummary(): void {
+    const text = this.summaryBlocks.map(b => `# ${b.title}\n${b.content}`).join('\n\n');
+    this.exportAsFile('summary.txt', text);
+  }
+
+  exportTodos(): void {
+    const text = this.todoItems.map(t => `- [${t.done ? 'x' : ' '}] ${t.text}${t.assignee ? ' @' + t.assignee : ''}${t.due ? ' (' + t.due + ')' : ''}`).join('\n');
+    this.exportAsFile('todos.txt', text);
   }
 }
