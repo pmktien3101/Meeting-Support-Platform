@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PmLayoutComponent } from '../../layout/pm-layout.component';
 
@@ -9,6 +10,18 @@ interface ProjectMember {
   email: string;
   role: string;
   avatar: string;
+}
+
+interface ProjectDocument {
+  id: string;
+  name: string;
+  description: string;
+  fileType: string;
+  fileSize: string;
+  uploadedBy: string;
+  uploadedDate: string;
+  downloadUrl: string;
+  projectId: string;
 }
 
 interface Project {
@@ -21,12 +34,13 @@ interface Project {
   status: 'planning' | 'active' | 'on-hold' | 'completed';
   progress: number;
   members: ProjectMember[];
+  documents: ProjectDocument[];
 }
 
 @Component({
   selector: 'app-pm-milestones',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './milestones.html',
   styleUrls: ['./milestones.scss']
 })
@@ -37,6 +51,12 @@ export class PmMilestones implements OnInit {
   projectId: string | null = null;
   currentProject: Project | null = null;
   isProjectSpecific = false;
+
+  // Modal states
+  showAddDocumentModal = false;
+  selectedFile: File | null = null;
+  documentName = '';
+  documentDescription = '';
 
   // Available team members for adding to projects
   availableMembers: ProjectMember[] = [
@@ -84,7 +104,7 @@ export class PmMilestones implements OnInit {
     }
   ];
 
-  // Mock data for projects with members
+  // Mock data for projects with members and documents
   projects: Project[] = [
     {
       id: '1',
@@ -117,6 +137,41 @@ export class PmMilestones implements OnInit {
           role: 'UI/UX Designer',
           avatar: 'LC'
         }
+      ],
+      documents: [
+        {
+          id: '1',
+          name: 'Yêu cầu thiết kế UI/UX',
+          description: 'Tài liệu mô tả chi tiết về thiết kế giao diện người dùng',
+          fileType: 'PDF',
+          fileSize: '2.5 MB',
+          uploadedBy: 'Lê Văn C',
+          uploadedDate: '2024-01-15',
+          downloadUrl: '/documents/ui-ux-requirements.pdf',
+          projectId: '1'
+        },
+        {
+          id: '2',
+          name: 'API Documentation',
+          description: 'Tài liệu API cho backend system',
+          fileType: 'DOCX',
+          fileSize: '1.8 MB',
+          uploadedBy: 'Trần Thị B',
+          uploadedDate: '2024-02-20',
+          downloadUrl: '/documents/api-docs.docx',
+          projectId: '1'
+        },
+        {
+          id: '3',
+          name: 'Database Schema',
+          description: 'Sơ đồ cơ sở dữ liệu cho hệ thống',
+          fileType: 'PNG',
+          fileSize: '850 KB',
+          uploadedBy: 'Trần Thị B',
+          uploadedDate: '2024-01-25',
+          downloadUrl: '/documents/db-schema.png',
+          projectId: '1'
+        }
       ]
     },
     {
@@ -142,6 +197,19 @@ export class PmMilestones implements OnInit {
           email: 'phamthid@company.com',
           role: 'QA Engineer',
           avatar: 'PD'
+        }
+      ],
+      documents: [
+        {
+          id: '4',
+          name: 'Mobile App Wireframes',
+          description: 'Wireframes cho ứng dụng di động',
+          fileType: 'Figma',
+          fileSize: '3.2 MB',
+          uploadedBy: 'Nguyễn Văn A',
+          uploadedDate: '2024-03-10',
+          downloadUrl: '/documents/mobile-wireframes.fig',
+          projectId: '2'
         }
       ]
     },
@@ -175,6 +243,30 @@ export class PmMilestones implements OnInit {
           email: 'vuthif@company.com',
           role: 'Business Analyst',
           avatar: 'VF'
+        }
+      ],
+      documents: [
+        {
+          id: '5',
+          name: 'Business Requirements',
+          description: 'Yêu cầu nghiệp vụ chi tiết cho CRM',
+          fileType: 'PDF',
+          fileSize: '4.1 MB',
+          uploadedBy: 'Vũ Thị F',
+          uploadedDate: '2024-02-05',
+          downloadUrl: '/documents/crm-requirements.pdf',
+          projectId: '3'
+        },
+        {
+          id: '6',
+          name: 'System Architecture',
+          description: 'Kiến trúc hệ thống CRM',
+          fileType: 'PDF',
+          fileSize: '2.8 MB',
+          uploadedBy: 'Hoàng Văn E',
+          uploadedDate: '2024-02-15',
+          downloadUrl: '/documents/crm-architecture.pdf',
+          projectId: '3'
         }
       ]
     }
@@ -451,6 +543,106 @@ export class PmMilestones implements OnInit {
       const removedMember = project.members.splice(index, 1)[0];
       console.log(`Removed ${removedMember.name} from project ${project.name}`);
     }
+  }
+
+  // Document management methods
+  openAddDocumentModal() {
+    this.showAddDocumentModal = true;
+    this.resetDocumentForm();
+  }
+
+  closeAddDocumentModal() {
+    this.showAddDocumentModal = false;
+    this.resetDocumentForm();
+  }
+
+  resetDocumentForm() {
+    this.selectedFile = null;
+    this.documentName = '';
+    this.documentDescription = '';
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      if (!this.documentName) {
+        this.documentName = file.name.split('.')[0]; // Use filename without extension
+      }
+    }
+  }
+
+  addDocumentToProject() {
+    if (!this.currentProject || !this.selectedFile || !this.documentName.trim()) {
+      return;
+    }
+
+    const newDocument: ProjectDocument = {
+      id: Date.now().toString(), // Simple ID generation
+      name: this.documentName.trim(),
+      description: this.documentDescription.trim() || 'Không có mô tả',
+      fileType: this.selectedFile.name.split('.').pop()?.toUpperCase() || 'UNKNOWN',
+      fileSize: this.formatFileSize(this.selectedFile.size),
+      uploadedBy: 'Current User', // In real app, get from auth service
+      uploadedDate: new Date().toISOString().split('T')[0],
+      downloadUrl: URL.createObjectURL(this.selectedFile), // In real app, upload to server
+      projectId: this.currentProject.id
+    };
+
+    this.currentProject.documents.push(newDocument);
+    console.log(`Added document ${newDocument.name} to project ${this.currentProject.name}`);
+    this.closeAddDocumentModal();
+  }
+
+  formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  }
+
+  downloadDocument(doc: ProjectDocument) {
+    // In real app, this would trigger a download from server
+    console.log(`Downloading document: ${doc.name}`);
+    // For demo, create a temporary link
+    const link = document.createElement('a');
+    link.href = doc.downloadUrl;
+    link.download = doc.name;
+    link.click();
+  }
+
+  removeDocumentFromProject(documentId: string) {
+    if (!this.currentProject) return;
+    
+    const index = this.currentProject.documents.findIndex(d => d.id === documentId);
+    if (index > -1) {
+      const removedDocument = this.currentProject.documents.splice(index, 1)[0];
+      console.log(`Removed document ${removedDocument.name} from project ${this.currentProject.name}`);
+    }
+  }
+
+  getFileIcon(fileType: string): string {
+    const iconMap: { [key: string]: string } = {
+      'PDF': '📄',
+      'DOCX': '📝',
+      'DOC': '📝',
+      'XLSX': '📊',
+      'XLS': '📊',
+      'PPTX': '📽️',
+      'PPT': '📽️',
+      'PNG': '🖼️',
+      'JPG': '🖼️',
+      'JPEG': '🖼️',
+      'GIF': '🖼️',
+      'Figma': '🎨',
+      'SKETCH': '🎨',
+      'ZIP': '📦',
+      'RAR': '📦',
+      'TXT': '📄',
+      'UNKNOWN': '📄'
+    };
+    return iconMap[fileType] || iconMap['UNKNOWN'];
   }
 
   getStatusText(status: string): string {
