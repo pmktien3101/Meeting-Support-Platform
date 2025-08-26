@@ -50,6 +50,21 @@ interface Project {
   documents: ProjectDocument[];
 }
 
+interface Milestone {
+  id: string;
+  name: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  status: 'pending' | 'in-progress' | 'completed' | 'delayed';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  projectId: string;
+  createdAt: string;
+  updatedAt: string;
+  progress: number;
+  projectName?: string;
+}
+
 @Component({
   selector: 'app-pm-milestones',
   standalone: true,
@@ -67,14 +82,30 @@ export class PmMilestones implements OnInit {
 
   // Modal states
   showAddDocumentModal = false;
+  showAddTaskModal = false;
+  showTasksModal = false;
+  showEditMilestoneModal = false;
+  showMilestoneDetailsModal = false;
+
+  // Selected items for modals
+  selectedMilestone: Milestone | null = null;
+  selectedMilestoneForDetails: Milestone | null = null;
+  selectedMilestoneForEdit: Milestone | null = null;
+
+  // Edit form data
+  editMilestoneForm = {
+    name: '',
+    description: '',
+    startDate: '',
+    endDate: '',
+    status: 'pending' as 'pending' | 'in-progress' | 'completed' | 'delayed',
+    priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent'
+  };
   selectedFile: File | null = null;
   documentName = '';
   documentDescription = '';
 
   // Task modal states
-  showTasksModal = false;
-  showAddTaskModal = false;
-  selectedMilestone: any = null;
   newTask = {
     name: '',
     description: '',
@@ -454,7 +485,7 @@ export class PmMilestones implements OnInit {
   ];
 
   // Mock data for milestones by project
-  projectMilestones: { [key: string]: any[] } = {
+  projectMilestones: { [key: string]: Milestone[] } = {
     '1': [
       {
         id: '1',
@@ -463,8 +494,12 @@ export class PmMilestones implements OnInit {
         startDate: '2024-01-01',
         endDate: '2024-02-15',
         status: 'completed',
+        priority: 'high',
+        projectId: '1',
+        createdAt: '2024-01-01',
+        updatedAt: '2024-02-15',
         progress: 100,
-        projectId: '1'
+        projectName: 'Website E-commerce'
       },
       {
         id: '2',
@@ -473,8 +508,12 @@ export class PmMilestones implements OnInit {
         startDate: '2024-02-16',
         endDate: '2024-04-30',
         status: 'in-progress',
+        priority: 'medium',
+        projectId: '1',
+        createdAt: '2024-02-16',
+        updatedAt: '2024-04-30',
         progress: 75,
-        projectId: '1'
+        projectName: 'Website E-commerce'
       },
       {
         id: '3',
@@ -483,8 +522,12 @@ export class PmMilestones implements OnInit {
         startDate: '2024-03-01',
         endDate: '2024-05-31',
         status: 'in-progress',
+        priority: 'high',
+        projectId: '1',
+        createdAt: '2024-03-01',
+        updatedAt: '2024-05-31',
         progress: 60,
-        projectId: '1'
+        projectName: 'Website E-commerce'
       },
       {
         id: '4',
@@ -493,8 +536,12 @@ export class PmMilestones implements OnInit {
         startDate: '2024-05-01',
         endDate: '2024-06-15',
         status: 'pending',
+        priority: 'low',
+        projectId: '1',
+        createdAt: '2024-05-01',
+        updatedAt: '2024-06-15',
         progress: 0,
-        projectId: '1'
+        projectName: 'Website E-commerce'
       }
     ],
     '2': [
@@ -505,8 +552,12 @@ export class PmMilestones implements OnInit {
         startDate: '2024-03-01',
         endDate: '2024-04-15',
         status: 'in-progress',
+        priority: 'medium',
+        projectId: '2',
+        createdAt: '2024-03-01',
+        updatedAt: '2024-04-15',
         progress: 30,
-        projectId: '2'
+        projectName: 'Mobile App'
       },
       {
         id: '6',
@@ -515,8 +566,12 @@ export class PmMilestones implements OnInit {
         startDate: '2024-04-16',
         endDate: '2024-06-30',
         status: 'pending',
+        priority: 'low',
+        projectId: '2',
+        createdAt: '2024-04-16',
+        updatedAt: '2024-06-30',
         progress: 0,
-        projectId: '2'
+        projectName: 'Mobile App'
       },
       {
         id: '7',
@@ -525,8 +580,12 @@ export class PmMilestones implements OnInit {
         startDate: '2024-04-16',
         endDate: '2024-06-30',
         status: 'pending',
+        priority: 'low',
+        projectId: '2',
+        createdAt: '2024-04-16',
+        updatedAt: '2024-06-30',
         progress: 0,
-        projectId: '2'
+        projectName: 'Mobile App'
       }
     ],
     '3': [
@@ -537,8 +596,12 @@ export class PmMilestones implements OnInit {
         startDate: '2024-02-01',
         endDate: '2024-03-15',
         status: 'completed',
+        priority: 'high',
+        projectId: '3',
+        createdAt: '2024-02-01',
+        updatedAt: '2024-03-15',
         progress: 100,
-        projectId: '3'
+        projectName: 'CRM System'
       },
       {
         id: '9',
@@ -547,8 +610,12 @@ export class PmMilestones implements OnInit {
         startDate: '2024-03-16',
         endDate: '2024-04-30',
         status: 'in-progress',
+        priority: 'medium',
+        projectId: '3',
+        createdAt: '2024-03-16',
+        updatedAt: '2024-04-30',
         progress: 80,
-        projectId: '3'
+        projectName: 'CRM System'
       },
       {
         id: '10',
@@ -557,24 +624,31 @@ export class PmMilestones implements OnInit {
         startDate: '2024-05-01',
         endDate: '2024-07-31',
         status: 'pending',
+        priority: 'low',
+        projectId: '3',
+        createdAt: '2024-05-01',
+        updatedAt: '2024-07-31',
         progress: 0,
-        projectId: '3'
+        projectName: 'CRM System'
       }
     ]
   };
 
   // All milestones for overview page
-  allMilestones = [
+  allMilestones: Milestone[] = [
     {
       id: '1',
       name: 'Thiết Kế UI/UX',
       description: 'Thiết kế giao diện người dùng và trải nghiệm người dùng',
       startDate: '2024-01-01',
       endDate: '2024-02-15',
-      status: 'completed',
+      status: 'completed' as const,
+      priority: 'high' as const,
       progress: 100,
       projectId: '1',
-      projectName: 'Website E-commerce'
+      projectName: 'Website E-commerce',
+      createdAt: '2024-01-01',
+      updatedAt: '2024-02-15'
     },
     {
       id: '2',
@@ -582,10 +656,13 @@ export class PmMilestones implements OnInit {
       description: 'Xây dựng giao diện người dùng với React/Angular',
       startDate: '2024-02-16',
       endDate: '2024-04-30',
-      status: 'in-progress',
+      status: 'in-progress' as const,
+      priority: 'medium' as const,
       progress: 75,
       projectId: '1',
-      projectName: 'Website E-commerce'
+      projectName: 'Website E-commerce',
+      createdAt: '2024-02-16',
+      updatedAt: '2024-04-30'
     },
     {
       id: '3',
@@ -593,10 +670,13 @@ export class PmMilestones implements OnInit {
       description: 'Xây dựng hệ thống backend và API',
       startDate: '2024-03-01',
       endDate: '2024-05-31',
-      status: 'in-progress',
+      status: 'in-progress' as const,
+      priority: 'high' as const,
       progress: 60,
       projectId: '1',
-      projectName: 'Website E-commerce'
+      projectName: 'Website E-commerce',
+      createdAt: '2024-03-01',
+      updatedAt: '2024-05-31'
     },
     {
       id: '4',
@@ -604,10 +684,13 @@ export class PmMilestones implements OnInit {
       description: 'Kiểm thử và đảm bảo chất lượng',
       startDate: '2024-05-01',
       endDate: '2024-06-15',
-      status: 'pending',
+      status: 'pending' as const,
+      priority: 'low' as const,
       progress: 0,
       projectId: '1',
-      projectName: 'Website E-commerce'
+      projectName: 'Website E-commerce',
+      createdAt: '2024-05-01',
+      updatedAt: '2024-06-15'
     },
     {
       id: '5',
@@ -615,10 +698,13 @@ export class PmMilestones implements OnInit {
       description: 'Thiết kế giao diện ứng dụng di động',
       startDate: '2024-03-01',
       endDate: '2024-04-15',
-      status: 'in-progress',
+      status: 'in-progress' as const,
+      priority: 'medium' as const,
       progress: 30,
       projectId: '2',
-      projectName: 'Mobile App'
+      projectName: 'Mobile App',
+      createdAt: '2024-03-01',
+      updatedAt: '2024-04-15'
     },
     {
       id: '6',
@@ -626,10 +712,13 @@ export class PmMilestones implements OnInit {
       description: 'Xây dựng phiên bản iOS',
       startDate: '2024-04-16',
       endDate: '2024-06-30',
-      status: 'pending',
+      status: 'pending' as const,
+      priority: 'low' as const,
       progress: 0,
       projectId: '2',
-      projectName: 'Mobile App'
+      projectName: 'Mobile App',
+      createdAt: '2024-04-16',
+      updatedAt: '2024-06-30'
     },
     {
       id: '7',
@@ -637,10 +726,13 @@ export class PmMilestones implements OnInit {
       description: 'Xây dựng phiên bản Android',
       startDate: '2024-04-16',
       endDate: '2024-06-30',
-      status: 'pending',
+      status: 'pending' as const,
+      priority: 'low' as const,
       progress: 0,
       projectId: '2',
-      projectName: 'Mobile App'
+      projectName: 'Mobile App',
+      createdAt: '2024-04-16',
+      updatedAt: '2024-06-30'
     },
     {
       id: '8',
@@ -648,10 +740,13 @@ export class PmMilestones implements OnInit {
       description: 'Phân tích và thu thập yêu cầu từ khách hàng',
       startDate: '2024-02-01',
       endDate: '2024-03-15',
-      status: 'completed',
+      status: 'completed' as const,
+      priority: 'high' as const,
       progress: 100,
       projectId: '3',
-      projectName: 'CRM System'
+      projectName: 'CRM System',
+      createdAt: '2024-02-01',
+      updatedAt: '2024-03-15'
     },
     {
       id: '9',
@@ -659,10 +754,13 @@ export class PmMilestones implements OnInit {
       description: 'Thiết kế kiến trúc hệ thống CRM',
       startDate: '2024-03-16',
       endDate: '2024-04-30',
-      status: 'in-progress',
+      status: 'in-progress' as const,
+      priority: 'medium' as const,
       progress: 80,
       projectId: '3',
-      projectName: 'CRM System'
+      projectName: 'CRM System',
+      createdAt: '2024-03-16',
+      updatedAt: '2024-04-30'
     },
     {
       id: '10',
@@ -670,14 +768,17 @@ export class PmMilestones implements OnInit {
       description: 'Phát triển các module chính của CRM',
       startDate: '2024-05-01',
       endDate: '2024-07-31',
-      status: 'pending',
+      status: 'pending' as const,
+      priority: 'low' as const,
       progress: 0,
       projectId: '3',
-      projectName: 'CRM System'
+      projectName: 'CRM System',
+      createdAt: '2024-05-01',
+      updatedAt: '2024-07-31'
     }
   ];
 
-  milestones: any[] = [];
+  milestones: Milestone[] = [];
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -855,7 +956,7 @@ export class PmMilestones implements OnInit {
   }
 
   // Task management methods
-  openTasksModal(milestone: any) {
+  openTasksModal(milestone: Milestone) {
     this.selectedMilestone = milestone;
     this.showTasksModal = true;
   }
@@ -1009,7 +1110,90 @@ export class PmMilestones implements OnInit {
     return this.getTasksForMilestone(milestoneId).filter(t => t.status === 'in-progress').length;
   }
 
+  getTasksByStatus(milestoneId: string, status: string): Task[] {
+    return this.getTasksForMilestone(milestoneId).filter(t => t.status === status);
+  }
+
+  // Helper methods to safely handle undefined milestone IDs
+  getTasksCountSafe(milestoneId: string | undefined): number {
+    if (!milestoneId) return 0;
+    return this.getTasksCount(milestoneId);
+  }
+
+  getCompletedTasksCountSafe(milestoneId: string | undefined): number {
+    if (!milestoneId) return 0;
+    return this.getCompletedTasksCount(milestoneId);
+  }
+
+  getInProgressTasksCountSafe(milestoneId: string | undefined): number {
+    if (!milestoneId) return 0;
+    return this.getInProgressTasksCount(milestoneId);
+  }
+
+  getTasksForMilestoneSafe(milestoneId: string | undefined): Task[] {
+    if (!milestoneId) return [];
+    return this.getTasksForMilestone(milestoneId);
+  }
+
   backToProjects(): void {
     this.router.navigate(['/pm/projects']);
+  }
+
+  // Milestone actions
+  viewMilestoneDetails(milestone: Milestone) {
+    this.selectedMilestoneForDetails = milestone;
+    this.showMilestoneDetailsModal = true;
+  }
+
+  openEditMilestone(milestone: Milestone) {
+    this.selectedMilestoneForEdit = milestone;
+    this.editMilestoneForm = {
+      name: milestone.name,
+      description: milestone.description || '',
+      startDate: milestone.startDate || '',
+      endDate: milestone.endDate || '',
+      status: milestone.status,
+      priority: milestone.priority || 'medium'
+    };
+    this.showEditMilestoneModal = true;
+  }
+
+  closeEditMilestone() {
+    this.showEditMilestoneModal = false;
+    this.selectedMilestoneForEdit = null;
+    this.resetEditMilestoneForm();
+  }
+
+  resetEditMilestoneForm() {
+    this.editMilestoneForm = {
+      name: '',
+      description: '',
+      startDate: '',
+      endDate: '',
+      status: 'pending',
+      priority: 'medium'
+    };
+  }
+
+  saveMilestoneEdit() {
+    if (!this.selectedMilestoneForEdit || !this.editMilestoneForm.name.trim()) {
+      return;
+    }
+
+    // Update milestone data
+    const milestoneIndex = this.milestones.findIndex(m => m.id === this.selectedMilestoneForEdit!.id);
+    if (milestoneIndex !== -1) {
+      this.milestones[milestoneIndex] = {
+        ...this.milestones[milestoneIndex],
+        ...this.editMilestoneForm
+      };
+    }
+
+    this.closeEditMilestone();
+  }
+
+  closeMilestoneDetails() {
+    this.showMilestoneDetailsModal = false;
+    this.selectedMilestoneForDetails = null;
   }
 }

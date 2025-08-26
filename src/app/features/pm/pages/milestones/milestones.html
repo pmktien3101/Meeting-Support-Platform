@@ -239,8 +239,8 @@
       </div>
       
              <div class="milestone-actions">
-         <button class="btn btn-primary btn-sm">Xem Chi Tiết</button>
-         <button class="btn btn-secondary btn-sm">Chỉnh Sửa</button>
+         <button class="btn btn-primary btn-sm" (click)="viewMilestoneDetails(milestone)">Xem Chi Tiết</button>
+         <button class="btn btn-secondary btn-sm" (click)="openEditMilestone(milestone)">Chỉnh Sửa</button>
          <button class="btn btn-outline btn-sm" (click)="openTasksModal(milestone)">
            📋 Tasks ({{ getTasksCount(milestone.id) }})
          </button>
@@ -398,15 +398,15 @@
           <div class="tasks-summary">
             <span class="summary-item">
               <span class="summary-icon">📋</span>
-              Tổng: {{ getTasksCount(selectedMilestone?.id) }}
+              Tổng: {{ getTasksCountSafe(selectedMilestone?.id) }}
             </span>
             <span class="summary-item">
               <span class="summary-icon">✅</span>
-              Hoàn thành: {{ getCompletedTasksCount(selectedMilestone?.id) }}
+              Hoàn thành: {{ getCompletedTasksCountSafe(selectedMilestone?.id) }}
             </span>
                          <span class="summary-item">
                <span class="summary-icon">⏳</span>
-               Đang thực hiện: {{ getInProgressTasksCount(selectedMilestone?.id) }}
+               Đang thực hiện: {{ getInProgressTasksCountSafe(selectedMilestone?.id) }}
              </span>
           </div>
           <button class="btn btn-primary btn-sm" (click)="openAddTaskModal()">
@@ -415,8 +415,8 @@
           </button>
         </div>
 
-        <div class="tasks-list" *ngIf="getTasksForMilestone(selectedMilestone?.id).length > 0; else noTasks">
-          <div class="task-card" *ngFor="let task of getTasksForMilestone(selectedMilestone?.id)">
+        <div class="tasks-list" *ngIf="getTasksForMilestoneSafe(selectedMilestone?.id).length > 0; else noTasks">
+          <div class="task-card" *ngFor="let task of getTasksForMilestoneSafe(selectedMilestone?.id)">
             <div class="task-header">
               <div class="task-info">
                 <h4 class="task-name">{{ task.name }}</h4>
@@ -598,6 +598,264 @@
                   [disabled]="!newTask.name.trim() || !newTask.dueDate">
             <span class="btn-icon">💾</span>
             Thêm task
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Milestone Details Modal -->
+  <div class="modal-overlay" *ngIf="showMilestoneDetailsModal" (click)="closeMilestoneDetails()">
+    <div class="modal milestone-details-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-content">
+          <div class="header-icon">🎯</div>
+          <div class="header-text">
+            <h3>Chi Tiết Milestone</h3>
+            <p>{{ selectedMilestoneForDetails?.name }}</p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeMilestoneDetails()" title="Đóng">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-content" *ngIf="selectedMilestoneForDetails">
+        <div class="milestone-details-content">
+          <div class="detail-section">
+            <h4>📋 Thông tin cơ bản</h4>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-label">Tên milestone:</span>
+                <span class="detail-value">{{ selectedMilestoneForDetails.name }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Mô tả:</span>
+                <span class="detail-value">{{ selectedMilestoneForDetails.description || 'Không có mô tả' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Trạng thái:</span>
+                <span class="status-badge" [class]="selectedMilestoneForDetails.status">
+                  {{ getStatusText(selectedMilestoneForDetails.status) }}
+                </span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Độ ưu tiên:</span>
+                <span class="priority-badge" [class]="selectedMilestoneForDetails.priority">
+                  {{ getPriorityText(selectedMilestoneForDetails.priority || 'medium') }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>📅 Thời gian</h4>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-label">Ngày bắt đầu:</span>
+                <span class="detail-value">{{ selectedMilestoneForDetails.startDate | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Ngày kết thúc:</span>
+                <span class="detail-value">{{ selectedMilestoneForDetails.endDate | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Ngày tạo:</span>
+                <span class="detail-value">{{ selectedMilestoneForDetails.createdAt | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Cập nhật lần cuối:</span>
+                <span class="detail-value">{{ selectedMilestoneForDetails.updatedAt | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>📊 Tiến độ</h4>
+            <div class="progress-section">
+              <div class="progress-header">
+                <span class="progress-label">Tiến độ hiện tại</span>
+                <span class="progress-percentage">{{ selectedMilestoneForDetails.progress }}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="selectedMilestoneForDetails.progress"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>📋 Tasks ({{ getTasksCount(selectedMilestoneForDetails.id) }})</h4>
+            <div class="tasks-summary">
+              <div class="task-stats">
+                <div class="stat-item">
+                  <span class="stat-icon">⏳</span>
+                  <span class="stat-label">Chờ thực hiện</span>
+                  <span class="stat-number">{{ getTasksByStatus(selectedMilestoneForDetails.id, 'pending').length }}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-icon">🚀</span>
+                  <span class="stat-label">Đang thực hiện</span>
+                  <span class="stat-number">{{ getTasksByStatus(selectedMilestoneForDetails.id, 'in-progress').length }}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-icon">✅</span>
+                  <span class="stat-label">Hoàn thành</span>
+                  <span class="stat-number">{{ getTasksByStatus(selectedMilestoneForDetails.id, 'completed').length }}</span>
+                </div>
+              </div>
+              <button class="btn btn-primary" (click)="openTasksModal(selectedMilestoneForDetails)">
+                <span class="btn-icon">👁️</span>
+                Xem tất cả tasks
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeMilestoneDetails()">
+          <span class="btn-icon">❌</span>
+          Đóng
+        </button>
+        <button class="btn btn-primary" (click)="openEditMilestone(selectedMilestoneForDetails!)">
+          <span class="btn-icon">✏️</span>
+          Chỉnh sửa
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Milestone Modal -->
+  <div class="modal-overlay" *ngIf="showEditMilestoneModal" (click)="closeEditMilestone()">
+    <div class="modal edit-milestone-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-content">
+          <div class="header-icon">✏️</div>
+          <div class="header-text">
+            <h3>Chỉnh Sửa Milestone</h3>
+            <p>{{ selectedMilestoneForEdit?.name }}</p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeEditMilestone()" title="Đóng">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form (ngSubmit)="saveMilestoneEdit()" class="modal-form">
+        <div class="form-section">
+          <h4 class="section-title">📋 Thông tin cơ bản</h4>
+          
+          <div class="form-group">
+            <label for="milestoneName">
+              <span class="label-icon">🎯</span>
+              Tên milestone <span class="required">*</span>
+            </label>
+            <input type="text" 
+                   id="milestoneName" 
+                   [(ngModel)]="editMilestoneForm.name" 
+                   name="milestoneName"
+                   placeholder="Nhập tên milestone"
+                   class="form-input"
+                   required>
+          </div>
+          
+          <div class="form-group">
+            <label for="milestoneDescription">
+              <span class="label-icon">📄</span>
+              Mô tả
+            </label>
+            <textarea id="milestoneDescription" 
+                      [(ngModel)]="editMilestoneForm.description" 
+                      name="milestoneDescription"
+                      rows="3" 
+                      placeholder="Mô tả chi tiết về milestone..."
+                      class="form-textarea"></textarea>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">📅 Thời gian</h4>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="milestoneStartDate">
+                <span class="label-icon">📅</span>
+                Ngày bắt đầu
+              </label>
+              <input type="date" 
+                     id="milestoneStartDate" 
+                     [(ngModel)]="editMilestoneForm.startDate" 
+                     name="milestoneStartDate"
+                     class="form-input">
+            </div>
+            
+            <div class="form-group">
+              <label for="milestoneEndDate">
+                <span class="label-icon">📅</span>
+                Ngày kết thúc
+              </label>
+              <input type="date" 
+                     id="milestoneEndDate" 
+                     [(ngModel)]="editMilestoneForm.endDate" 
+                     name="milestoneEndDate"
+                     class="form-input">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">⚙️ Cài đặt</h4>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="milestoneStatus">
+                <span class="label-icon">🔄</span>
+                Trạng thái
+              </label>
+              <select id="milestoneStatus" 
+                      [(ngModel)]="editMilestoneForm.status" 
+                      name="milestoneStatus"
+                      class="form-select">
+                <option value="pending">Chờ thực hiện</option>
+                <option value="in-progress">Đang thực hiện</option>
+                <option value="completed">Hoàn thành</option>
+                <option value="delayed">Bị trễ</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="milestonePriority">
+                <span class="label-icon">🎯</span>
+                Độ ưu tiên
+              </label>
+              <select id="milestonePriority" 
+                      [(ngModel)]="editMilestoneForm.priority" 
+                      name="milestonePriority"
+                      class="form-select">
+                <option value="low">Thấp</option>
+                <option value="medium">Trung bình</option>
+                <option value="high">Cao</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeEditMilestone()">
+            <span class="btn-icon">❌</span>
+            Hủy bỏ
+          </button>
+          <button type="submit" 
+                  class="btn btn-primary" 
+                  [disabled]="!editMilestoneForm.name.trim()">
+            <span class="btn-icon">💾</span>
+            Lưu thay đổi
           </button>
         </div>
       </form>

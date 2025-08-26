@@ -82,6 +82,19 @@ export class PmMeetings {
     content: '',
     type: 'general' as 'general' | 'action-item' | 'decision' | 'question'
   };
+  
+  // Tab state
+  activeTab = 'summary'; // 'summary', 'todos', 'notes'
+  
+  // Edit state for todos
+  editingTodo: TodoItem | null = null;
+  editTodoForm = {
+    task: '',
+    assignee: '',
+    dueDate: '',
+    priority: 'medium' as 'low' | 'medium' | 'high',
+    status: 'pending' as 'pending' | 'in-progress' | 'completed'
+  };
 
   // Mock data for projects and milestones
   projects: Project[] = [
@@ -388,6 +401,7 @@ export class PmMeetings {
     this.meetingNotes = this.meetingNotesData.find(notes => notes.meetingId === meeting.id) || null;
     console.log('Found meeting notes:', this.meetingNotes);
     this.resetNewNote();
+    this.activeTab = 'summary';
     this.showNotesModal = true;
     console.log('Modal should be visible:', this.showNotesModal);
   }
@@ -397,6 +411,8 @@ export class PmMeetings {
     this.selectedMeetingForNotes = null;
     this.meetingNotes = null;
     this.resetNewNote();
+    this.activeTab = 'summary';
+    this.editingTodo = null;
   }
 
   resetNewNote() {
@@ -533,4 +549,74 @@ export class PmMeetings {
 
   // Delegate methods to layout component
   openCreateMeeting() { return this.layoutComponent.openCreateMeeting(); }
+
+  // Tab methods
+  setActiveTab(tab: string) {
+    this.activeTab = tab;
+  }
+
+  // Todo editing methods
+  startEditTodo(todo: TodoItem) {
+    this.editingTodo = todo;
+    this.editTodoForm = {
+      task: todo.task,
+      assignee: todo.assignee,
+      dueDate: todo.dueDate,
+      priority: todo.priority,
+      status: todo.status
+    };
+  }
+
+  cancelEditTodo() {
+    this.editingTodo = null;
+    this.resetEditTodoForm();
+  }
+
+  saveEditTodo() {
+    if (!this.editingTodo || !this.meetingNotes) return;
+
+    const todoIndex = this.meetingNotes.todoList.findIndex(t => t.id === this.editingTodo!.id);
+    if (todoIndex !== -1) {
+      this.meetingNotes.todoList[todoIndex] = {
+        ...this.editingTodo,
+        ...this.editTodoForm
+      };
+      this.meetingNotes.updatedAt = new Date().toISOString();
+    }
+
+    this.editingTodo = null;
+    this.resetEditTodoForm();
+  }
+
+  resetEditTodoForm() {
+    this.editTodoForm = {
+      task: '',
+      assignee: '',
+      dueDate: '',
+      priority: 'medium',
+      status: 'pending'
+    };
+  }
+
+  // Generate tasks from edited todos
+  generateTasksFromTodos() {
+    if (!this.meetingNotes) return;
+    
+    // Filter only completed todos that can be converted to tasks
+    const completedTodos = this.meetingNotes.todoList.filter(todo => todo.status === 'completed');
+    
+    if (completedTodos.length === 0) {
+      alert('Không có công việc hoàn thành để tạo task!');
+      return;
+    }
+
+    // Here you would typically send the data to backend
+    // For now, we'll just show a success message
+    console.log('Generating tasks from todos:', completedTodos);
+    alert(`Đã tạo ${completedTodos.length} task từ danh sách công việc!`);
+    
+    // Reset the todos after generating tasks
+    this.meetingNotes.todoList = this.meetingNotes.todoList.filter(todo => todo.status !== 'completed');
+    this.meetingNotes.updatedAt = new Date().toISOString();
+  }
 }

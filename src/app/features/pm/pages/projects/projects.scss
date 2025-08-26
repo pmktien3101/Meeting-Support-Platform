@@ -441,7 +441,7 @@ $off-white: #F9F4EE;
 
     &.edit-project-modal {
       .modal-header {
-        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        background: linear-gradient(135deg, #FFA463 0%, #FF5E13 100%);
         border-radius: 20px 20px 0 0;
         padding: 24px 32px;
         border-bottom: 1px solid #e2e8f0;
@@ -467,12 +467,12 @@ $off-white: #F9F4EE;
               margin: 0 0 4px 0;
               font-size: 24px;
               font-weight: 700;
-              color: #1e293b;
+              color: white;
             }
 
             p {
               margin: 0;
-              color: #64748b;
+              color: white;
               font-size: 14px;
             }
           }
@@ -946,7 +946,7 @@ $off-white: #F9F4EE;
       min-width: 320px;
 
       .modal-header {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        background: linear-gradient(135deg, #FFA463 0%, #FF5E13 100%);
         border-radius: 20px 20px 0 0;
         padding: 24px 32px;
         border-bottom: 1px solid #e2e8f0;
@@ -1072,7 +1072,7 @@ $off-white: #F9F4EE;
 
               &:focus {
                 outline: none;
-                border-color: #3b82f6;
+                border-color: #FFA463;
                 box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
                 background: white;
               }
@@ -1158,8 +1158,8 @@ $off-white: #F9F4EE;
                   }
 
                   .checkbox-input:checked + .checkbox-custom {
-                    background: #3b82f6;
-                    border-color: #3b82f6;
+                    background: #FFA463;
+                    border-color: #FFA463;
 
                     &::after {
                       opacity: 1;
@@ -1238,7 +1238,7 @@ $off-white: #F9F4EE;
             }
 
             &.btn-primary {
-              background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+              background: linear-gradient(135deg, #FFA463 0%, #FF5E13 100%);
               color: white;
               box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 
