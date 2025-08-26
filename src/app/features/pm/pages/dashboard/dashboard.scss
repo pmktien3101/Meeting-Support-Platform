@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // Color variables - matching landing page and PM layout
 $primary-orange: #FF5E13;
 $secondary-orange: #FFA463;
@@ -124,7 +126,7 @@ $off-white: #F9F4EE;
             color: white;
 
             &:hover {
-              background: linear-gradient(135deg, darken($primary-orange, 10%), darken($secondary-orange, 10%));
+              background: linear-gradient(135deg, color.adjust($primary-orange, $lightness: -10%), color.adjust($secondary-orange, $lightness: -10%));
               transform: translateY(-2px);
               box-shadow: 0 8px 25px rgba(255, 94, 19, 0.3);
             }
