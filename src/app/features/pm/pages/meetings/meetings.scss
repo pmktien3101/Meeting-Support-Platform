@@ -404,9 +404,7 @@ $off-white: #F9F4EE;
           .meeting-icon {
             font-size: 32px;
             background: linear-gradient(135deg, $primary-orange, $secondary-orange);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: white;
           }
 
           .meeting-status {
