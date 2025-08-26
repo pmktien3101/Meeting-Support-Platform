@@ -24,6 +24,19 @@ interface ProjectDocument {
   projectId: string;
 }
 
+interface Task {
+  id: string;
+  name: string;
+  description: string;
+  status: 'pending' | 'in-progress' | 'completed' | 'blocked';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  assignedTo: ProjectMember | null;
+  dueDate: string;
+  milestoneId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface Project {
   id: string;
   name: string;
@@ -57,6 +70,18 @@ export class PmMilestones implements OnInit {
   selectedFile: File | null = null;
   documentName = '';
   documentDescription = '';
+
+  // Task modal states
+  showTasksModal = false;
+  showAddTaskModal = false;
+  selectedMilestone: any = null;
+  newTask = {
+    name: '',
+    description: '',
+    priority: 'medium' as 'low' | 'medium' | 'high' | 'urgent',
+    assignedTo: null as ProjectMember | null,
+    dueDate: ''
+  };
 
   // Available team members for adding to projects
   availableMembers: ProjectMember[] = [
@@ -103,6 +128,162 @@ export class PmMilestones implements OnInit {
       avatar: 'VF'
     }
   ];
+
+  // Mock data for tasks by milestone
+  milestoneTasks: { [key: string]: Task[] } = {
+    '1': [
+      {
+        id: '1',
+        name: 'Thiết kế wireframes',
+        description: 'Tạo wireframes cho các trang chính của website',
+        status: 'completed',
+        priority: 'high',
+        assignedTo: this.availableMembers[2], // Lê Văn C - UI/UX Designer
+        dueDate: '2024-01-30',
+        milestoneId: '1',
+        createdAt: '2024-01-01',
+        updatedAt: '2024-01-30'
+      },
+      {
+        id: '2',
+        name: 'Thiết kế mockups',
+        description: 'Tạo mockups chi tiết với màu sắc và typography',
+        status: 'completed',
+        priority: 'high',
+        assignedTo: this.availableMembers[2], // Lê Văn C - UI/UX Designer
+        dueDate: '2024-02-10',
+        milestoneId: '1',
+        createdAt: '2024-01-15',
+        updatedAt: '2024-02-10'
+      },
+      {
+        id: '3',
+        name: 'Tạo style guide',
+        description: 'Xây dựng style guide cho design system',
+        status: 'completed',
+        priority: 'medium',
+        assignedTo: this.availableMembers[2], // Lê Văn C - UI/UX Designer
+        dueDate: '2024-02-15',
+        milestoneId: '1',
+        createdAt: '2024-02-01',
+        updatedAt: '2024-02-15'
+      }
+    ],
+    '2': [
+      {
+        id: '4',
+        name: 'Setup React project',
+        description: 'Khởi tạo dự án React với TypeScript và các dependencies',
+        status: 'completed',
+        priority: 'high',
+        assignedTo: this.availableMembers[0], // Nguyễn Văn A - Frontend Developer
+        dueDate: '2024-02-20',
+        milestoneId: '2',
+        createdAt: '2024-02-16',
+        updatedAt: '2024-02-20'
+      },
+      {
+        id: '5',
+        name: 'Implement responsive layout',
+        description: 'Xây dựng layout responsive cho các trang chính',
+        status: 'in-progress',
+        priority: 'high',
+        assignedTo: this.availableMembers[0], // Nguyễn Văn A - Frontend Developer
+        dueDate: '2024-03-15',
+        milestoneId: '2',
+        createdAt: '2024-02-21',
+        updatedAt: '2024-03-01'
+      },
+      {
+        id: '6',
+        name: 'Build component library',
+        description: 'Tạo thư viện components tái sử dụng',
+        status: 'in-progress',
+        priority: 'medium',
+        assignedTo: this.availableMembers[0], // Nguyễn Văn A - Frontend Developer
+        dueDate: '2024-03-30',
+        milestoneId: '2',
+        createdAt: '2024-02-25',
+        updatedAt: '2024-03-01'
+      },
+      {
+        id: '7',
+        name: 'Implement user authentication',
+        description: 'Xây dựng hệ thống đăng nhập/đăng ký',
+        status: 'pending',
+        priority: 'high',
+        assignedTo: this.availableMembers[0], // Nguyễn Văn A - Frontend Developer
+        dueDate: '2024-04-15',
+        milestoneId: '2',
+        createdAt: '2024-03-01',
+        updatedAt: '2024-03-01'
+      }
+    ],
+    '3': [
+      {
+        id: '8',
+        name: 'Setup Node.js backend',
+        description: 'Khởi tạo server Node.js với Express và TypeScript',
+        status: 'completed',
+        priority: 'high',
+        assignedTo: this.availableMembers[1], // Trần Thị B - Backend Developer
+        dueDate: '2024-03-10',
+        milestoneId: '3',
+        createdAt: '2024-03-01',
+        updatedAt: '2024-03-10'
+      },
+      {
+        id: '9',
+        name: 'Design database schema',
+        description: 'Thiết kế cấu trúc cơ sở dữ liệu',
+        status: 'completed',
+        priority: 'high',
+        assignedTo: this.availableMembers[1], // Trần Thị B - Backend Developer
+        dueDate: '2024-03-20',
+        milestoneId: '3',
+        createdAt: '2024-03-05',
+        updatedAt: '2024-03-20'
+      },
+      {
+        id: '10',
+        name: 'Implement REST APIs',
+        description: 'Xây dựng các API endpoints cho frontend',
+        status: 'in-progress',
+        priority: 'high',
+        assignedTo: this.availableMembers[1], // Trần Thị B - Backend Developer
+        dueDate: '2024-04-30',
+        milestoneId: '3',
+        createdAt: '2024-03-15',
+        updatedAt: '2024-03-25'
+      }
+    ],
+    '4': [
+      {
+        id: '11',
+        name: 'Write unit tests',
+        description: 'Viết unit tests cho các components và functions',
+        status: 'pending',
+        priority: 'medium',
+        assignedTo: this.availableMembers[3], // Phạm Thị D - QA Engineer
+        dueDate: '2024-05-30',
+        milestoneId: '4',
+        createdAt: '2024-05-01',
+        updatedAt: '2024-05-01'
+      },
+      {
+        id: '12',
+        name: 'Integration testing',
+        description: 'Thực hiện integration testing cho toàn bộ hệ thống',
+        status: 'pending',
+        priority: 'high',
+        assignedTo: this.availableMembers[3], // Phạm Thị D - QA Engineer
+        dueDate: '2024-06-10',
+        milestoneId: '4',
+        createdAt: '2024-05-01',
+        updatedAt: '2024-05-01'
+      }
+    ]
+  };
 
   // Mock data for projects with members and documents
   projects: Project[] = [
@@ -671,6 +852,161 @@ export class PmMilestones implements OnInit {
   getAverageProgress(): number {
     const totalProgress = this.milestones.reduce((sum, m) => sum + m.progress, 0);
     return Math.round(totalProgress / this.milestones.length);
+  }
+
+  // Task management methods
+  openTasksModal(milestone: any) {
+    this.selectedMilestone = milestone;
+    this.showTasksModal = true;
+  }
+
+  closeTasksModal() {
+    this.showTasksModal = false;
+    this.selectedMilestone = null;
+  }
+
+  openAddTaskModal() {
+    this.showAddTaskModal = true;
+    this.resetTaskForm();
+  }
+
+  closeAddTaskModal() {
+    this.showAddTaskModal = false;
+    this.resetTaskForm();
+  }
+
+  resetTaskForm() {
+    this.newTask = {
+      name: '',
+      description: '',
+      priority: 'medium',
+      assignedTo: null,
+      dueDate: ''
+    };
+  }
+
+  addTaskToMilestone() {
+    if (!this.selectedMilestone || !this.newTask.name.trim() || !this.newTask.dueDate) {
+      return;
+    }
+
+    const newTask: Task = {
+      id: Date.now().toString(),
+      name: this.newTask.name.trim(),
+      description: this.newTask.description.trim() || 'Không có mô tả',
+      status: 'pending',
+      priority: this.newTask.priority,
+      assignedTo: this.newTask.assignedTo,
+      dueDate: this.newTask.dueDate,
+      milestoneId: this.selectedMilestone.id,
+      createdAt: new Date().toISOString().split('T')[0],
+      updatedAt: new Date().toISOString().split('T')[0]
+    };
+
+    if (!this.milestoneTasks[this.selectedMilestone.id]) {
+      this.milestoneTasks[this.selectedMilestone.id] = [];
+    }
+    this.milestoneTasks[this.selectedMilestone.id].push(newTask);
+
+    console.log(`Added task ${newTask.name} to milestone ${this.selectedMilestone.name}`);
+    this.closeAddTaskModal();
+  }
+
+  removeTaskFromMilestone(taskId: string) {
+    if (!this.selectedMilestone) return;
+    
+    const tasks = this.milestoneTasks[this.selectedMilestone.id];
+    if (tasks) {
+      const index = tasks.findIndex(t => t.id === taskId);
+      if (index > -1) {
+        const removedTask = tasks.splice(index, 1)[0];
+        console.log(`Removed task ${removedTask.name} from milestone ${this.selectedMilestone.name}`);
+      }
+    }
+  }
+
+  onTaskStatusChange(taskId: string, event: Event) {
+    const target = event.target as HTMLSelectElement;
+    if (target && target.value) {
+      this.updateTaskStatus(taskId, target.value);
+    }
+  }
+
+  updateTaskStatus(taskId: string, newStatus: string) {
+    if (!this.selectedMilestone) return;
+    
+    // Validate the status value
+    const validStatuses = ['pending', 'in-progress', 'completed', 'blocked'] as const;
+    if (!validStatuses.includes(newStatus as any)) {
+      console.error(`Invalid status: ${newStatus}`);
+      return;
+    }
+    
+    const tasks = this.milestoneTasks[this.selectedMilestone.id];
+    if (tasks) {
+      const task = tasks.find(t => t.id === taskId);
+      if (task) {
+        task.status = newStatus as 'pending' | 'in-progress' | 'completed' | 'blocked';
+        task.updatedAt = new Date().toISOString().split('T')[0];
+        console.log(`Updated task ${task.name} status to ${newStatus}`);
+      }
+    }
+  }
+
+  getTasksForMilestone(milestoneId: string): Task[] {
+    return this.milestoneTasks[milestoneId] || [];
+  }
+
+  getTaskStatusText(status: string): string {
+    const statusMap: { [key: string]: string } = {
+      'pending': 'Chờ thực hiện',
+      'in-progress': 'Đang thực hiện',
+      'completed': 'Hoàn thành',
+      'blocked': 'Bị chặn'
+    };
+    return statusMap[status] || status;
+  }
+
+  getPriorityText(priority: string): string {
+    const priorityMap: { [key: string]: string } = {
+      'low': 'Thấp',
+      'medium': 'Trung bình',
+      'high': 'Cao',
+      'urgent': 'Khẩn cấp'
+    };
+    return priorityMap[priority] || priority;
+  }
+
+  getPriorityColor(priority: string): string {
+    const colorMap: { [key: string]: string } = {
+      'low': '#10b981',
+      'medium': '#f59e0b',
+      'high': '#ef4444',
+      'urgent': '#dc2626'
+    };
+    return colorMap[priority] || '#6b7280';
+  }
+
+  getStatusColor(status: string): string {
+    const colorMap: { [key: string]: string } = {
+      'pending': '#6b7280',
+      'in-progress': '#f59e0b',
+      'completed': '#10b981',
+      'blocked': '#ef4444'
+    };
+    return colorMap[status] || '#6b7280';
+  }
+
+  getTasksCount(milestoneId: string): number {
+    return this.getTasksForMilestone(milestoneId).length;
+  }
+
+  getCompletedTasksCount(milestoneId: string): number {
+    return this.getTasksForMilestone(milestoneId).filter(t => t.status === 'completed').length;
+  }
+
+  getInProgressTasksCount(milestoneId: string): number {
+    return this.getTasksForMilestone(milestoneId).filter(t => t.status === 'in-progress').length;
   }
 
   backToProjects(): void {

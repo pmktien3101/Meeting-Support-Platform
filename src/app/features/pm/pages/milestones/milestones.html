@@ -233,11 +233,13 @@
         </div>
       </div>
       
-      <div class="milestone-actions">
-        <button class="btn btn-primary btn-sm">Xem Chi Tiết</button>
-        <button class="btn btn-secondary btn-sm">Chỉnh Sửa</button>
-        <button class="btn btn-outline btn-sm">📋 Tasks</button>
-      </div>
+             <div class="milestone-actions">
+         <button class="btn btn-primary btn-sm">Xem Chi Tiết</button>
+         <button class="btn btn-secondary btn-sm">Chỉnh Sửa</button>
+         <button class="btn btn-outline btn-sm" (click)="openTasksModal(milestone)">
+           📋 Tasks ({{ getTasksCount(milestone.id) }})
+         </button>
+       </div>
     </div>
   </div>
 
@@ -361,6 +363,236 @@
                   [disabled]="!selectedFile || !documentName.trim()">
             <span class="btn-icon">💾</span>
             Thêm tài liệu
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tasks Modal -->
+  <div class="modal-overlay" *ngIf="showTasksModal" (click)="closeTasksModal()">
+    <div class="modal tasks-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-content">
+          <div class="header-icon">📋</div>
+          <div class="header-text">
+            <h3>Tasks - {{ selectedMilestone?.name }}</h3>
+            <p>Quản lý các tasks của milestone</p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeTasksModal()" title="Đóng">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="modal-content">
+        <div class="tasks-header">
+          <div class="tasks-summary">
+            <span class="summary-item">
+              <span class="summary-icon">📋</span>
+              Tổng: {{ getTasksCount(selectedMilestone?.id) }}
+            </span>
+            <span class="summary-item">
+              <span class="summary-icon">✅</span>
+              Hoàn thành: {{ getCompletedTasksCount(selectedMilestone?.id) }}
+            </span>
+                         <span class="summary-item">
+               <span class="summary-icon">⏳</span>
+               Đang thực hiện: {{ getInProgressTasksCount(selectedMilestone?.id) }}
+             </span>
+          </div>
+          <button class="btn btn-primary btn-sm" (click)="openAddTaskModal()">
+            <span class="btn-icon">➕</span>
+            Thêm Task
+          </button>
+        </div>
+
+        <div class="tasks-list" *ngIf="getTasksForMilestone(selectedMilestone?.id).length > 0; else noTasks">
+          <div class="task-card" *ngFor="let task of getTasksForMilestone(selectedMilestone?.id)">
+            <div class="task-header">
+              <div class="task-info">
+                <h4 class="task-name">{{ task.name }}</h4>
+                <p class="task-description">{{ task.description }}</p>
+              </div>
+              <div class="task-actions">
+                <button class="action-btn delete-btn" (click)="removeTaskFromMilestone(task.id)" title="Xóa task">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3,6 5,6 21,6"></polyline>
+                    <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <div class="task-meta">
+              <div class="meta-row">
+                <div class="meta-item">
+                  <span class="meta-label">Trạng thái:</span>
+                                     <select class="status-select" 
+                           [value]="task.status"
+                           (change)="onTaskStatusChange(task.id, $event)">
+                     <option value="pending">Chờ thực hiện</option>
+                     <option value="in-progress">Đang thực hiện</option>
+                     <option value="completed">Hoàn thành</option>
+                     <option value="blocked">Bị chặn</option>
+                   </select>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Độ ưu tiên:</span>
+                  <span class="priority-badge" [style.background-color]="getPriorityColor(task.priority)">
+                    {{ getPriorityText(task.priority) }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="meta-row">
+                <div class="meta-item">
+                  <span class="meta-label">Người thực hiện:</span>
+                  <span class="assignee" *ngIf="task.assignedTo">
+                    <span class="assignee-avatar">{{ task.assignedTo.avatar }}</span>
+                    {{ task.assignedTo.name }}
+                  </span>
+                  <span class="no-assignee" *ngIf="!task.assignedTo">Chưa phân công</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Hạn hoàn thành:</span>
+                  <span class="due-date">{{ task.dueDate | date:'dd/MM/yyyy' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noTasks>
+          <div class="no-tasks">
+            <div class="no-tasks-icon">📋</div>
+            <h5>Chưa có task nào</h5>
+            <p>Thêm task đầu tiên để bắt đầu làm việc</p>
+            <button class="btn btn-primary" (click)="openAddTaskModal()">
+              <span class="btn-icon">➕</span>
+              Thêm task đầu tiên
+            </button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Task Modal -->
+  <div class="modal-overlay" *ngIf="showAddTaskModal" (click)="closeAddTaskModal()">
+    <div class="modal add-task-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-content">
+          <div class="header-icon">➕</div>
+          <div class="header-text">
+            <h3>Thêm Task Mới</h3>
+            <p>Thêm task cho milestone {{ selectedMilestone?.name }}</p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeAddTaskModal()" title="Đóng">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <form (ngSubmit)="addTaskToMilestone()" class="modal-form">
+        <div class="form-section">
+          <h4 class="section-title">📋 Thông tin task</h4>
+          
+          <div class="form-group">
+            <label for="taskName">
+              <span class="label-icon">📝</span>
+              Tên task <span class="required">*</span>
+            </label>
+            <input type="text" 
+                   id="taskName" 
+                   [(ngModel)]="newTask.name" 
+                   name="taskName"
+                   placeholder="Nhập tên task"
+                   class="form-input"
+                   required>
+          </div>
+          
+          <div class="form-group">
+            <label for="taskDescription">
+              <span class="label-icon">📄</span>
+              Mô tả task
+            </label>
+            <textarea id="taskDescription" 
+                      [(ngModel)]="newTask.description" 
+                      name="taskDescription"
+                      rows="3" 
+                      placeholder="Mô tả chi tiết về task..."
+                      class="form-textarea"></textarea>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">⚙️ Cài đặt task</h4>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="taskPriority">
+                <span class="label-icon">🎯</span>
+                Độ ưu tiên
+              </label>
+              <select id="taskPriority" 
+                      [(ngModel)]="newTask.priority" 
+                      name="taskPriority"
+                      class="form-select">
+                <option value="low">Thấp</option>
+                <option value="medium">Trung bình</option>
+                <option value="high">Cao</option>
+                <option value="urgent">Khẩn cấp</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="taskDueDate">
+                <span class="label-icon">📅</span>
+                Hạn hoàn thành <span class="required">*</span>
+              </label>
+              <input type="date" 
+                     id="taskDueDate" 
+                     [(ngModel)]="newTask.dueDate" 
+                     name="taskDueDate"
+                     class="form-input"
+                     required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="taskAssignee">
+              <span class="label-icon">👤</span>
+              Người thực hiện
+            </label>
+            <select id="taskAssignee" 
+                    [(ngModel)]="newTask.assignedTo" 
+                    name="taskAssignee"
+                    class="form-select">
+              <option [ngValue]="null">Chưa phân công</option>
+              <option *ngFor="let member of currentProject?.members" [ngValue]="member">
+                {{ member.name }} - {{ member.role }}
+              </option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeAddTaskModal()">
+            <span class="btn-icon">❌</span>
+            Hủy bỏ
+          </button>
+          <button type="submit" 
+                  class="btn btn-primary" 
+                  [disabled]="!newTask.name.trim() || !newTask.dueDate">
+            <span class="btn-icon">💾</span>
+            Thêm task
           </button>
         </div>
       </form>
