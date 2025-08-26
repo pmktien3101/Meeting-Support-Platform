@@ -1,8 +1,30 @@
+  <!-- Confirm Delete Milestone Modal -->
+  <div class="modal-overlay" *ngIf="showDeleteConfirmModal" (click)="cancelDeleteMilestone()">
+    <div class="modal" style="max-width: 400px; width: 100%;" (click)="$event.stopPropagation()">
+      <div class="modal-header" style="padding: 24px 24px 0 24px;">
+        <h3 style="margin: 0; color: #ef4444; font-size: 20px;">Xác nhận xóa milestone</h3>
+      </div>
+      <div class="modal-content" style="padding: 24px;">
+        <p>Bạn có chắc chắn muốn xóa milestone <b>{{ milestoneToDelete?.name }}</b> không?</p>
+      </div>
+      <div class="modal-actions" style="padding: 0 24px 24px 24px; display: flex; gap: 12px; justify-content: flex-end;">
+        <button class="btn btn-secondary" (click)="cancelDeleteMilestone()">Hủy</button>
+        <button class="btn btn-primary" style="background: #ef4444;" (click)="deleteMilestoneConfirmed()">Xóa</button>
+      </div>
+    </div>
+  </div>
 <div class="milestones-page">
   <div class="page-header">
     <div class="header-content">
-      <h2>🎯 Quản Lý Milestone</h2>
-      <p>Theo dõi và quản lý các milestone của dự án</p>
+      <div class="header-title-section">
+        <button *ngIf="isProjectSpecific" class="btn btn-outline btn-sm back-btn" (click)="backToProjects()">
+          ← Quay lại Dự Án
+        </button>
+        <h2 *ngIf="!isProjectSpecific">🎯 Quản Lý Milestone</h2>
+        <h2 *ngIf="isProjectSpecific">🎯 Milestones - {{ currentProject?.name }}</h2>
+        <p *ngIf="!isProjectSpecific">Theo dõi và quản lý các milestone của dự án</p>
+        <p *ngIf="isProjectSpecific">Quản lý milestones cho dự án {{ currentProject?.name }}</p>
+      </div>
     </div>
     <div class="header-actions">
       <button class="btn btn-primary" (click)="openCreateMilestone()">
@@ -10,6 +32,161 @@
       </button>
       <button class="btn btn-secondary">
         📊 Xem Báo Cáo
+      </button>
+    </div>
+  </div>
+
+  <!-- Project Info Section (only for project-specific view) -->
+  <div *ngIf="isProjectSpecific && currentProject" class="project-info-section">
+    <div class="project-info-card">
+      <div class="project-info-header">
+        <div class="project-icon">📁</div>
+        <div class="project-info">
+          <h3>{{ currentProject.name }}</h3>
+          <p>{{ currentProject.description }}</p>
+        </div>
+        <div class="project-status">
+          <span class="status-badge" [class]="currentProject.status">
+            {{ currentProject.status === 'active' ? 'Đang thực hiện' : 
+               currentProject.status === 'planning' ? 'Lập kế hoạch' : 
+               currentProject.status === 'completed' ? 'Hoàn thành' : currentProject.status }}
+          </span>
+        </div>
+      </div>
+      <div class="project-info-meta">
+        <div class="meta-item">
+          <span class="meta-icon">📅</span>
+          <span class="meta-text">
+            {{ currentProject.startDate | date:'dd/MM/yyyy' }} - {{ currentProject.endDate | date:'dd/MM/yyyy' }}
+          </span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-icon">👤</span>
+          <span class="meta-text">{{ currentProject.manager }}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-icon">⏰</span>
+          <span class="meta-text">Tiến độ: {{ currentProject.progress }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Members Section -->
+    <div class="project-members-section">
+      <div class="section-header">
+        <h4>👥 Thành viên dự án</h4>
+        <span class="member-count">{{ currentProject.members.length }} thành viên</span>
+      </div>
+      
+      <div class="members-grid">
+        <div class="member-card" *ngFor="let member of currentProject.members">
+          <div class="member-avatar">{{ member.avatar }}</div>
+          <div class="member-info">
+            <h5 class="member-name">{{ member.name }}</h5>
+            <p class="member-role">{{ member.role }}</p>
+            <p class="member-email">{{ member.email }}</p>
+          </div>
+          <button class="remove-member-btn" 
+                  (click)="removeMemberFromProject(currentProject, member.id)"
+                  title="Xóa thành viên">
+            ×
+          </button>
+        </div>
+        
+        <!-- Add Member Card -->
+        <div class="add-member-card">
+          <div class="add-member-content">
+            <div class="add-member-icon">+</div>
+            <h5>Thêm thành viên</h5>
+            <select class="add-member-select" 
+                    (change)="onMemberSelect(currentProject, $event)">
+              <option value="">Chọn thành viên...</option>
+              <option *ngFor="let member of getAvailableMembersForProject(currentProject)" 
+                      [value]="member.id">
+                {{ member.name }} - {{ member.role }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Documents Section -->
+    <div class="project-documents-section">
+      <div class="section-header">
+        <h4>📁 Các tài liệu có liên quan</h4>
+        <div class="section-actions">
+          <span class="document-count">{{ currentProject.documents.length }} tài liệu</span>
+          <button class="btn btn-primary btn-sm" (click)="openAddDocumentModal()">
+            <span class="btn-icon">📤</span>
+            Thêm tài liệu
+          </button>
+        </div>
+      </div>
+      
+      <div class="documents-grid" *ngIf="currentProject.documents.length > 0; else noDocuments">
+        <div class="document-card" *ngFor="let document of currentProject.documents">
+          <div class="document-icon">
+            <span>{{ getFileIcon(document.fileType) }}</span>
+          </div>
+          <div class="document-info">
+            <h5 class="document-name">{{ document.name }}</h5>
+            <p class="document-description">{{ document.description }}</p>
+            <div class="document-meta">
+              <span class="meta-item">
+                <span class="meta-icon">👤</span>
+                {{ document.uploadedBy }}
+              </span>
+              <span class="meta-item">
+                <span class="meta-icon">📅</span>
+                {{ document.uploadedDate | date:'dd/MM/yyyy' }}
+              </span>
+              <span class="meta-item">
+                <span class="meta-icon">📏</span>
+                {{ document.fileSize }}
+              </span>
+            </div>
+          </div>
+          <div class="document-actions">
+            <button class="action-btn download-btn" (click)="downloadDocument(document)" title="Tải xuống">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7,10 12,15 17,10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+            </button>
+            <button class="action-btn delete-btn" (click)="removeDocumentFromProject(document.id)" title="Xóa tài liệu">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3,6 5,6 21,6"></polyline>
+                <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noDocuments>
+        <div class="no-documents">
+          <div class="no-documents-icon">📁</div>
+          <h5>Chưa có tài liệu nào</h5>
+          <p>Thêm tài liệu đầu tiên để chia sẻ thông tin dự án</p>
+          <button class="btn btn-primary" (click)="openAddDocumentModal()">
+            <span class="btn-icon">📤</span>
+            Thêm tài liệu đầu tiên
+          </button>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+
+  <div class="milestones-section-header">
+    <div class="milestones-section-header-content" style="display: flex; align-items: center; justify-content: space-between; gap: 16px;">
+      <div>
+        <h3 style="margin-bottom: 4px;">🎯 Các milestones hiện tại</h3>
+        <p style="margin: 0;">Quản lý và theo dõi tiến độ các milestones của dự án</p>
+      </div>
+      <button class="btn btn-primary" (click)="openCreateMilestone()">
+        ➕ Thêm Milestone
       </button>
     </div>
   </div>
@@ -25,7 +202,7 @@
         <option value="delayed">Bị trễ</option>
       </select>
     </div>
-    <div class="filter-group">
+    <div class="filter-group" *ngIf="isProjectSpecific">
       <label>Dự án:</label>
       <select class="filter-select" aria-label="Lọc theo dự án">
         <option value="">Tất cả dự án</option>
@@ -41,7 +218,8 @@
   </div>
 
   <div class="milestones-grid">
-    <div class="milestone-card" *ngFor="let milestone of milestones">
+    <div class="milestone-card" *ngFor="let milestone of milestones" style="position: relative;">
+      <button class="milestone-delete-btn" style="position: absolute; top: 12px; right: 12px; background: transparent; border: none; font-size: 18px; color: #ef4444; cursor: pointer; z-index: 2;" (click)="confirmDeleteMilestone(milestone)">×</button>
       <div class="milestone-header">
         <div class="milestone-icon">🎯</div>
         <div class="milestone-status">
@@ -56,9 +234,9 @@
         <p class="milestone-description">{{ milestone.description }}</p>
         
         <div class="milestone-meta">
-          <div class="meta-item">
+          <div class="meta-item" *ngIf="!isProjectSpecific">
             <span class="meta-icon">📁</span>
-            <span class="meta-text">Website E-commerce</span>
+            <span class="meta-text">{{ milestone.projectName }}</span>
           </div>
           <div class="meta-item">
             <span class="meta-icon">📅</span>
@@ -83,11 +261,13 @@
         </div>
       </div>
       
-      <div class="milestone-actions">
-        <button class="btn btn-primary btn-sm">Xem Chi Tiết</button>
-        <button class="btn btn-secondary btn-sm">Chỉnh Sửa</button>
-        <button class="btn btn-outline btn-sm">📋 Tasks</button>
-      </div>
+             <div class="milestone-actions">
+         <button class="btn btn-primary btn-sm" (click)="viewMilestoneDetails(milestone)">Xem Chi Tiết</button>
+         <button class="btn btn-secondary btn-sm" (click)="openEditMilestone(milestone)">Chỉnh Sửa</button>
+         <button class="btn btn-outline btn-sm" (click)="openTasksModal(milestone)">
+           📋 Tasks ({{ getTasksCount(milestone.id) }})
+         </button>
+       </div>
     </div>
   </div>
 
@@ -119,6 +299,591 @@
         <h4>Trung bình hoàn thành</h4>
         <p class="summary-number">{{ getAverageProgress() }}%</p>
       </div>
+    </div>
+  </div>
+
+  <!-- Add Document Modal -->
+  <div class="modal-overlay" *ngIf="showAddDocumentModal" (click)="closeAddDocumentModal()">
+    <div class="modal add-document-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-content">
+          <div class="header-icon">📤</div>
+          <div class="header-text">
+            <h3>Thêm tài liệu mới</h3>
+            <p>Upload tài liệu cho dự án {{ currentProject?.name }}</p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeAddDocumentModal()" title="Đóng">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <form (ngSubmit)="addDocumentToProject()" class="modal-form">
+        <div class="form-section">
+          <h4 class="section-title">📋 Thông tin tài liệu</h4>
+          
+          <div class="form-group">
+            <label for="documentName">
+              <span class="label-icon">📝</span>
+              Tên tài liệu <span class="required">*</span>
+            </label>
+            <input type="text" 
+                   id="documentName" 
+                   [(ngModel)]="documentName" 
+                   name="documentName"
+                   placeholder="Nhập tên tài liệu"
+                   class="form-input"
+                   required>
+          </div>
+          
+          <div class="form-group">
+            <label for="documentDescription">
+              <span class="label-icon">📄</span>
+              Mô tả tài liệu
+            </label>
+            <textarea id="documentDescription" 
+                      [(ngModel)]="documentDescription" 
+                      name="documentDescription"
+                      rows="3" 
+                      placeholder="Mô tả chi tiết về tài liệu..."
+                      class="form-textarea"></textarea>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">📁 Chọn file</h4>
+          
+          <div class="form-group">
+            <label for="documentFile">
+              <span class="label-icon">📎</span>
+              File tài liệu <span class="required">*</span>
+            </label>
+            <div class="file-upload-area" [class.has-file]="selectedFile">
+              <input type="file" 
+                     id="documentFile" 
+                     (change)="onFileSelected($event)"
+                     class="file-input"
+                     accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg,.gif,.zip,.rar,.txt"
+                     required>
+              <div class="upload-content">
+                <div class="upload-icon">📎</div>
+                <div class="upload-text">
+                  <h5 *ngIf="!selectedFile">Chọn file hoặc kéo thả vào đây</h5>
+                  <h5 *ngIf="selectedFile">{{ selectedFile.name }}</h5>
+                  <p *ngIf="!selectedFile">Hỗ trợ: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, PNG, JPG, ZIP, RAR, TXT</p>
+                  <p *ngIf="selectedFile">Kích thước: {{ formatFileSize(selectedFile.size) }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeAddDocumentModal()">
+            <span class="btn-icon">❌</span>
+            Hủy bỏ
+          </button>
+          <button type="submit" 
+                  class="btn btn-primary" 
+                  [disabled]="!selectedFile || !documentName.trim()">
+            <span class="btn-icon">💾</span>
+            Thêm tài liệu
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Tasks Modal -->
+  <div class="modal-overlay" *ngIf="showTasksModal" (click)="closeTasksModal()">
+    <div class="modal tasks-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-content">
+          <div class="header-icon">📋</div>
+          <div class="header-text">
+            <h3>Tasks - {{ selectedMilestone?.name }}</h3>
+            <p>Quản lý các tasks của milestone</p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeTasksModal()" title="Đóng">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="modal-content">
+        <div class="tasks-header">
+          <div class="tasks-summary">
+            <span class="summary-item">
+              <span class="summary-icon">📋</span>
+              Tổng: {{ getTasksCountSafe(selectedMilestone?.id) }}
+            </span>
+            <span class="summary-item">
+              <span class="summary-icon">✅</span>
+              Hoàn thành: {{ getCompletedTasksCountSafe(selectedMilestone?.id) }}
+            </span>
+                         <span class="summary-item">
+               <span class="summary-icon">⏳</span>
+               Đang thực hiện: {{ getInProgressTasksCountSafe(selectedMilestone?.id) }}
+             </span>
+          </div>
+          <button class="btn btn-primary btn-sm" (click)="openAddTaskModal()">
+            <span class="btn-icon">➕</span>
+            Thêm Task
+          </button>
+        </div>
+
+        <div class="tasks-list" *ngIf="getTasksForMilestoneSafe(selectedMilestone?.id).length > 0; else noTasks">
+          <div class="task-card" *ngFor="let task of getTasksForMilestoneSafe(selectedMilestone?.id)">
+            <div class="task-header">
+              <div class="task-info">
+                <h4 class="task-name">{{ task.name }}</h4>
+                <p class="task-description">{{ task.description }}</p>
+              </div>
+              <div class="task-actions">
+                <button class="action-btn delete-btn" (click)="removeTaskFromMilestone(task.id)" title="Xóa task">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3,6 5,6 21,6"></polyline>
+                    <path d="M19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <div class="task-meta">
+              <div class="meta-row">
+                <div class="meta-item">
+                  <span class="meta-label">Trạng thái:</span>
+                                     <select class="status-select" 
+                           [value]="task.status"
+                           (change)="onTaskStatusChange(task.id, $event)">
+                     <option value="pending">Chờ thực hiện</option>
+                     <option value="in-progress">Đang thực hiện</option>
+                     <option value="completed">Hoàn thành</option>
+                     <option value="blocked">Bị chặn</option>
+                   </select>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Độ ưu tiên:</span>
+                  <span class="priority-badge" [style.background-color]="getPriorityColor(task.priority)">
+                    {{ getPriorityText(task.priority) }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="meta-row">
+                <div class="meta-item">
+                  <span class="meta-label">Người thực hiện:</span>
+                  <span class="assignee" *ngIf="task.assignedTo">
+                    <span class="assignee-avatar">{{ task.assignedTo.avatar }}</span>
+                    {{ task.assignedTo.name }}
+                  </span>
+                  <span class="no-assignee" *ngIf="!task.assignedTo">Chưa phân công</span>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Hạn hoàn thành:</span>
+                  <span class="due-date">{{ task.dueDate | date:'dd/MM/yyyy' }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ng-template #noTasks>
+          <div class="no-tasks">
+            <div class="no-tasks-icon">📋</div>
+            <h5>Chưa có task nào</h5>
+            <p>Thêm task đầu tiên để bắt đầu làm việc</p>
+            <button class="btn btn-primary" (click)="openAddTaskModal()">
+              <span class="btn-icon">➕</span>
+              Thêm task đầu tiên
+            </button>
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Task Modal -->
+  <div class="modal-overlay" *ngIf="showAddTaskModal" (click)="closeAddTaskModal()">
+    <div class="modal add-task-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-content">
+          <div class="header-icon">➕</div>
+          <div class="header-text">
+            <h3>Thêm Task Mới</h3>
+            <p>Thêm task cho milestone {{ selectedMilestone?.name }}</p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeAddTaskModal()" title="Đóng">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      
+      <form (ngSubmit)="addTaskToMilestone()" class="modal-form">
+        <div class="form-section">
+          <h4 class="section-title">📋 Thông tin task</h4>
+          
+          <div class="form-group">
+            <label for="taskName">
+              <span class="label-icon">📝</span>
+              Tên task <span class="required">*</span>
+            </label>
+            <input type="text" 
+                   id="taskName" 
+                   [(ngModel)]="newTask.name" 
+                   name="taskName"
+                   placeholder="Nhập tên task"
+                   class="form-input"
+                   required>
+          </div>
+          
+          <div class="form-group">
+            <label for="taskDescription">
+              <span class="label-icon">📄</span>
+              Mô tả task
+            </label>
+            <textarea id="taskDescription" 
+                      [(ngModel)]="newTask.description" 
+                      name="taskDescription"
+                      rows="3" 
+                      placeholder="Mô tả chi tiết về task..."
+                      class="form-textarea"></textarea>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">⚙️ Cài đặt task</h4>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="taskPriority">
+                <span class="label-icon">🎯</span>
+                Độ ưu tiên
+              </label>
+              <select id="taskPriority" 
+                      [(ngModel)]="newTask.priority" 
+                      name="taskPriority"
+                      class="form-select">
+                <option value="low">Thấp</option>
+                <option value="medium">Trung bình</option>
+                <option value="high">Cao</option>
+                <option value="urgent">Khẩn cấp</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="taskDueDate">
+                <span class="label-icon">📅</span>
+                Hạn hoàn thành <span class="required">*</span>
+              </label>
+              <input type="date" 
+                     id="taskDueDate" 
+                     [(ngModel)]="newTask.dueDate" 
+                     name="taskDueDate"
+                     class="form-input"
+                     required>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="taskAssignee">
+              <span class="label-icon">👤</span>
+              Người thực hiện
+            </label>
+            <select id="taskAssignee" 
+                    [(ngModel)]="newTask.assignedTo" 
+                    name="taskAssignee"
+                    class="form-select">
+              <option [ngValue]="null">Chưa phân công</option>
+              <option *ngFor="let member of currentProject?.members" [ngValue]="member">
+                {{ member.name }} - {{ member.role }}
+              </option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeAddTaskModal()">
+            <span class="btn-icon">❌</span>
+            Hủy bỏ
+          </button>
+          <button type="submit" 
+                  class="btn btn-primary" 
+                  [disabled]="!newTask.name.trim() || !newTask.dueDate">
+            <span class="btn-icon">💾</span>
+            Thêm task
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Milestone Details Modal -->
+  <div class="modal-overlay" *ngIf="showMilestoneDetailsModal" (click)="closeMilestoneDetails()">
+    <div class="modal milestone-details-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-content">
+          <div class="header-icon">🎯</div>
+          <div class="header-text">
+            <h3>Chi Tiết Milestone</h3>
+            <p>{{ selectedMilestoneForDetails?.name }}</p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeMilestoneDetails()" title="Đóng">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="modal-content" *ngIf="selectedMilestoneForDetails">
+        <div class="milestone-details-content">
+          <div class="detail-section">
+            <h4>📋 Thông tin cơ bản</h4>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-label">Tên milestone:</span>
+                <span class="detail-value">{{ selectedMilestoneForDetails.name }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Mô tả:</span>
+                <span class="detail-value">{{ selectedMilestoneForDetails.description || 'Không có mô tả' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Trạng thái:</span>
+                <span class="status-badge" [class]="selectedMilestoneForDetails.status">
+                  {{ getStatusText(selectedMilestoneForDetails.status) }}
+                </span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Độ ưu tiên:</span>
+                <span class="priority-badge" [class]="selectedMilestoneForDetails.priority">
+                  {{ getPriorityText(selectedMilestoneForDetails.priority || 'medium') }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>📅 Thời gian</h4>
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-label">Ngày bắt đầu:</span>
+                <span class="detail-value">{{ selectedMilestoneForDetails.startDate | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Ngày kết thúc:</span>
+                <span class="detail-value">{{ selectedMilestoneForDetails.endDate | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Ngày tạo:</span>
+                <span class="detail-value">{{ selectedMilestoneForDetails.createdAt | date:'dd/MM/yyyy' }}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Cập nhật lần cuối:</span>
+                <span class="detail-value">{{ selectedMilestoneForDetails.updatedAt | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>📊 Tiến độ</h4>
+            <div class="progress-section">
+              <div class="progress-header">
+                <span class="progress-label">Tiến độ hiện tại</span>
+                <span class="progress-percentage">{{ selectedMilestoneForDetails.progress }}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" [style.width.%]="selectedMilestoneForDetails.progress"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <h4>📋 Tasks ({{ getTasksCount(selectedMilestoneForDetails.id) }})</h4>
+            <div class="tasks-summary">
+              <div class="task-stats">
+                <div class="stat-item">
+                  <span class="stat-icon">⏳</span>
+                  <span class="stat-label">Chờ thực hiện</span>
+                  <span class="stat-number">{{ getTasksByStatus(selectedMilestoneForDetails.id, 'pending').length }}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-icon">🚀</span>
+                  <span class="stat-label">Đang thực hiện</span>
+                  <span class="stat-number">{{ getTasksByStatus(selectedMilestoneForDetails.id, 'in-progress').length }}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-icon">✅</span>
+                  <span class="stat-label">Hoàn thành</span>
+                  <span class="stat-number">{{ getTasksByStatus(selectedMilestoneForDetails.id, 'completed').length }}</span>
+                </div>
+              </div>
+              <button class="btn btn-primary" (click)="openTasksModal(selectedMilestoneForDetails)">
+                <span class="btn-icon">👁️</span>
+                Xem tất cả tasks
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <div style="display: flex; justify-content: flex-end; gap: 12px; width: 100%;">
+          <button class="btn btn-secondary" (click)="closeMilestoneDetails()">
+            <span class="btn-icon">❌</span>
+            Đóng
+          </button>
+          <button class="btn btn-primary" (click)="openEditMilestone(selectedMilestoneForDetails!)">
+            <span class="btn-icon">✏️</span>
+            Chỉnh sửa
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Milestone Modal -->
+  <div class="modal-overlay" *ngIf="showEditMilestoneModal" (click)="closeEditMilestone()">
+    <div class="modal edit-milestone-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-content">
+          <div class="header-icon">✏️</div>
+          <div class="header-text">
+            <h3>Chỉnh Sửa Milestone</h3>
+            <p>{{ selectedMilestoneForEdit?.name }}</p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeEditMilestone()" title="Đóng">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <form (ngSubmit)="saveMilestoneEdit()" class="modal-form">
+        <div class="form-section">
+          <h4 class="section-title">📋 Thông tin cơ bản</h4>
+          
+          <div class="form-group">
+            <label for="milestoneName">
+              <span class="label-icon">🎯</span>
+              Tên milestone <span class="required">*</span>
+            </label>
+            <input type="text" 
+                   id="milestoneName" 
+                   [(ngModel)]="editMilestoneForm.name" 
+                   name="milestoneName"
+                   placeholder="Nhập tên milestone"
+                   class="form-input"
+                   required>
+          </div>
+          
+          <div class="form-group">
+            <label for="milestoneDescription">
+              <span class="label-icon">📄</span>
+              Mô tả
+            </label>
+            <textarea id="milestoneDescription" 
+                      [(ngModel)]="editMilestoneForm.description" 
+                      name="milestoneDescription"
+                      rows="3" 
+                      placeholder="Mô tả chi tiết về milestone..."
+                      class="form-textarea"></textarea>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">📅 Thời gian</h4>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="milestoneStartDate">
+                <span class="label-icon">📅</span>
+                Ngày bắt đầu
+              </label>
+              <input type="date" 
+                     id="milestoneStartDate" 
+                     [(ngModel)]="editMilestoneForm.startDate" 
+                     name="milestoneStartDate"
+                     class="form-input">
+            </div>
+            
+            <div class="form-group">
+              <label for="milestoneEndDate">
+                <span class="label-icon">📅</span>
+                Ngày kết thúc
+              </label>
+              <input type="date" 
+                     id="milestoneEndDate" 
+                     [(ngModel)]="editMilestoneForm.endDate" 
+                     name="milestoneEndDate"
+                     class="form-input">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h4 class="section-title">⚙️ Cài đặt</h4>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label for="milestoneStatus">
+                <span class="label-icon">🔄</span>
+                Trạng thái
+              </label>
+              <select id="milestoneStatus" 
+                      [(ngModel)]="editMilestoneForm.status" 
+                      name="milestoneStatus"
+                      class="form-select">
+                <option value="pending">Chờ thực hiện</option>
+                <option value="in-progress">Đang thực hiện</option>
+                <option value="completed">Hoàn thành</option>
+                <option value="delayed">Bị trễ</option>
+              </select>
+            </div>
+            
+            <div class="form-group">
+              <label for="milestonePriority">
+                <span class="label-icon">🎯</span>
+                Độ ưu tiên
+              </label>
+              <select id="milestonePriority" 
+                      [(ngModel)]="editMilestoneForm.priority" 
+                      name="milestonePriority"
+                      class="form-select">
+                <option value="low">Thấp</option>
+                <option value="medium">Trung bình</option>
+                <option value="high">Cao</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeEditMilestone()">
+            <span class="btn-icon">❌</span>
+            Hủy bỏ
+          </button>
+          <button type="submit" 
+                  class="btn btn-primary" 
+                  [disabled]="!editMilestoneForm.name.trim()">
+            <span class="btn-icon">💾</span>
+            Lưu thay đổi
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

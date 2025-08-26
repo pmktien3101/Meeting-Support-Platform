@@ -14,85 +14,196 @@
     </div>
   </div>
 
-  <div class="meetings-filters">
-    <div class="filter-group">
-      <label>Trạng thái:</label>
-      <select class="filter-select" aria-label="Lọc theo trạng thái">
-        <option value="">Tất cả</option>
-        <option value="scheduled">Đã lên lịch</option>
-        <option value="ongoing">Đang diễn ra</option>
-        <option value="completed">Đã hoàn thành</option>
-        <option value="cancelled">Đã hủy</option>
-      </select>
+  <!-- Upcoming Meetings Section -->
+  <div class="upcoming-meetings-section" *ngIf="getUpcomingMeetings().length > 0">
+    <div class="section-header">
+      <h3>🚀 Cuộc họp sắp tới (7 ngày tới)</h3>
+      <span class="upcoming-count">{{ getUpcomingMeetings().length }} cuộc họp</span>
     </div>
-    <div class="filter-group">
-      <label>Hình thức:</label>
-      <select class="filter-select" aria-label="Lọc theo hình thức">
-        <option value="">Tất cả</option>
-        <option value="online">Trực tuyến</option>
-        <option value="offline">Trực tiếp</option>
-        <option value="hybrid">Kết hợp</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>Tìm kiếm:</label>
-      <input type="text" class="filter-input" placeholder="Tìm kiếm cuộc họp...">
+    <div class="upcoming-meetings-grid">
+      <div class="upcoming-meeting-card" *ngFor="let meeting of getUpcomingMeetings()">
+        <div class="upcoming-meeting-time">
+          <div class="time-display">
+            <span class="time-hour">{{ meeting.time }}</span>
+            <span class="time-date">{{ meeting.date | date:'dd/MM' }}</span>
+          </div>
+        </div>
+        <div class="upcoming-meeting-info">
+          <h4>{{ meeting.title }}</h4>
+          <div class="meeting-meta">
+            <span class="project-badge">{{ meeting.projectName }}</span>
+            <span class="duration">{{ meeting.duration }} phút</span>
+            <span class="type-badge" [class]="meeting.type">{{ getTypeText(meeting.type) }}</span>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm">Tham Gia</button>
+      </div>
     </div>
   </div>
 
-  <div class="meetings-grid">
-    <div class="meeting-card" *ngFor="let meeting of meetings">
-      <div class="meeting-header">
-        <div class="meeting-icon">📅</div>
-        <div class="meeting-status">
-          <span class="status-badge" [class]="meeting.status">
-            {{ getStatusText(meeting.status) }}
-          </span>
-        </div>
+  <!-- Enhanced Filters Section -->
+  <div class="meetings-filters-section">
+    <div class="filters-header">
+      <h3>🔍 Bộ lọc cuộc họp</h3>
+      <button class="btn btn-outline btn-sm" (click)="clearFilters()" *ngIf="selectedProjectFilter || selectedStatusFilter || selectedTypeFilter || searchTerm">
+        <span class="btn-icon">🔄</span>
+        Xóa bộ lọc
+      </button>
+    </div>
+    
+    <div class="meetings-filters">
+      <div class="filter-group">
+        <label>Dự án:</label>
+        <select class="filter-select" 
+                [(ngModel)]="selectedProjectFilter"
+                aria-label="Lọc theo dự án">
+          <option value="">Tất cả dự án</option>
+          <option *ngFor="let project of availableProjects" [value]="project.id">
+            {{ project.name }}
+          </option>
+        </select>
       </div>
       
-      <div class="meeting-content">
-        <h3 class="meeting-title">{{ meeting.title }}</h3>
-        <p class="meeting-description">{{ meeting.description }}</p>
-        
-        <div class="meeting-details">
-          <div class="detail-item">
-            <span class="detail-icon">📅</span>
-            <span class="detail-text">{{ meeting.date | date:'dd/MM/yyyy' }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-icon">⏰</span>
-            <span class="detail-text">{{ meeting.time }}</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-icon">⏱️</span>
-            <span class="detail-text">{{ meeting.duration }} phút</span>
-          </div>
-          <div class="detail-item">
-            <span class="detail-icon">🌐</span>
-            <span class="detail-text">{{ getTypeText(meeting.type) }}</span>
-          </div>
-        </div>
-        
-        <div class="meeting-participants">
-          <span class="participants-label">Người tham dự:</span>
-          <div class="participants-list">
-            <span class="participant" *ngFor="let participant of meeting.participants.slice(0, 3)">
-              {{ participant }}
-            </span>
-            <span class="more-participants" *ngIf="meeting.participants.length > 3">
-              +{{ meeting.participants.length - 3 }} khác
-            </span>
-          </div>
-        </div>
+      <div class="filter-group">
+        <label>Trạng thái:</label>
+        <select class="filter-select" 
+                [(ngModel)]="selectedStatusFilter"
+                aria-label="Lọc theo trạng thái">
+          <option value="">Tất cả trạng thái</option>
+          <option value="scheduled">Đã lên lịch</option>
+          <option value="ongoing">Đang diễn ra</option>
+          <option value="completed">Đã hoàn thành</option>
+          <option value="cancelled">Đã hủy</option>
+        </select>
       </div>
       
-      <div class="meeting-actions">
-        <button class="btn btn-primary btn-sm">Tham Gia</button>
-        <button class="btn btn-secondary btn-sm">Chỉnh Sửa</button>
-        <button class="btn btn-outline btn-sm">📋 Ghi Chú</button>
+      <div class="filter-group">
+        <label>Hình thức:</label>
+        <select class="filter-select" 
+                [(ngModel)]="selectedTypeFilter"
+                aria-label="Lọc theo hình thức">
+          <option value="">Tất cả hình thức</option>
+          <option value="online">Trực tuyến</option>
+          <option value="offline">Trực tiếp</option>
+          <option value="hybrid">Kết hợp</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label>Sắp xếp theo:</label>
+        <select class="filter-select" 
+                [(ngModel)]="sortBy"
+                aria-label="Sắp xếp cuộc họp">
+          <option value="date">Thời gian gần nhất</option>
+          <option value="title">Tên cuộc họp</option>
+          <option value="project">Tên dự án</option>
+        </select>
+      </div>
+      
+      <div class="filter-group search-group">
+        <label>Tìm kiếm:</label>
+        <input type="text" 
+               class="filter-input" 
+               [(ngModel)]="searchTerm"
+               placeholder="Tìm kiếm cuộc họp, dự án, milestone...">
       </div>
     </div>
+  </div>
+
+  <!-- Meetings Results Section -->
+  <div class="meetings-results-section">
+    <div class="results-header">
+      <h3>📋 Danh sách cuộc họp</h3>
+      <span class="results-count">{{ filteredMeetings.length }} cuộc họp</span>
+    </div>
+
+    <div class="meetings-grid" *ngIf="filteredMeetings.length > 0; else noMeetings">
+      <div class="meeting-card" *ngFor="let meeting of filteredMeetings">
+        <div class="meeting-header">
+          <div class="meeting-icon">📅</div>
+          <div class="meeting-status">
+            <span class="status-badge" [class]="meeting.status">
+              {{ getStatusText(meeting.status) }}
+            </span>
+          </div>
+        </div>
+        
+        <div class="meeting-content">
+          <h3 class="meeting-title">{{ meeting.title }}</h3>
+          <p class="meeting-description">{{ meeting.description }}</p>
+          
+          <!-- Project and Milestone Information -->
+          <div class="meeting-project-info">
+            <div class="project-info">
+              <span class="project-icon">📁</span>
+              <span class="project-name">{{ meeting.projectName }}</span>
+            </div>
+            <div class="milestone-info" *ngIf="meeting.milestoneName">
+              <span class="milestone-icon">🎯</span>
+              <span class="milestone-name">{{ meeting.milestoneName }}</span>
+            </div>
+          </div>
+          
+          <div class="meeting-details">
+            <div class="detail-item">
+              <span class="detail-icon">📅</span>
+              <span class="detail-text">{{ meeting.date | date:'dd/MM/yyyy' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">⏰</span>
+              <span class="detail-text">{{ meeting.time }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">⏱️</span>
+              <span class="detail-text">{{ meeting.duration }} phút</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-icon">🌐</span>
+              <span class="detail-text">{{ getTypeText(meeting.type) }}</span>
+            </div>
+            <div class="detail-item" *ngIf="meeting.location">
+              <span class="detail-icon">📍</span>
+              <span class="detail-text">{{ meeting.location }}</span>
+            </div>
+          </div>
+          
+          <div class="meeting-participants">
+            <span class="participants-label">Người tham dự:</span>
+            <div class="participants-list">
+              <span class="participant" *ngFor="let participant of meeting.participants.slice(0, 3)">
+                {{ participant }}
+              </span>
+              <span class="more-participants" *ngIf="meeting.participants.length > 3">
+                +{{ meeting.participants.length - 3 }} khác
+              </span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="meeting-actions">
+          <button class="btn btn-primary btn-sm" *ngIf="meeting.status === 'scheduled'">Tham Gia</button>
+          <button class="btn btn-secondary btn-sm">Chỉnh Sửa</button>
+          <button class="btn btn-outline btn-sm" 
+                  (click)="openMeetingNotes(meeting)"
+                  *ngIf="meeting.status === 'completed'"
+                  title="Xem ghi chú cuộc họp">
+            📋 Ghi Chú
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <ng-template #noMeetings>
+      <div class="no-meetings">
+        <div class="no-meetings-icon">📅</div>
+        <h4>Không tìm thấy cuộc họp nào</h4>
+        <p>Thử thay đổi bộ lọc hoặc tạo cuộc họp mới</p>
+        <button class="btn btn-primary" (click)="openCreateMeeting()">
+          <span class="btn-icon">➕</span>
+          Tạo cuộc họp mới
+        </button>
+      </div>
+    </ng-template>
   </div>
 
   <div class="meetings-summary">
@@ -122,6 +233,219 @@
       <div class="summary-content">
         <h4>Trung bình tham dự</h4>
         <p class="summary-number">{{ getAverageParticipants() }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Meeting Notes Modal -->
+  <div class="modal-overlay" *ngIf="showNotesModal" (click)="closeMeetingNotes()">
+    <div class="modal meeting-notes-modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="header-content">
+          <div class="header-icon">📋</div>
+          <div class="header-text">
+            <h3>Ghi Chú Cuộc Họp</h3>
+            <p>{{ selectedMeetingForNotes?.title }}</p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeMeetingNotes()" title="Đóng">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Tab Navigation -->
+      <div class="modal-tabs">
+        <button class="tab-button" 
+                [class.active]="activeTab === 'summary'"
+                (click)="setActiveTab('summary')">
+          📝 Tóm Tắt
+        </button>
+        <button class="tab-button" 
+                [class.active]="activeTab === 'todos'"
+                (click)="setActiveTab('todos')">
+          ✅ Danh Sách Công Việc
+        </button>
+        <button class="tab-button" 
+                [class.active]="activeTab === 'notes'"
+                (click)="setActiveTab('notes')">
+          💬 Ghi Chú Thủ Công
+        </button>
+      </div>
+
+      <div class="modal-content">
+        <!-- Summary Tab -->
+        <div class="tab-content" *ngIf="activeTab === 'summary'">
+          <div class="notes-section" *ngIf="meetingNotes?.summary">
+            <div class="section-header">
+              <h4>📋 Tóm Tắt Cuộc Họp</h4>
+            </div>
+            <div class="summary-content">
+              <p>{{ meetingNotes!.summary }}</p>
+            </div>
+          </div>
+          
+          <div class="no-summary" *ngIf="!meetingNotes?.summary">
+            <div class="empty-state">
+              <div class="empty-icon">📝</div>
+              <h5>Chưa có tóm tắt</h5>
+              <p>Cuộc họp này chưa có tóm tắt được tạo.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Todos Tab -->
+        <div class="tab-content" *ngIf="activeTab === 'todos'">
+          <div class="notes-section" *ngIf="meetingNotes?.todoList && meetingNotes!.todoList.length > 0">
+            <div class="section-header">
+              <h4>✅ Danh Sách Công Việc (AI)</h4>
+              <div class="header-actions">
+                <span class="todo-count">{{ meetingNotes!.todoList.length }} công việc</span>
+                <button class="btn btn-primary btn-sm" (click)="generateTasksFromTodos()">
+                  🚀 Tạo Task
+                </button>
+              </div>
+            </div>
+            
+            <div class="todo-list">
+              <div class="todo-item" *ngFor="let todo of meetingNotes!.todoList">
+                <!-- Edit Mode -->
+                <div class="todo-edit-form" *ngIf="editingTodo?.id === todo.id">
+                  <div class="edit-form-content">
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label>Công việc:</label>
+                        <input type="text" class="form-input" [(ngModel)]="editTodoForm.task">
+                      </div>
+                      <div class="form-group">
+                        <label>Người thực hiện:</label>
+                        <input type="text" class="form-input" [(ngModel)]="editTodoForm.assignee">
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label>Ngày hạn:</label>
+                        <input type="date" class="form-input" [(ngModel)]="editTodoForm.dueDate">
+                      </div>
+                      <div class="form-group">
+                        <label>Độ ưu tiên:</label>
+                        <select class="form-select" [(ngModel)]="editTodoForm.priority">
+                          <option value="low">Thấp</option>
+                          <option value="medium">Trung bình</option>
+                          <option value="high">Cao</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label>Trạng thái:</label>
+                        <select class="form-select" [(ngModel)]="editTodoForm.status">
+                          <option value="pending">Chờ thực hiện</option>
+                          <option value="in-progress">Đang thực hiện</option>
+                          <option value="completed">Hoàn thành</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="edit-actions">
+                      <button class="btn btn-primary btn-sm" (click)="saveEditTodo()">
+                        💾 Lưu
+                      </button>
+                      <button class="btn btn-secondary btn-sm" (click)="cancelEditTodo()">
+                        ❌ Hủy
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- View Mode -->
+                <div class="todo-content" *ngIf="editingTodo?.id !== todo.id">
+                  <div class="todo-task">{{ todo.task }}</div>
+                  <div class="todo-meta">
+                    <span>👤 {{ todo.assignee }}</span>
+                    <span>📅 {{ todo.dueDate }}</span>
+                    <span [style.color]="getPriorityColor(todo.priority)">
+                      ⚡ {{ getPriorityText(todo.priority) }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="todo-status" *ngIf="editingTodo?.id !== todo.id">
+                  <div class="status-badge" [class]="todo.status">
+                    {{ getStatusText(todo.status) }}
+                  </div>
+                  <button class="btn btn-outline btn-sm edit-todo-btn" (click)="startEditTodo(todo)">
+                    ✏️ Chỉnh sửa
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="no-todos" *ngIf="!meetingNotes?.todoList || meetingNotes!.todoList.length === 0">
+            <div class="empty-state">
+              <div class="empty-icon">✅</div>
+              <h5>Chưa có công việc</h5>
+              <p>Cuộc họp này chưa có danh sách công việc được tạo.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes Tab -->
+        <div class="tab-content" *ngIf="activeTab === 'notes'">
+          <div class="notes-section">
+            <div class="section-header">
+              <h4>💬 Ghi Chú Thủ Công</h4>
+              <span class="notes-count" *ngIf="meetingNotes?.manualNotes">{{ meetingNotes!.manualNotes.length }} ghi chú</span>
+            </div>
+            
+            <div class="manual-notes-list" *ngIf="meetingNotes?.manualNotes && meetingNotes!.manualNotes.length > 0">
+              <div class="manual-note" *ngFor="let note of meetingNotes!.manualNotes">
+                <div class="note-header">
+                  <span class="note-type-icon">{{ getNoteTypeIcon(note.type) }}</span>
+                  <span class="note-type">{{ getNoteTypeText(note.type) }}</span>
+                  <span class="note-author">{{ note.author }}</span>
+                  <span class="note-time">{{ note.timestamp | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                <div class="note-content">{{ note.content }}</div>
+              </div>
+            </div>
+
+            <div class="add-note-section">
+              <h5>➕ Thêm Ghi Chú Mới</h5>
+              <form (ngSubmit)="addManualNote()" class="add-note-form">
+                <div class="form-group">
+                  <label>Loại ghi chú:</label>
+                  <select class="form-select" [(ngModel)]="newManualNote.type" name="type">
+                    <option value="general">Ghi chú chung</option>
+                    <option value="action-item">Hành động</option>
+                    <option value="decision">Quyết định</option>
+                    <option value="question">Câu hỏi</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Nội dung:</label>
+                  <textarea class="form-textarea" 
+                            [(ngModel)]="newManualNote.content" 
+                            name="content"
+                            placeholder="Nhập nội dung ghi chú..."></textarea>
+                </div>
+                <button type="submit" 
+                        class="btn btn-primary"
+                        [disabled]="!newManualNote.content.trim()">
+                  <span class="btn-icon">💾</span>
+                  Thêm Ghi Chú
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeMeetingNotes()">
+          <span class="btn-icon">❌</span>
+          Đóng
+        </button>
       </div>
     </div>
   </div>

@@ -95,7 +95,7 @@ export class PmLayoutComponent implements OnInit {
   // Services
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
-  private router = inject(Router);
+  public router = inject(Router);
   private route = inject(ActivatedRoute);
 
   // UI state
@@ -258,12 +258,6 @@ export class PmLayoutComponent implements OnInit {
       icon: '📁',
       route: '/pm/projects',
       badge: '2'
-    },
-    {
-      label: 'Milestone',
-      icon: '🎯',
-      route: '/pm/milestones',
-      badge: '3'
     },
     {
       label: 'Cuộc Họp',
@@ -490,6 +484,12 @@ export class PmLayoutComponent implements OnInit {
   getPageTitle(): string {
     const currentRoute = this.router.url;
     if (currentRoute.includes('/dashboard')) return 'Bảng Điều Khiển';
+    if (currentRoute.includes('/projects') && currentRoute.includes('/milestones')) {
+      // Extract project ID from URL
+      const projectId = currentRoute.split('/')[3]; // /pm/projects/{projectId}/milestones
+      const project = this.projects.find(p => p.id === projectId);
+      return project ? `Milestones - ${project.name}` : 'Milestones';
+    }
     if (currentRoute.includes('/projects')) return 'Quản Lý Dự Án';
     if (currentRoute.includes('/milestones')) return 'Quản Lý Milestone';
     if (currentRoute.includes('/meetings')) return 'Quản Lý Cuộc Họp';
@@ -502,6 +502,16 @@ export class PmLayoutComponent implements OnInit {
 
   getBreadcrumb(): BreadcrumbItem[] | null {
     const currentRoute = this.router.url;
+    if (currentRoute.includes('/projects') && currentRoute.includes('/milestones')) {
+      // Project-specific milestones
+      const projectId = currentRoute.split('/')[3];
+      const project = this.projects.find(p => p.id === projectId);
+      return [
+        { label: 'Dự Án', route: '/pm/projects' },
+        { label: project ? project.name : 'Dự Án', route: `/pm/projects/${projectId}` },
+        { label: 'Milestones', route: `/pm/projects/${projectId}/milestones` }
+      ];
+    }
     if (currentRoute.includes('/projects')) {
       return [
         { label: 'Dự Án', route: '/pm/projects' }
