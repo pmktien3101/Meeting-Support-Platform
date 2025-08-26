@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // Force modal width for milestone details and edit modal
 .modal.milestone-details-modal,
 .modal.edit-milestone-modal {
@@ -5,6 +7,7 @@
   max-width: 900px !important;
   min-width: 320px !important;
 }
+
 // Color variables - matching landing page and PM layout
 $primary-orange: #FF5E13;
 $secondary-orange: #FFA463;
@@ -93,7 +96,7 @@ $off-white: #F9F4EE;
           color: white;
 
           &:hover {
-            background: linear-gradient(135deg, darken($primary-orange, 10%), darken($secondary-orange, 10%));
+            background: linear-gradient(135deg, color.adjust($primary-orange, $lightness: -10%), color.adjust($secondary-orange, $lightness: -10%));
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(255, 94, 19, 0.3);
           }
@@ -663,7 +666,8 @@ $off-white: #F9F4EE;
         color: #374151;
       }
 
-      .filter-select, .filter-input {
+      .filter-select,
+      .filter-input {
         padding: 8px 12px;
         border: 1px solid #d1d5db;
         border-radius: 6px;
@@ -838,7 +842,7 @@ $off-white: #F9F4EE;
             color: white;
 
             &:hover {
-              background: linear-gradient(135deg, darken($primary-orange, 10%), darken($secondary-orange, 10%));
+              background: linear-gradient(135deg, color.adjust($primary-orange, $lightness: -10%), color.adjust($secondary-orange, $lightness: -10%));
               transform: translateY(-2px);
               box-shadow: 0 8px 25px rgba(255, 94, 19, 0.3);
             }
@@ -959,7 +963,9 @@ $off-white: #F9F4EE;
       padding: 16px;
 
       .filter-group {
-        .filter-select, .filter-input {
+
+        .filter-select,
+        .filter-input {
           min-width: 100%;
         }
       }
@@ -1019,7 +1025,7 @@ $off-white: #F9F4EE;
     &::-webkit-scrollbar {
       display: none;
     }
-    
+
     // Hide scrollbar for Firefox
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -1101,7 +1107,7 @@ $off-white: #F9F4EE;
         &::-webkit-scrollbar {
           display: none;
         }
-        
+
         scrollbar-width: none;
         -ms-overflow-style: none;
 
@@ -1146,7 +1152,8 @@ $off-white: #F9F4EE;
               }
             }
 
-            .form-input, .form-textarea {
+            .form-input,
+            .form-textarea {
               width: 100%;
               padding: 12px 16px;
               border: 2px solid #e2e8f0;
@@ -1489,7 +1496,10 @@ $off-white: #F9F4EE;
         overflow-y: auto;
 
         // Hide scrollbar
-        &::-webkit-scrollbar { display: none; }
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
         scrollbar-width: none;
         -ms-overflow-style: none;
 
@@ -1889,7 +1899,10 @@ $off-white: #F9F4EE;
         overflow-y: auto;
 
         // Hide scrollbar
-        &::-webkit-scrollbar { display: none; }
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
         scrollbar-width: none;
         -ms-overflow-style: none;
 
@@ -2057,6 +2070,7 @@ $off-white: #F9F4EE;
     padding: 16px;
 
     .modal {
+
       &.tasks-modal,
       &.add-task-modal {
         width: 98%;
@@ -2131,6 +2145,7 @@ $off-white: #F9F4EE;
     padding: 12px;
 
     .modal {
+
       &.tasks-modal,
       &.add-task-modal {
         width: 100%;
@@ -2176,6 +2191,7 @@ $off-white: #F9F4EE;
 
           .form-section {
             .form-group {
+
               .form-input,
               .form-textarea,
               .form-select {
@@ -2195,18 +2211,22 @@ $off-white: #F9F4EE;
   width: 95%;
   max-width: 900px;
   min-width: 320px;
+
   .modal-content {
     padding: 0;
     max-height: 85vh;
     overflow-y: auto;
     background: white;
     box-sizing: border-box;
+
     &::-webkit-scrollbar {
       display: none;
     }
+
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
+
   .modal-header {
     box-sizing: border-box;
     width: 100%;
@@ -2217,19 +2237,19 @@ $off-white: #F9F4EE;
 
   .modal-header {
     background: linear-gradient(135deg, #FFA463 0%, #FF5E13 100%);
-  border-radius: 20px 20px 0 0;
-  padding: 32px 64px 32px 64px;
-  width: 100%;
-  max-width: none;
+    border-radius: 20px 20px 0 0;
+    padding: 32px 64px 32px 64px;
+    width: 100%;
+    max-width: none;
     border-bottom: 1px solid #e2e8f0;
     position: relative;
 
     .header-content {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  width: 100%;
-  padding-right: 0;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+      padding-right: 0;
 
       .header-icon {
         font-size: 32px;
@@ -2289,7 +2309,10 @@ $off-white: #F9F4EE;
     overflow-y: auto;
 
     // Hide scrollbar
-    &::-webkit-scrollbar { display: none; }
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
@@ -2297,11 +2320,11 @@ $off-white: #F9F4EE;
   .detail-section {
     margin-bottom: 32px;
     position: relative;
-    
+
     &:last-child {
       margin-bottom: 0;
     }
-    
+
     h4 {
       font-size: 18px;
       font-weight: 700;
@@ -2508,18 +2531,22 @@ $off-white: #F9F4EE;
   width: 95%;
   max-width: 900px;
   min-width: 320px;
+
   .modal-form {
     padding: 0;
     max-height: 75vh;
     overflow-y: auto;
     background: white;
     box-sizing: border-box;
+
     &::-webkit-scrollbar {
       display: none;
     }
+
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
+
   .modal-header {
     box-sizing: border-box;
     width: 100%;
@@ -2530,19 +2557,19 @@ $off-white: #F9F4EE;
 
   .modal-header {
     background: linear-gradient(135deg, #FFA463 0%, #FF5E13 100%);
-  border-radius: 20px 20px 0 0;
-  padding: 32px 64px 32px 64px;
-  width: 100%;
-  max-width: none;
+    border-radius: 20px 20px 0 0;
+    padding: 32px 64px 32px 64px;
+    width: 100%;
+    max-width: none;
     border-bottom: 1px solid #e2e8f0;
     position: relative;
 
     .header-content {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  width: 100%;
-  padding-right: 0;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      width: 100%;
+      padding-right: 0;
 
       .header-icon {
         font-size: 32px;
@@ -2599,11 +2626,11 @@ $off-white: #F9F4EE;
   .form-section {
     padding: 32px;
     border-bottom: 1px solid #e2e8f0;
-    
+
     &:last-child {
       border-bottom: none;
     }
-    
+
     .section-title {
       font-size: 18px;
       font-weight: 700;
@@ -2625,7 +2652,7 @@ $off-white: #F9F4EE;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    
+
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
       gap: 16px;
@@ -2641,11 +2668,11 @@ $off-white: #F9F4EE;
     display: flex;
     align-items: center;
     gap: 8px;
-    
+
     .label-icon {
       font-size: 16px;
     }
-    
+
     .required {
       color: #ef4444;
       font-weight: 700;
@@ -2663,19 +2690,19 @@ $off-white: #F9F4EE;
     transition: all 0.2s ease;
     box-sizing: border-box;
     background: #f8fafc;
-    
+
     &:focus {
       outline: none;
       border-color: #FFA463;
       box-shadow: 0 0 0 3px rgba(255, 164, 99, 0.1);
       background: white;
     }
-    
+
     &:hover {
       border-color: #cbd5e1;
       background: white;
     }
-    
+
     &::placeholder {
       color: #9ca3af;
     }
@@ -2703,7 +2730,7 @@ $off-white: #F9F4EE;
     display: flex;
     gap: 16px;
     justify-content: flex-end;
-    
+
     @media (max-width: 768px) {
       flex-direction: column;
       gap: 12px;
@@ -2721,7 +2748,7 @@ $off-white: #F9F4EE;
     align-items: center;
     gap: 8px;
     border: none;
-    
+
     &:disabled {
       opacity: 0.6;
       cursor: not-allowed;
@@ -2734,7 +2761,7 @@ $off-white: #F9F4EE;
     background: #f1f5f9;
     color: #64748b;
     border: 2px solid #e2e8f0;
-    
+
     &:hover:not(:disabled) {
       background: #e2e8f0;
       color: #475569;
@@ -2746,7 +2773,7 @@ $off-white: #F9F4EE;
     background: linear-gradient(135deg, #FFA463 0%, #FF5E13 100%);
     color: white;
     box-shadow: 0 2px 8px rgba(255, 94, 19, 0.3);
-    
+
     &:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(255, 94, 19, 0.4);
@@ -2766,7 +2793,7 @@ $off-white: #F9F4EE;
   border: 2px solid;
   position: relative;
   overflow: hidden;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -2777,32 +2804,32 @@ $off-white: #F9F4EE;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     transition: left 0.6s ease;
   }
-  
+
   &:hover::before {
     left: 100%;
   }
-  
+
   &.pending {
     background: linear-gradient(135deg, #FFA463, #FFDBBD);
     color: #FF5E13;
     border-color: #FF5E13;
     box-shadow: 0 4px 16px rgba(255, 164, 99, 0.3);
   }
-  
+
   &.in-progress {
     background: linear-gradient(135deg, #FF5E13, #FFA463);
     color: white;
     border-color: #FF5E13;
     box-shadow: 0 4px 16px rgba(255, 94, 19, 0.3);
   }
-  
+
   &.completed {
     background: linear-gradient(135deg, #28a745, #20c997);
     color: white;
     border-color: #28a745;
     box-shadow: 0 4px 16px rgba(40, 167, 69, 0.3);
   }
-  
+
   &.delayed {
     background: linear-gradient(135deg, #dc3545, #fd7e14);
     color: white;
@@ -2822,7 +2849,7 @@ $off-white: #F9F4EE;
   border: 2px solid;
   position: relative;
   overflow: hidden;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -2833,32 +2860,32 @@ $off-white: #F9F4EE;
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     transition: left 0.6s ease;
   }
-  
+
   &:hover::before {
     left: 100%;
   }
-  
+
   &.low {
     background: linear-gradient(135deg, #28a745, #20c997);
     color: white;
     border-color: #28a745;
     box-shadow: 0 4px 16px rgba(40, 167, 69, 0.3);
   }
-  
+
   &.medium {
     background: linear-gradient(135deg, #FFA463, #FFDBBD);
     color: #FF5E13;
     border-color: #FF5E13;
     box-shadow: 0 4px 16px rgba(255, 164, 99, 0.3);
   }
-  
+
   &.high {
     background: linear-gradient(135deg, #FF5E13, #FFA463);
     color: white;
     border-color: #FF5E13;
     box-shadow: 0 4px 16px rgba(255, 94, 19, 0.3);
   }
-  
+
   &.urgent {
     background: linear-gradient(135deg, #dc3545, #fd7e14);
     color: white;
@@ -2873,6 +2900,7 @@ $off-white: #F9F4EE;
   0% {
     transform: translateX(-100%);
   }
+
   100% {
     transform: translateX(100%);
   }
@@ -2882,6 +2910,7 @@ $off-white: #F9F4EE;
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
@@ -2892,10 +2921,12 @@ $off-white: #F9F4EE;
     box-shadow: 0 4px 16px rgba(220, 53, 69, 0.3);
     transform: scale(1);
   }
+
   50% {
     box-shadow: 0 8px 24px rgba(220, 53, 69, 0.5);
     transform: scale(1.05);
   }
+
   100% {
     box-shadow: 0 4px 16px rgba(220, 53, 69, 0.3);
     transform: scale(1);
@@ -2904,34 +2935,35 @@ $off-white: #F9F4EE;
 
 // Responsive Design with Creative Touch
 @media (max-width: 768px) {
+
   .milestone-details-modal,
   .edit-milestone-modal {
     width: 95%;
     max-width: none;
     min-width: 280px;
-    
+
     .modal-content {
       max-height: 80vh;
     }
-    
+
     .milestone-details-content {
       padding: 24px;
     }
-    
+
     .detail-grid {
       grid-template-columns: 1fr;
       gap: 16px;
     }
-    
+
     .task-stats {
       grid-template-columns: 1fr;
       gap: 16px;
     }
-    
+
     .form-section {
       padding: 24px;
     }
-    
+
     .modal-actions {
       padding: 24px;
     }
@@ -2939,62 +2971,63 @@ $off-white: #F9F4EE;
 }
 
 @media (max-width: 480px) {
+
   .milestone-details-modal,
   .edit-milestone-modal {
     width: 98%;
     min-width: 260px;
-    
+
     .modal-content {
       max-height: 85vh;
     }
-    
+
     .milestone-details-content {
       padding: 20px;
     }
-    
+
     .detail-section {
       margin-bottom: 32px;
-      
+
       h4 {
         font-size: 18px;
         margin-bottom: 20px;
         padding: 14px 20px;
       }
     }
-    
+
     .detail-item {
       padding: 18px 20px;
     }
-    
+
     .progress-section,
     .tasks-summary {
       padding: 24px;
     }
-    
+
     .form-section {
       padding: 20px;
-      
+
       .section-title {
         font-size: 18px;
         margin-bottom: 20px;
         padding: 14px 20px;
       }
     }
-    
+
     .form-group {
       margin-bottom: 20px;
     }
-    
+
     .form-input,
     .form-textarea,
     .form-select {
       padding: 14px 18px;
       font-size: 14px;
     }
-    
+
     .modal-actions {
       padding: 20px;
-      
+
       .btn {
         padding: 14px 24px;
         font-size: 14px;
@@ -3005,34 +3038,35 @@ $off-white: #F9F4EE;
 
 // Enhanced Responsive Design with Creative Touch
 @media (max-width: 1400px) {
+
   .milestone-details-modal,
   .edit-milestone-modal {
     width: 95%;
     max-width: 1100px;
-    
+
     .modal-content,
     .modal-form {
       max-height: 80vh;
     }
-    
+
     .milestone-details-content {
       padding: 36px;
     }
-    
+
     .detail-grid {
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 20px;
     }
-    
+
     .task-stats {
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 20px;
     }
-    
+
     .form-section {
       padding: 36px;
     }
-    
+
     .modal-actions {
       padding: 36px;
     }
@@ -3040,34 +3074,35 @@ $off-white: #F9F4EE;
 }
 
 @media (max-width: 1200px) {
+
   .milestone-details-modal,
   .edit-milestone-modal {
     width: 95%;
     max-width: 900px;
-    
+
     .modal-content,
     .modal-form {
       max-height: 80vh;
     }
-    
+
     .milestone-details-content {
       padding: 32px;
     }
-    
+
     .detail-grid {
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 18px;
     }
-    
+
     .task-stats {
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 18px;
     }
-    
+
     .form-section {
       padding: 32px;
     }
-    
+
     .modal-actions {
       padding: 32px;
     }
@@ -3075,34 +3110,35 @@ $off-white: #F9F4EE;
 }
 
 @media (max-width: 992px) {
+
   .milestone-details-modal,
   .edit-milestone-modal {
     width: 95%;
     max-width: 800px;
-    
+
     .modal-content,
     .modal-form {
       max-height: 82vh;
     }
-    
+
     .milestone-details-content {
       padding: 28px;
     }
-    
+
     .detail-grid {
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 16px;
     }
-    
+
     .task-stats {
       grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
       gap: 16px;
     }
-    
+
     .form-section {
       padding: 28px;
     }
-    
+
     .modal-actions {
       padding: 28px;
     }
@@ -3110,75 +3146,76 @@ $off-white: #F9F4EE;
 }
 
 @media (max-width: 768px) {
+
   .milestone-details-modal,
   .edit-milestone-modal {
     width: 95%;
     max-width: none;
     min-width: 600px; // Increased minimum width
-    
+
     .modal-content,
     .modal-form {
       max-height: 85vh;
     }
-    
+
     .milestone-details-content {
       padding: 24px;
     }
-    
+
     .detail-section {
       margin-bottom: 32px;
-      
+
       h4 {
         font-size: 18px;
         margin-bottom: 20px;
         padding: 16px 20px;
       }
     }
-    
+
     .detail-grid {
       grid-template-columns: 1fr;
       gap: 16px;
     }
-    
+
     .detail-item {
       padding: 20px 22px;
     }
-    
+
     .progress-section,
     .tasks-summary {
       padding: 24px;
     }
-    
+
     .task-stats {
       grid-template-columns: 1fr;
       gap: 16px;
     }
-    
+
     .form-section {
       padding: 24px;
-      
+
       .section-title {
         font-size: 18px;
         margin-bottom: 20px;
         padding: 16px 20px;
       }
     }
-    
+
     .form-group {
       margin-bottom: 20px;
     }
-    
+
     .form-input,
     .form-textarea,
     .form-select {
       padding: 14px 18px;
       font-size: 14px;
     }
-    
+
     .modal-actions {
       padding: 24px;
       gap: 16px;
-      
+
       .btn {
         padding: 14px 24px;
         font-size: 14px;
@@ -3188,68 +3225,69 @@ $off-white: #F9F4EE;
 }
 
 @media (max-width: 576px) {
+
   .milestone-details-modal,
   .edit-milestone-modal {
     width: 99%;
     min-width: 350px; // Increased minimum width
-    
+
     .modal-content,
     .modal-form {
       max-height: 90vh;
     }
-    
+
     .milestone-details-content {
       padding: 24px;
     }
-    
+
     .detail-section {
       margin-bottom: 32px;
-      
+
       h4 {
         font-size: 18px;
         margin-bottom: 20px;
         padding: 16px 20px;
       }
     }
-    
+
     .detail-item {
       padding: 20px 22px;
     }
-    
+
     .progress-section,
     .tasks-summary {
       padding: 24px;
     }
-    
+
     .task-stats {
       gap: 16px;
     }
-    
+
     .form-section {
       padding: 24px;
-      
+
       .section-title {
         font-size: 18px;
         margin-bottom: 20px;
         padding: 16px 20px;
       }
     }
-    
+
     .form-group {
       margin-bottom: 20px;
     }
-    
+
     .form-input,
     .form-textarea,
     .form-select {
       padding: 14px 18px;
       font-size: 14px;
     }
-    
+
     .modal-actions {
       padding: 24px;
       gap: 16px;
-      
+
       .btn {
         padding: 14px 24px;
         font-size: 14px;
@@ -3259,68 +3297,69 @@ $off-white: #F9F4EE;
 }
 
 @media (max-width: 480px) {
+
   .milestone-details-modal,
   .edit-milestone-modal {
     width: 100%;
     min-width: 320px; // Increased minimum width
-    
+
     .modal-content,
     .modal-form {
       max-height: 95vh;
     }
-    
+
     .milestone-details-content {
       padding: 20px;
     }
-    
+
     .detail-section {
       margin-bottom: 28px;
-      
+
       h4 {
         font-size: 17px;
         margin-bottom: 18px;
         padding: 14px 18px;
       }
     }
-    
+
     .detail-item {
       padding: 18px 20px;
     }
-    
+
     .progress-section,
     .tasks-summary {
       padding: 20px;
     }
-    
+
     .task-stats {
       gap: 14px;
     }
-    
+
     .form-section {
       padding: 20px;
-      
+
       .section-title {
         font-size: 17px;
         margin-bottom: 18px;
         padding: 14px 18px;
       }
     }
-    
+
     .form-group {
       margin-bottom: 18px;
     }
-    
+
     .form-input,
     .form-textarea,
     .form-select {
       padding: 12px 16px;
       font-size: 13px;
     }
-    
+
     .modal-actions {
       padding: 20px;
       gap: 14px;
-      
+
       .btn {
         padding: 12px 20px;
         font-size: 13px;

@@ -380,6 +380,26 @@
         &:hover {
           color: #374151;
         }
+
+        &.emergency-close {
+          position: absolute;
+          top: 1rem;
+          right: 3rem;
+          background-color: #dc2626;
+          color: white;
+          border-radius: 50%;
+          width: 2rem;
+          height: 2rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.875rem;
+          
+          &:hover {
+            background-color: #b91c1c;
+            color: white;
+          }
+        }
       }
     }
 
@@ -398,13 +418,26 @@
       }
 
       .form-group {
-        .form-input {
+        margin-bottom: 1.5rem;
+
+        label {
+          display: block;
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: #374151;
+          margin-bottom: 0.5rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
           width: 100%;
           padding: 0.75rem;
           border: 1px solid #d1d5db;
           border-radius: 0.5rem;
           font-size: 0.875rem;
           transition: border-color 0.2s ease;
+          background-color: #fff;
 
           &:focus {
             outline: none;
@@ -414,6 +447,72 @@
 
           &.error {
             border-color: #dc2626;
+          }
+        }
+
+        .form-textarea {
+          resize: vertical;
+          min-height: 80px;
+        }
+
+        .role-selection {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+
+          .role-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background-color: #f9fafb;
+            transition: all 0.2s ease;
+            cursor: pointer;
+
+            &:hover {
+              background-color: #f3f4f6;
+              border-color: #d1d5db;
+            }
+
+            .role-checkbox {
+              margin-top: 0.25rem;
+              width: 1.125rem;
+              height: 1.125rem;
+              accent-color: #3b82f6;
+            }
+
+            .role-label {
+              display: flex;
+              align-items: flex-start;
+              gap: 0.75rem;
+              cursor: pointer;
+              flex: 1;
+
+              .role-icon {
+                font-size: 1.5rem;
+                margin-top: 0.125rem;
+              }
+
+              .role-text {
+                display: flex;
+                flex-direction: column;
+                gap: 0.25rem;
+
+                strong {
+                  font-size: 0.875rem;
+                  font-weight: 600;
+                  color: #1f2937;
+                }
+
+                small {
+                  font-size: 0.75rem;
+                  color: #6b7280;
+                  line-height: 1.4;
+                }
+              }
+            }
           }
         }
 

@@ -1,3 +1,5 @@
+﻿@use "sass:color";
+
 // Color variables - matching landing page and PM layout
 $primary-orange: #FF5E13;
 $secondary-orange: #FFA463;
@@ -57,7 +59,7 @@ $off-white: #F9F4EE;
           color: white;
 
           &:hover {
-            background: linear-gradient(135deg, darken($primary-orange, 10%), darken($secondary-orange, 10%));
+            background: linear-gradient(135deg, color.adjust($primary-orange, $lightness: -10%), color.adjust($secondary-orange, $lightness: -10%));
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(255, 94, 19, 0.3);
           }
@@ -97,7 +99,8 @@ $off-white: #F9F4EE;
         color: #374151;
       }
 
-      .filter-select, .filter-input {
+      .filter-select,
+      .filter-input {
         padding: 8px 12px;
         border: 1px solid #d1d5db;
         border-radius: 6px;
@@ -274,7 +277,7 @@ $off-white: #F9F4EE;
             color: white;
 
             &:hover {
-              background: linear-gradient(135deg, darken($primary-orange, 10%), darken($secondary-orange, 10%));
+              background: linear-gradient(135deg, color.adjust($primary-orange, $lightness: -10%), color.adjust($secondary-orange, $lightness: -10%));
               transform: translateY(-2px);
               box-shadow: 0 8px 25px rgba(255, 94, 19, 0.3);
             }
@@ -374,7 +377,9 @@ $off-white: #F9F4EE;
       padding: 16px;
 
       .filter-group {
-        .filter-select, .filter-input {
+
+        .filter-select,
+        .filter-input {
           min-width: 100%;
         }
       }
@@ -434,7 +439,7 @@ $off-white: #F9F4EE;
     &::-webkit-scrollbar {
       display: none;
     }
-    
+
     // Hide scrollbar for Firefox
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -516,7 +521,7 @@ $off-white: #F9F4EE;
         &::-webkit-scrollbar {
           display: none;
         }
-        
+
         scrollbar-width: none;
         -ms-overflow-style: none;
 
@@ -561,7 +566,9 @@ $off-white: #F9F4EE;
               }
             }
 
-            .form-input, .form-textarea, .form-select {
+            .form-input,
+            .form-textarea,
+            .form-select {
               width: 100%;
               padding: 12px 16px;
               border: 2px solid #e2e8f0;
@@ -1016,7 +1023,10 @@ $off-white: #F9F4EE;
         overflow-y: auto;
 
         // Hide scrollbar
-        &::-webkit-scrollbar { display: none; }
+        &::-webkit-scrollbar {
+          display: none;
+        }
+
         scrollbar-width: none;
         -ms-overflow-style: none;
 
@@ -1157,7 +1167,7 @@ $off-white: #F9F4EE;
                     }
                   }
 
-                  .checkbox-input:checked + .checkbox-custom {
+                  .checkbox-input:checked+.checkbox-custom {
                     background: #FFA463;
                     border-color: #FFA463;
 
@@ -1378,6 +1388,7 @@ $off-white: #F9F4EE;
             }
 
             .form-group {
+
               .form-input,
               .form-textarea,
               .form-select {
