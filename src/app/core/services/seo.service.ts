@@ -1,4 +1,4 @@
-import { Injectable, inject, PLATFORM_ID } from '@angular/core';
+import { Injectable, inject, PLATFORM_ID, Inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
@@ -25,7 +25,6 @@ export class SeoService {
   private readonly meta = inject(Meta);
   private readonly router = inject(Router);
   private readonly platformId = inject(PLATFORM_ID);
-  private readonly isBrowser = isPlatformBrowser(this.platformId);
 
   private readonly defaultMeta: Required<SeoMetaData> = {
     title: 'Meeting Support Platform',
@@ -43,10 +42,15 @@ export class SeoService {
   };
 
   constructor() {
-    if (this.isBrowser) {
+    // Only subscribe to router events in browser environment
+    if (isPlatformBrowser(this.platformId)) {
       this.router.events.pipe(
         filter(e => e instanceof NavigationEnd)
-      ).subscribe(() => this.setCanonicalUrl(window.location.href));
+      ).subscribe(() => {
+        if (typeof window !== 'undefined') {
+          this.setCanonicalUrl(window.location.href);
+        }
+      });
     }
   }
 
@@ -77,7 +81,11 @@ export class SeoService {
   }
 
   setCanonicalUrl(url: string): void {
-    if (!this.isBrowser) return;
+    // Only execute in browser environment
+    if (!isPlatformBrowser(this.platformId) || typeof document === 'undefined') {
+      return;
+    }
+
     let link: HTMLLinkElement | null = document.querySelector('link[rel="canonical"]');
     if (!link) {
       link = document.createElement('link');

@@ -82,40 +82,56 @@ export class AuthService {
 
   /** Getters */
   getAccessToken(): string | null {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    return localStorage.getItem('accessToken');
+    if (typeof window !== 'undefined' && window.localStorage) {
+      return localStorage.getItem('accessToken');
+    }
+    return null;
   }
-  return null;
-}
+
   getRefreshToken(): string | null {
-    return localStorage.getItem('refreshToken');
+    if (typeof window !== 'undefined' && window.localStorage) {
+      return localStorage.getItem('refreshToken');
+    }
+    return null;
   }
+
   getCurrentUser(): User | null {
-    const userStr = localStorage.getItem('currentUser');
-    return userStr ? JSON.parse(userStr) : null;
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const userStr = localStorage.getItem('currentUser');
+      return userStr ? JSON.parse(userStr) : null;
+    }
+    return null;
   }
+
   getUserRole(): string | null {
     return this.getCurrentUser()?.role ?? null;
   }
+
   public isAuthenticated(): boolean {
     return !!this.getAccessToken();
   }
 
   /** Setters */
   public setTokens(tokens: AuthTokens): void {
-    localStorage.setItem('accessToken', tokens.accessToken);
-    localStorage.setItem('refreshToken', tokens.refreshToken);
-    localStorage.setItem('tokenExpiresAt', (Date.now() + tokens.expiresIn * 1000).toString());
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem('accessToken', tokens.accessToken);
+      localStorage.setItem('refreshToken', tokens.refreshToken);
+      localStorage.setItem('tokenExpiresAt', (Date.now() + tokens.expiresIn * 1000).toString());
+    }
   }
 
   private setCurrentUser(user: User): void {
-    localStorage.setItem('currentUser', JSON.stringify(user));
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem('currentUser', JSON.stringify(user));
+    }
   }
 
   private clearAuth(): void {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('tokenExpiresAt');
-    localStorage.removeItem('currentUser');
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('tokenExpiresAt');
+      localStorage.removeItem('currentUser');
+    }
   }
 }

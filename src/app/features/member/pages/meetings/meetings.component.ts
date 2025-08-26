@@ -1,7 +1,9 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { isPlatformBrowser } from '@angular/common';
+import { PLATFORM_ID, inject } from '@angular/core';
 
 interface Meeting {
   id: number;
@@ -29,7 +31,7 @@ interface Meeting {
   templateUrl: './meetings.component.html',
   styleUrls: ['./meetings.component.scss']
 })
-export class MemberMeetingsComponent {
+export class MemberMeetingsComponent implements OnInit {
   // Search and filters
   searchTerm = '';
   statusFilter = '';
@@ -123,6 +125,12 @@ export class MemberMeetingsComponent {
     this.filterMeetings();
   }
 
+  ngOnInit(): void {
+    // This method is typically used for initialization that requires platform-specific logic
+    // or for fetching data that depends on the platform.
+    // For now, it's empty as the data is already loaded in the constructor.
+  }
+
   // Filter meetings based on search and filters
   filterMeetings(): void {
     let filtered = this.allMeetings();
@@ -175,7 +183,11 @@ export class MemberMeetingsComponent {
   joinMeeting(meeting: Meeting): void {
     console.log('Joining meeting:', meeting.title);
     if (meeting.meetingLink) {
-      window.open(meeting.meetingLink, '_blank');
+      if (isPlatformBrowser(inject(PLATFORM_ID))) {
+        window.open(meeting.meetingLink, '_blank');
+      } else {
+        console.warn('Browser environment not available, cannot open meeting link.');
+      }
     }
   }
 

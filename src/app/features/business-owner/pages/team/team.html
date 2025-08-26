@@ -5,6 +5,12 @@
       <h1>Quản Lý Nhóm</h1>
       <p>Quản lý thành viên nhóm và xem thông tin Project Manager</p>
     </div>
+    <div class="header-actions">
+      <button class="btn btn-primary" (click)="openAddMemberModal()">
+        <span class="icon">➕</span>
+        Thêm Thành Viên
+      </button>
+    </div>
   </div>
 
   <!-- Filters -->
@@ -99,7 +105,7 @@
         </div>
 
         <div class="member-actions">
-          <button class="btn btn-outline btn-sm">
+          <button class="btn btn-outline btn-sm" (click)="openEditMemberModal(member)">
             <span class="icon">✏️</span>
             Sửa
           </button>
@@ -116,6 +122,317 @@
       <div class="empty-icon">👥</div>
       <h3>Không tìm thấy thành viên nhóm</h3>
       <p>Hãy thử điều chỉnh tìm kiếm hoặc bộ lọc để tìm thành viên nhóm.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Add Member Modal -->
+<div class="modal-overlay" *ngIf="shouldShowModal()" (click)="closeAddMemberModal()" (keydown.escape)="closeAddMemberModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Thêm Thành Viên Mới</h2>
+      <button class="modal-close" (click)="closeAddMemberModal()">
+        <span class="icon">✕</span>
+      </button>
+      <button class="modal-close emergency-close" (click)="forceCloseModal()" title="Đóng khẩn cấp">
+        <span class="icon">🚨</span>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <form [formGroup]="addMemberForm" (ngSubmit)="onSubmitAddMember()">
+        <div class="form-group">
+          <label for="fullName">Họ và Tên *</label>
+          <input 
+            type="text" 
+            id="fullName" 
+            formControlName="fullName"
+            placeholder="Nhập họ và tên đầy đủ"
+            class="form-input"
+          >
+          <div class="error-message" *ngIf="addMemberForm.get('fullName')?.invalid && addMemberForm.get('fullName')?.touched">
+            Họ và tên là bắt buộc
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <input 
+            type="email" 
+            id="email" 
+            formControlName="email"
+            placeholder="Nhập địa chỉ email"
+            class="form-input"
+          >
+          <div class="error-message" *ngIf="addMemberForm.get('email')?.invalid && addMemberForm.get('email')?.touched">
+            Email không hợp lệ
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Số Điện Thoại</label>
+          <input 
+            type="tel" 
+            id="phone" 
+            formControlName="phone"
+            placeholder="Nhập số điện thoại"
+            class="form-input"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="position">Chức Vụ</label>
+          <input 
+            type="text" 
+            id="position" 
+            formControlName="position"
+            placeholder="Nhập chức vụ"
+            class="form-input"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Vai Trô *</label>
+          <div class="role-selection">
+            <div class="role-option">
+              <input 
+                type="checkbox" 
+                id="roleMember" 
+                [checked]="selectedRoles.member"
+                (change)="onRoleChange('member', $event)"
+                class="role-checkbox"
+              >
+              <label for="roleMember" class="role-label">
+                <span class="role-icon">👤</span>
+                <span class="role-text">
+                  <strong>Member</strong>
+                  <small>Thành viên nhóm thông thường</small>
+                </span>
+              </label>
+            </div>
+            
+            <div class="role-option">
+              <input 
+                type="checkbox" 
+                id="rolePM" 
+                [checked]="selectedRoles.pm"
+                (change)="onRoleChange('pm', $event)"
+                class="role-checkbox"
+              >
+              <label for="rolePM" class="role-label">
+                <span class="role-icon">👨‍💼</span>
+                <span class="role-text">
+                  <strong>Project Manager</strong>
+                  <small>Quản lý dự án và nhóm</small>
+                </span>
+              </label>
+            </div>
+          </div>
+          <div class="error-message" *ngIf="!selectedRoles.member && !selectedRoles.pm">
+            Vui lòng chọn ít nhất một vai trò
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="department">Phòng Ban</label>
+          <select id="department" formControlName="department" class="form-select">
+            <option value="">Chọn phòng ban</option>
+            <option value="development">Phát Triển</option>
+            <option value="design">Thiết Kế</option>
+            <option value="marketing">Marketing</option>
+            <option value="sales">Kinh Doanh</option>
+            <option value="hr">Nhân Sự</option>
+            <option value="finance">Tài Chính</option>
+            <option value="other">Khác</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="notes">Ghi Chú</label>
+          <textarea 
+            id="notes" 
+            formControlName="notes"
+            placeholder="Thông tin bổ sung về thành viên mới..."
+            rows="3"
+            class="form-textarea"
+          ></textarea>
+        </div>
+      </form>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeAddMemberModal()">
+        Hủy
+      </button>
+      <button 
+        class="btn btn-primary" 
+        (click)="onSubmitAddMember()"
+        [disabled]="addMemberForm.invalid || isSubmitting() || (!selectedRoles.member && !selectedRoles.pm)"
+      >
+        <span class="icon" *ngIf="!isSubmitting()">➕</span>
+        <span class="spinner" *ngIf="isSubmitting()"></span>
+        {{ isSubmitting() ? 'Đang thêm...' : 'Thêm Thành Viên' }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Member Modal -->
+<div class="modal-overlay" *ngIf="shouldShowEditModal()" (click)="closeEditMemberModal()" (keydown.escape)="closeEditMemberModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Sửa Thông Tin Thành Viên</h2>
+      <button class="modal-close" (click)="closeEditMemberModal()">
+        <span class="icon">✕</span>
+      </button>
+      <button class="modal-close emergency-close" (click)="forceCloseEditModal()" title="Đóng khẩn cấp">
+        <span class="icon">🚨</span>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <form [formGroup]="editMemberForm" (ngSubmit)="onSubmitEditMember()">
+        <div class="form-group">
+          <label for="editFullName">Họ và Tên *</label>
+          <input 
+            type="text" 
+            id="editFullName" 
+            formControlName="fullName"
+            placeholder="Nhập họ và tên đầy đủ"
+            class="form-input"
+          >
+          <div class="error-message" *ngIf="editMemberForm.get('fullName')?.invalid && editMemberForm.get('fullName')?.touched">
+            Họ và tên là bắt buộc
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="editEmail">Email *</label>
+          <input 
+            type="email" 
+            id="editEmail" 
+            formControlName="email"
+            placeholder="Nhập địa chỉ email"
+            class="form-input"
+          >
+          <div class="error-message" *ngIf="editMemberForm.get('email')?.invalid && editMemberForm.get('email')?.touched">
+            Email không hợp lệ
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="editPhone">Số Điện Thoại</label>
+          <input 
+            type="tel" 
+            id="editPhone" 
+            formControlName="phone"
+            placeholder="Nhập số điện thoại"
+            class="form-input"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="editPosition">Chức Vụ</label>
+          <input 
+            type="text" 
+            id="editPosition" 
+            formControlName="position"
+            placeholder="Nhập chức vụ"
+            class="form-input"
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Vai Trò *</label>
+          <div class="role-selection">
+            <div class="role-option">
+              <input 
+                type="checkbox" 
+                id="editRoleMember" 
+                [checked]="editSelectedRoles.member"
+                (change)="onEditRoleChange('member', $event)"
+                class="role-checkbox"
+              >
+              <label for="editRoleMember" class="role-label">
+                <span class="role-icon">👤</span>
+                <span class="role-text">
+                  <strong>Member</strong>
+                  <small>Thành viên nhóm thông thường</small>
+                </span>
+              </label>
+            </div>
+            
+            <div class="role-option">
+              <input 
+                type="checkbox" 
+                id="editRolePM" 
+                [checked]="editSelectedRoles.pm"
+                (change)="onEditRoleChange('pm', $event)"
+                class="role-checkbox"
+              >
+              <label for="editRolePM" class="role-label">
+                <span class="role-icon">👨‍💼</span>
+                <span class="role-text">
+                  <strong>Project Manager</strong>
+                  <small>Quản lý dự án và nhóm</small>
+                </span>
+              </label>
+            </div>
+          </div>
+          <div class="error-message" *ngIf="!editSelectedRoles.member && !editSelectedRoles.pm">
+            Vui lòng chọn ít nhất một vai trò
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="editStatus">Trạng Thái</label>
+          <select id="editStatus" formControlName="status" class="form-select">
+            <option value="active">Hoạt Động</option>
+            <option value="inactive">Không Hoạt Động</option>
+            <option value="pending">Chờ Xử Lý</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="editDepartment">Phòng Ban</label>
+          <select id="editDepartment" formControlName="department" class="form-select">
+            <option value="">Chọn phòng ban</option>
+            <option value="development">Phát Triển</option>
+            <option value="design">Thiết Kế</option>
+            <option value="marketing">Marketing</option>
+            <option value="sales">Kinh Doanh</option>
+            <option value="hr">Nhân Sự</option>
+            <option value="finance">Tài Chính</option>
+            <option value="other">Khác</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="editNotes">Ghi Chú</label>
+          <textarea 
+            id="editNotes" 
+            formControlName="notes"
+            placeholder="Thông tin bổ sung về thành viên..."
+            rows="3"
+            class="form-textarea"
+          ></textarea>
+        </div>
+      </form>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-outline" (click)="closeEditMemberModal()">
+        Hủy
+      </button>
+      <button 
+        class="btn btn-primary" 
+        (click)="onSubmitEditMember()"
+        [disabled]="editMemberForm.invalid || isEditing() || (!editSelectedRoles.member && !editSelectedRoles.pm)"
+      >
+        <span class="icon" *ngIf="!isEditing()">💾</span>
+        <span class="spinner" *ngIf="isEditing()"></span>
+        {{ isEditing() ? 'Đang lưu...' : 'Lưu Thay Đổi' }}
+      </button>
     </div>
   </div>
 </div>

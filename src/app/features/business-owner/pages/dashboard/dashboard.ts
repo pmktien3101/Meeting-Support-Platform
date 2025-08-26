@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ElementRef, ViewChild } from '@angular/core';
 
 interface ProjectOverview {
   id: number;
@@ -82,6 +83,8 @@ interface NewPMForm {
   styleUrls: ['./dashboard.scss']
 })
 export class BusinessOwnerDashboard implements OnInit {
+  @ViewChild('milestonesSection') milestonesSectionRef?: ElementRef<HTMLElement>;
+  @ViewChild('meetingsSection') meetingsSectionRef?: ElementRef<HTMLElement>;
   // Dashboard data
   projects = signal<ProjectOverview[]>([]);
   milestones = signal<Milestone[]>([]);
@@ -104,10 +107,30 @@ export class BusinessOwnerDashboard implements OnInit {
   showAssignPMModal = signal(false);
   showProjectDetailsModal = signal(false);
   showCreatePMModal = signal(false);
+  showCreateProjectModal = signal(false);
   
   // PM Form data
   newPMForm = signal<NewPMForm>({
     name: '', email: '', phone: '', position: '', department: '', startDate: ''
+  });
+  
+  // Project Form data
+  newProjectForm = signal<{
+    name: string;
+    description: string;
+    startDate: string;
+    endDate: string;
+    budget: number | null;
+    priority: 'high' | 'medium' | 'low';
+    pmId: number | null;
+  }>({
+    name: '',
+    description: '',
+    startDate: '',
+    endDate: '',
+    budget: null,
+    priority: 'medium',
+    pmId: null
   });
   
   // Form validation
@@ -408,6 +431,30 @@ export class BusinessOwnerDashboard implements OnInit {
     this.selectedProject.set(null);
   }
 
+  openCreateProjectModal(): void {
+    if (this.showCreateProjectModal() || this.isSubmitting()) return;
+    this.showCreateProjectModal.set(true);
+    this.resetProjectForm();
+  }
+
+  closeCreateProjectModal(): void {
+    this.showCreateProjectModal.set(false);
+    this.resetProjectForm();
+  }
+
+  resetProjectForm(): void {
+    this.newProjectForm.set({
+      name: '',
+      description: '',
+      startDate: '',
+      endDate: '',
+      budget: null,
+      priority: 'medium',
+      pmId: null
+    });
+    this.formErrors.set({});
+  }
+
   openCreatePMModal(): void {
     if (this.showCreatePMModal() || this.isSubmitting()) return;
     this.showCreatePMModal.set(true);
@@ -477,6 +524,80 @@ export class BusinessOwnerDashboard implements OnInit {
     }
   }
 
+  async createNewProject(): Promise<void> {
+    if (this.isSubmitting()) return;
+    this.isSubmitting.set(true);
+    this.formErrors.set({});
+
+    const p = this.newProjectForm();
+    const errors: {[key: string]: string} = {};
+
+    if (!p.name.trim()) errors['project.name'] = 'Tên dự án là bắt buộc';
+    if (!p.description.trim()) errors['project.description'] = 'Mô tả là bắt buộc';
+    if (!p.startDate) errors['project.startDate'] = 'Ngày bắt đầu là bắt buộc';
+    if (!p.endDate) errors['project.endDate'] = 'Ngày kết thúc là bắt buộc';
+    if (p.startDate && p.endDate && new Date(p.endDate) < new Date(p.startDate)) {
+      errors['project.dateRange'] = 'Ngày kết thúc phải sau ngày bắt đầu';
+    }
+    if (p.budget === null || p.budget < 0) errors['project.budget'] = 'Ngân sách không hợp lệ';
+
+    if (Object.keys(errors).length > 0) {
+      this.formErrors.set(errors);
+      this.isSubmitting.set(false);
+      return;
+    }
+
+    try {
+      // Simulate API latency
+      await new Promise(resolve => setTimeout(resolve, 1200));
+
+      const nextId = (this.projects().reduce((max, cur) => Math.max(max, cur.id), 0) || 0) + 1;
+      const pmName = p.pmId ? (this.projectManagers().find(pm => pm.id === p.pmId)?.name || '') : '';
+
+      const newProject: ProjectOverview = {
+        id: nextId,
+        name: p.name,
+        status: 'active',
+        progress: 0,
+        startDate: p.startDate,
+        endDate: p.endDate,
+        manager: pmName,
+        teamSize: 0,
+        completedMilestones: 0,
+        totalMilestones: 0,
+        completedTasks: 0,
+        totalTasks: 0,
+        budget: p.budget ?? 0,
+        priority: p.priority
+      };
+
+      this.projects.set([newProject, ...this.projects()]);
+
+      // Update PM capacity if assigned
+      if (p.pmId) {
+        const updatedPMs = this.projectManagers().map(pm =>
+          pm.id === p.pmId ? { ...pm, managedProjects: pm.managedProjects + 1, status: (pm.managedProjects + 1) >= pm.maxProjects ? 'busy' : pm.status } : pm
+        );
+        this.projectManagers.set(updatedPMs);
+      }
+
+      // Update summary stats
+      const s = this.summaryStats();
+      this.summaryStats.set({
+        ...s,
+        totalProjects: s.totalProjects + 1,
+        activeProjects: s.activeProjects + 1
+      });
+
+      this.closeCreateProjectModal();
+      console.log('Project created');
+    } catch (error) {
+      console.error('Error creating project:', error);
+    } finally {
+      this.isSubmitting.set(false);
+    }
+  }
+
 
 
   onEditProject(projectId: number): void {
@@ -485,13 +606,17 @@ export class BusinessOwnerDashboard implements OnInit {
   }
 
   onViewAllMilestones(): void {
-    console.log('View all milestones clicked');
-    // Navigate to milestones page
+    const el = this.milestonesSectionRef?.nativeElement;
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   onViewAllMeetings(): void {
-    console.log('View all meetings clicked');
-    // Navigate to meetings page
+    const el = this.meetingsSectionRef?.nativeElement;
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   // Utility methods
