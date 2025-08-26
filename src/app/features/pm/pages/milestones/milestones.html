@@ -739,14 +739,16 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="closeMilestoneDetails()">
-          <span class="btn-icon">❌</span>
-          Đóng
-        </button>
-        <button class="btn btn-primary" (click)="openEditMilestone(selectedMilestoneForDetails!)">
-          <span class="btn-icon">✏️</span>
-          Chỉnh sửa
-        </button>
+        <div style="display: flex; justify-content: flex-end; gap: 12px; width: 100%;">
+          <button class="btn btn-secondary" (click)="closeMilestoneDetails()">
+            <span class="btn-icon">❌</span>
+            Đóng
+          </button>
+          <button class="btn btn-primary" (click)="openEditMilestone(selectedMilestoneForDetails!)">
+            <span class="btn-icon">✏️</span>
+            Chỉnh sửa
+          </button>
+        </div>
       </div>
     </div>
   </div>
