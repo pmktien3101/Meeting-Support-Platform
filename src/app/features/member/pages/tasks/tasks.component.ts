@@ -2,12 +2,13 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { DragDropModule, CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 
 interface Task {
   id: number;
   title: string;
   description: string;
-  status: 'todo' | 'in-progress' | 'done';
+  status: 'todo' | 'in-progress' | 'review' | 'done';
   priority: 'low' | 'medium' | 'high';
   dueDate: string;
   project: string;
@@ -16,6 +17,7 @@ interface Task {
   actualHours?: number;
   tags: string[];
   comments: Comment[];
+  attachments?: string[];
 }
 
 interface Comment {
@@ -28,7 +30,7 @@ interface Comment {
 @Component({
   selector: 'app-member-tasks',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, DragDropModule],
   templateUrl: './tasks.component.html',
   styleUrls: ['./tasks.component.scss']
 })
@@ -77,7 +79,8 @@ export class MemberTasksComponent {
           content: 'Cần hoàn thành trước cuối tuần',
           timestamp: '2 giờ trước'
         }
-      ]
+      ],
+      attachments: []
     },
     {
       id: 2,
@@ -91,7 +94,8 @@ export class MemberTasksComponent {
       estimatedHours: 12,
       actualHours: 10,
       tags: ['Backend', 'Security', 'API'],
-      comments: []
+      comments: [],
+      attachments: []
     },
     {
       id: 3,
@@ -104,12 +108,19 @@ export class MemberTasksComponent {
       assignee: 'Nguyễn Văn A',
       estimatedHours: 6,
       tags: ['Testing', 'Backend', 'Quality'],
-      comments: []
+      comments: [],
+      attachments: []
     }
   ]);
 
   // Filtered tasks
   filteredTasks = signal<Task[]>([]);
+
+  // Kanban lists
+  todoTasks = signal<Task[]>([]);
+  inProgressTasks = signal<Task[]>([]);
+  reviewTasks = signal<Task[]>([]);
+  doneTasks = signal<Task[]>([]);
 
   // Edit status modal state
   isEditModalOpen = false;
@@ -120,6 +131,11 @@ export class MemberTasksComponent {
   isNoteModalOpen = false;
   taskBeingNoted: Task | null = null;
   noteContent = '';
+
+  // Detail modal state
+  isDetailModalOpen = false;
+  detailTask: Task | null = null;
+  detailNoteContent = '';
 
   constructor() {
     this.filterTasks();
@@ -151,6 +167,14 @@ export class MemberTasksComponent {
     }
 
     this.filteredTasks.set(filtered);
+    this.groupTasksByStatus(filtered);
+  }
+
+  private groupTasksByStatus(tasks: Task[]): void {
+    this.todoTasks.set(tasks.filter(t => t.status === 'todo'));
+    this.inProgressTasks.set(tasks.filter(t => t.status === 'in-progress'));
+    this.reviewTasks.set(tasks.filter(t => t.status === 'review'));
+    this.doneTasks.set(tasks.filter(t => t.status === 'done'));
   }
 
   // Get status text in Vietnamese
@@ -158,6 +182,7 @@ export class MemberTasksComponent {
     const statusMap: { [key: string]: string } = {
       'todo': 'Chưa bắt đầu',
       'in-progress': 'Đang thực hiện',
+      'review': 'Review',
       'done': 'Hoàn thành'
     };
     return statusMap[status] || status;
@@ -185,7 +210,7 @@ export class MemberTasksComponent {
     if (task.actualHours && task.estimatedHours) {
       return Math.min(Math.round((task.actualHours / task.estimatedHours) * 100), 100);
     }
-    return 50; // Default for in-progress without actual hours
+    return 50;
   }
 
   // Action methods
@@ -213,6 +238,51 @@ export class MemberTasksComponent {
     this.openNoteModal(task);
   }
 
+  openDetail(task: Task): void {
+    this.detailTask = task;
+    this.detailNoteContent = '';
+    if (!this.detailTask.attachments) this.detailTask.attachments = [];
+    this.isDetailModalOpen = true;
+  }
+
+  closeDetail(): void {
+    this.isDetailModalOpen = false;
+    this.detailTask = null;
+    this.detailNoteContent = '';
+  }
+
+  onSelectFile(event: Event): void {
+    if (!this.detailTask) return;
+    const input = event.target as HTMLInputElement;
+    const file = input.files && input.files[0];
+    if (!file) return;
+    const updated = this.allTasks().map(t => {
+      if (t.id !== this.detailTask!.id) return t;
+      const names = [...(t.attachments || []), file.name];
+      return { ...t, attachments: names };
+    });
+    this.allTasks.set(updated);
+    this.filterTasks();
+    input.value = '';
+  }
+
+  addDetailNote(): void {
+    if (!this.detailTask) return;
+    const content = this.detailNoteContent.trim();
+    if (!content) return;
+    const nowLabel = 'Vừa xong';
+    const newComment: Comment = {
+      id: this.generateCommentId(this.detailTask),
+      author: 'Bạn',
+      content,
+      timestamp: nowLabel
+    };
+    const updated = this.allTasks().map(t => t.id === this.detailTask!.id ? { ...t, comments: [...t.comments, newComment] } : t);
+    this.allTasks.set(updated);
+    this.filterTasks();
+    this.detailNoteContent = '';
+  }
+
   viewMyTasks(): void {
     console.log('Viewing my tasks');
   }
@@ -223,6 +293,19 @@ export class MemberTasksComponent {
 
   exportTasks(): void {
     console.log('Exporting tasks');
+  }
+
+  // Drag&Drop handler
+  onDrop(event: CdkDragDrop<Task[]>, targetStatus: Task['status']): void {
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+      return;
+    }
+    const movedTask = event.previousContainer.data[event.previousIndex];
+    transferArrayItem(event.previousContainer.data, event.container.data, event.previousIndex, event.currentIndex);
+    if (movedTask.status !== targetStatus) {
+      this.updateTask(movedTask.id, { status: targetStatus });
+    }
   }
 
   // Status Modal helpers
