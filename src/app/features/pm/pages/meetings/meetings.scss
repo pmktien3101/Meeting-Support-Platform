@@ -844,7 +844,7 @@ $off-white: #F9F4EE;
       flex-direction: column;
 
       .modal-header {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        background: linear-gradient(135deg, #FFA463 0%, #FF5E13 100%);
         border-radius: 20px 20px 0 0;
         padding: 24px 32px;
         border-bottom: 1px solid #e2e8f0;
@@ -955,7 +955,7 @@ $off-white: #F9F4EE;
             background: #f8fafc;
             padding: 20px;
             border-radius: 12px;
-            border-left: 4px solid #3b82f6;
+            border-left: 4px solid #FFA463;
 
             p {
               margin: 0;
@@ -1027,7 +1027,7 @@ $off-white: #F9F4EE;
 
                   &.in-progress {
                     background: #dbeafe;
-                    color: #2563eb;
+                    color: #FF5E13;
                   }
 
                   &.completed {
@@ -1136,7 +1136,7 @@ $off-white: #F9F4EE;
 
                   &:focus {
                     outline: none;
-                    border-color: #3b82f6;
+                    border-color: #FFA463;
                     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
                   }
                 }
@@ -1156,7 +1156,7 @@ $off-white: #F9F4EE;
 
                   &:focus {
                     outline: none;
-                    border-color: #3b82f6;
+                    border-color: #FFA463;
                     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
                   }
 
@@ -1179,11 +1179,11 @@ $off-white: #F9F4EE;
                 transition: all 0.2s ease;
 
                 &.btn-primary {
-                  background: #3b82f6;
+                  background: #FFA463;
                   color: white;
 
                   &:hover:not(:disabled) {
-                    background: #2563eb;
+                    background: #FF5E13;
                     transform: translateY(-1px);
                   }
 
