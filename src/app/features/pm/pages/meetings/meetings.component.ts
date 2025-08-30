@@ -1,7 +1,8 @@
-import { Component, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Inject, inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PmLayoutComponent } from '../../layout/pm-layout.component';
+import { Router, RouterModule } from '@angular/router';
 
 interface Meeting {
   id: string;
@@ -18,6 +19,7 @@ interface Meeting {
   milestoneId?: string;
   milestoneName?: string;
   location?: string;
+  meetingLink?: string;
 }
 
 interface Project {
@@ -65,6 +67,8 @@ interface ManualNote {
   styleUrls: ['./meetings.scss']
 })
 export class PmMeetings {
+  constructor(private router: Router,  @Inject(PLATFORM_ID) private platformId: Object) {
+  }
   private layoutComponent = inject(PmLayoutComponent);
 
   // Filter states
@@ -421,7 +425,16 @@ export class PmMeetings {
       type: 'general'
     };
   }
-
+  // joinMeeting(meeting: Meeting): void {
+  //   console.log('Joining meeting:', meeting.title);
+  //   if (meeting.meetingLink) {
+  //     if (isPlatformBrowser(this.platformId)) {
+  //       this.router.navigate(['/meeting', meeting.id]);
+  //     } else {
+  //       console.warn('Browser environment not available, cannot open meeting link.');
+  //     }
+  //   }
+  // }
   addManualNote() {
     if (!this.newManualNote.content.trim() || !this.selectedMeetingForNotes) {
       return;

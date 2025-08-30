@@ -1,0 +1,573 @@
+// Color variables
+$primary-orange: #FF5E13;
+$secondary-orange: #FFA463;
+$light-orange: #FFDBBD;
+$cream: #FDF0D2;
+$off-white: #F9F4EE;
+
+// Additional colors
+$dark-gray: #2D3748;
+$medium-gray: #4A5568;
+$light-gray: #E2E8F0;
+$white: #FFFFFF;
+$success: #48BB78;
+$danger: #F56565;
+
+.meeting-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: $off-white;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+// Header
+.meeting-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: $white;
+  border-bottom: 1px solid $light-gray;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .meeting-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    .meeting-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: $dark-gray;
+      margin: 0;
+    }
+
+    .meeting-id {
+      font-size: 0.875rem;
+      color: $medium-gray;
+    }
+  }
+
+  .meeting-time {
+    font-size: 1rem;
+    font-weight: 500;
+    color: $primary-orange;
+    background: $light-orange;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+  }
+}
+
+// Main content
+.meeting-content {
+  flex: 1;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+// Video section
+.video-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  transition: all 0.3s ease;
+
+  &.screen-sharing {
+    .video-grid {
+      height: 20%;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+.video-grid {
+  flex: 1;
+  display: grid;
+  gap: 0.75rem;
+  height: 100%;
+
+  &.grid-1 {
+    grid-template-columns: 1fr;
+  }
+
+  &.grid-2x2 {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+
+  &.grid-2x3 {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+  }
+
+  &.grid-3x3 {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+  }
+
+  &.grid-auto {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+.video-item {
+  position: relative;
+  background: $dark-gray;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+
+  &.speaking {
+    border-color: $success;
+    box-shadow: 0 0 0 2px rgba(72, 187, 120, 0.3);
+  }
+
+  &.muted {
+    .participant-overlay::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(245, 101, 101, 0.1);
+      pointer-events: none;
+    }
+  }
+
+  .video-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .participant-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+
+    .participant-name {
+      color: $white;
+      font-weight: 500;
+      font-size: 0.875rem;
+    }
+
+    .participant-status {
+      display: flex;
+      gap: 0.5rem;
+
+      i {
+        color: $white;
+        font-size: 1rem;
+
+        &.icon-mic-off {
+          color: $danger;
+        }
+
+        &.icon-hand-raised {
+          color: $secondary-orange;
+        }
+      }
+    }
+  }
+}
+
+// Screen share
+.screen-share-view {
+  flex: 1;
+  position: relative;
+  background: $dark-gray;
+  border-radius: 0.75rem;
+  overflow: hidden;
+
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .screen-share-info {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    background: rgba(0, 0, 0, 0.8);
+    color: $white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+// Side panel
+.side-panel {
+  width: 0;
+  background: $white;
+  border-left: 1px solid $light-gray;
+  transition: width 0.3s ease;
+  overflow: hidden;
+
+  &.open {
+    width: 350px;
+  }
+}
+
+.chat-panel, .participants-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-header, .participants-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid $light-gray;
+  background: $cream;
+
+  h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: $dark-gray;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: $medium-gray;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $light-gray;
+      color: $dark-gray;
+    }
+  }
+}
+
+// Chat
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  &.own-message {
+    align-items: flex-end;
+
+    .message-content {
+      background: $primary-orange;
+      color: $white;
+    }
+  }
+
+  .message-header {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: $medium-gray;
+
+    .sender-name {
+      font-weight: 500;
+    }
+  }
+
+  .message-content {
+    background: $light-orange;
+    color: $dark-gray;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    max-width: 80%;
+    word-wrap: break-word;
+  }
+}
+
+.chat-input {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-top: 1px solid $light-gray;
+  background: $off-white;
+
+  input {
+    flex: 1;
+    padding: 0.75rem;
+    border: 1px solid $light-gray;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+
+    &:focus {
+      border-color: $primary-orange;
+    }
+
+    &::placeholder {
+      color: $medium-gray;
+    }
+  }
+
+  button {
+    background: $primary-orange;
+    color: $white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: darken($primary-orange, 10%);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Participants
+.participants-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.participant-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: $off-white;
+  }
+
+  .participant-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .participant-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    .participant-name {
+      font-weight: 500;
+      color: $dark-gray;
+    }
+
+    .participant-role {
+      font-size: 0.75rem;
+      color: $primary-orange;
+      font-weight: 500;
+    }
+  }
+
+  .participant-controls {
+    display: flex;
+    gap: 0.5rem;
+
+    i {
+      font-size: 1rem;
+      color: $success;
+
+      &.muted, &.off {
+        color: $danger;
+      }
+
+      &.icon-hand-raised {
+        color: $secondary-orange;
+      }
+    }
+  }
+}
+
+// Meeting controls
+.meeting-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: $white;
+  border-top: 1px solid $light-gray;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.control-group {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+
+  &.left, &.right {
+    flex: 1;
+  }
+
+  &.center {
+    flex: 2;
+    justify-content: center;
+  }
+
+  &.right {
+    justify-content: flex-end;
+  }
+}
+
+.control-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  background: $cream;
+  border: 1px solid $light-gray;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  min-width: 80px;
+
+  &:hover {
+    background: $light-orange;
+    border-color: $secondary-orange;
+  }
+
+  &.active {
+    background: $primary-orange;
+    color: $white;
+    border-color: $primary-orange;
+  }
+
+  &.leave-btn {
+    background: $danger;
+    color: $white;
+    border-color: $danger;
+
+    &:hover {
+      background: darken($danger, 10%);
+    }
+  }
+
+  i {
+    font-size: 1.25rem;
+  }
+
+  span {
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .notification-badge {
+    position: absolute;
+    top: -0.25rem;
+    right: -0.25rem;
+    background: $danger;
+    color: $white;
+    font-size: 0.625rem;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.75rem;
+    min-width: 1.25rem;
+    text-align: center;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .meeting-header {
+    padding: 0.75rem 1rem;
+    
+    .meeting-info .meeting-title {
+      font-size: 1rem;
+    }
+  }
+
+  .video-section {
+    padding: 0.5rem;
+  }
+
+  .video-grid {
+    gap: 0.5rem;
+
+    &.grid-2x2, &.grid-2x3, &.grid-3x3 {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+    }
+  }
+
+  .side-panel.open {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    z-index: 10;
+  }
+
+  .meeting-controls {
+    padding: 0.75rem 1rem;
+    
+    .control-group {
+      gap: 0.5rem;
+    }
+
+    .control-btn {
+      min-width: 60px;
+      padding: 0.5rem 0.75rem;
+
+      span {
+        font-size: 0.625rem;
+      }
+    }
+  }
+}
+
+// Icon classes (you'll need to implement these with your preferred icon library)
+.icon-mic, .icon-mic-off, .icon-video, .icon-video-off, 
+.icon-screen-share, .icon-hand-raised, .icon-chat, 
+.icon-participants, .icon-phone-off {
+  // Add your icon styles here
+  // This could be Font Awesome, Material Icons, or custom SVG icons
+}

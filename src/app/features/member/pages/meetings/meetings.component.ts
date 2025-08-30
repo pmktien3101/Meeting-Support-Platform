@@ -1,6 +1,6 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, Inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { isPlatformBrowser } from '@angular/common';
 import { PLATFORM_ID, inject } from '@angular/core';
@@ -121,7 +121,7 @@ export class MemberMeetingsComponent implements OnInit {
   // Filtered meetings
   filteredMeetings = signal<Meeting[]>([]);
 
-  constructor() {
+  constructor(private router: Router,  @Inject(PLATFORM_ID) private platformId: Object) {
     this.filterMeetings();
   }
 
@@ -183,13 +183,14 @@ export class MemberMeetingsComponent implements OnInit {
   joinMeeting(meeting: Meeting): void {
     console.log('Joining meeting:', meeting.title);
     if (meeting.meetingLink) {
-      if (isPlatformBrowser(inject(PLATFORM_ID))) {
-        window.open(meeting.meetingLink, '_blank');
+      if (isPlatformBrowser(this.platformId)) {
+        this.router.navigate(['/meeting', meeting.id]);
       } else {
         console.warn('Browser environment not available, cannot open meeting link.');
       }
     }
   }
+  
 
   addToCalendar(meeting: Meeting): void {
     console.log('Adding to calendar:', meeting.title);
