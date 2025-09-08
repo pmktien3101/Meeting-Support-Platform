@@ -33,33 +33,6 @@ interface Milestone {
   progress: number;
 }
 
-interface Meeting {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  time: string;
-  duration: number;
-  type: 'online' | 'offline' | 'hybrid';
-  projectId?: string;
-  milestoneId?: string;
-  participants: string[];
-  status: 'scheduled' | 'ongoing' | 'completed' | 'cancelled';
-}
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  assigneeId: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  startDate: string;
-  dueDate: string;
-  projectId?: string;
-  milestoneId?: string;
-  status: 'todo' | 'in-progress' | 'review' | 'done';
-}
-
 interface TeamMember {
   id: string;
   name: string;
@@ -104,12 +77,10 @@ export class PmLayoutComponent implements OnInit {
   notificationsOpen = signal(false);
   
   // Modal states
-  showCreateProjectModal = signal(false);
   showCreateMeetingModal = signal(false);
   showCreateTaskModal = signal(false);
   
   // Forms
-  projectForm!: FormGroup;
   meetingForm!: FormGroup;
   taskForm!: FormGroup;
   
@@ -120,8 +91,7 @@ export class PmLayoutComponent implements OnInit {
     avatar: 'PM',
     role: 'Quản Lý Dự Án'
   });
-
-  // Mock data
+// Mock data
   projects: Project[] = [
     {
       id: '1',
@@ -144,7 +114,6 @@ export class PmLayoutComponent implements OnInit {
       progress: 15
     }
   ];
-
   milestones: Milestone[] = [
     {
       id: '1',
@@ -251,37 +220,31 @@ export class PmLayoutComponent implements OnInit {
       label: 'Bảng Điều Khiển',
       icon: '📊',
       route: '/pm/dashboard',
-      badge: '3'
     },
     {
       label: 'Dự Án',
       icon: '📁',
       route: '/pm/projects',
-      badge: '2'
     },
     {
       label: 'Cuộc Họp',
       icon: '📅',
       route: '/pm/meetings',
-      badge: '5'
     },
     {
       label: 'Công Việc',
       icon: '✅',
       route: '/pm/tasks',
-      badge: '12'
     },
     {
       label: 'Nhóm',
       icon: '👥',
       route: '/pm/team',
-      badge: '4'
     },
     {
       label: 'Tài Liệu',
       icon: '📄',
       route: '/pm/documents',
-      badge: '8'
     },
     {
       label: 'Báo Cáo',
@@ -299,14 +262,6 @@ export class PmLayoutComponent implements OnInit {
   }
 
   private initializeForms(): void {
-    this.projectForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
-      description: [''],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
-      manager: [''],
-      status: ['planning']
-    });
 
     this.meetingForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(5)]],
@@ -351,19 +306,6 @@ export class PmLayoutComponent implements OnInit {
     this.notificationsOpen.update(open => !open);
   }
 
-  // Modal Methods
-  openCreateProject(): void {
-    this.showCreateProjectModal.set(true);
-    this.projectForm.reset({
-      status: 'planning'
-    });
-  }
-
-  closeCreateProject(): void {
-    this.showCreateProjectModal.set(false);
-    this.projectForm.reset();
-  }
-
   openCreateMeeting(): void {
     this.showCreateMeetingModal.set(true);
     this.meetingForm.reset({
@@ -390,18 +332,6 @@ export class PmLayoutComponent implements OnInit {
   closeCreateTask(): void {
     this.showCreateTaskModal.set(false);
     this.taskForm.reset();
-  }
-
-  // Form Submission Methods
-  submitProject(): void {
-    if (this.projectForm.valid) {
-      const projectData = this.projectForm.value;
-      console.log('Creating project:', projectData);
-      
-      // TODO: Call API to create project
-      this.closeCreateProject();
-      // Show success message
-    }
   }
 
   submitMeeting(): void {
@@ -514,7 +444,7 @@ export class PmLayoutComponent implements OnInit {
     }
     if (currentRoute.includes('/projects')) {
       return [
-        { label: 'Dự Án', route: '/pm/projects' }
+        { label: 'Theo dõi và quản lý các dự án của bạn', route: '/pm/projects' }
       ];
     }
     if (currentRoute.includes('/milestones')) {

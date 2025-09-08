@@ -23,6 +23,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/animations": "^20.2.4",
     "@angular/cdk": "^20.2.0",
     "@angular/common": "^20.2.0",
     "@angular/compiler": "^20.2.0",
@@ -36,7 +37,12 @@
     "@ngrx/entity": "^20.0.0",
     "@ngrx/store": "^20.0.0",
     "@ngrx/store-devtools": "^20.0.0",
+    "@stream-io/video-client": "^1.28.1",
+    "agora-rtm-sdk": "^1.5.1",
+    "chart.js": "^4.5.0",
     "express": "^5.1.0",
+    "ng2-charts": "^8.0.0",
+    "ngx-toastr": "^18.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

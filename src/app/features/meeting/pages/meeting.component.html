@@ -1,132 +1,18 @@
-<div class="meeting-container">
-   Header 
-  <div class="meeting-header">
-    <div class="meeting-info">
-      <h2 class="meeting-title">{{ meetingTitle }}</h2>
-      <span class="meeting-id">ID: {{ meetingId }}</span>
-    </div>
-    <div class="meeting-time">{{ currentTime | date:'HH:mm:ss' }}</div>
-  </div>
+<main class="h-screen w-full" *ngIf="!isLoading && callId">
+  <app-stream-theme>
+    <app-meeting-setup
+      *ngIf="!isSetupComplete"
+      [callId]="callId"
+      [onJoin]="markSetupComplete"
+    ></app-meeting-setup>
 
-   Main Content 
-  <div class="meeting-content">
-     Video Grid 
-    <div class="video-section" [class.screen-sharing]="isScreenSharing">
-      <div class="video-grid" [ngClass]="getGridClass()">
-        <div class="video-item" *ngFor="let participant of participants; trackBy: trackByParticipant" 
-             [class.speaking]="participant.isSpeaking" [class.muted]="participant.isMuted">
-          <div class="video-wrapper">
-            <video [srcObject]="participant.videoStream" autoplay muted></video>
-            <div class="participant-overlay">
-              <span class="participant-name">{{ participant.name }}</span>
-              <div class="participant-status">
-                <i class="icon-mic-off" *ngIf="participant.isMuted"></i>
-                <i class="icon-video-off" *ngIf="!participant.hasVideo"></i>
-                <i class="icon-hand-raised" *ngIf="participant.handRaised"></i>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <app-meeting-room
+      *ngIf="isSetupComplete"
+      [callId]="callId"
+    ></app-meeting-room>
+  </app-stream-theme>
+</main>
 
-       Screen Share View 
-      <div class="screen-share-view" *ngIf="isScreenSharing">
-        <video [srcObject]="screenShareStream" autoplay></video>
-        <div class="screen-share-info">
-          <span>{{ screenShareParticipant }} đang chia sẻ màn hình</span>
-        </div>
-      </div>
-    </div>
-
-     Side Panel 
-    <div class="side-panel" [class.open]="sidePanelOpen">
-       Chat Panel 
-      <div class="chat-panel" *ngIf="activePanel === 'chat'">
-        <div class="chat-header">
-          <h3>Trò chuyện</h3>
-          <button class="close-btn" (click)="closeSidePanel()">×</button>
-        </div>
-        <div class="chat-messages" #chatMessagesContainer>
-  <div class="message" *ngFor="let message of chatMessages" 
-       [class.own-message]="message.senderId === currentUserId">
-    <div class="message-header">
-      <span class="sender-name">{{ message.senderName }}</span>
-      <span class="message-time">{{ message.timestamp | date:'HH:mm' }}</span>
-    </div>
-    <div class="message-content">{{ message.content }}</div>
-  </div>
-</div>
-        <div class="chat-input">
-          <input type="text" [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" 
-                 placeholder="Nhập tin nhắn...">
-          <button (click)="sendMessage()" [disabled]="!newMessage.trim()">Gửi</button>
-        </div>
-      </div>
-
-       Participants Panel 
-      <div class="participants-panel" *ngIf="activePanel === 'participants'">
-        <div class="participants-header">
-          <h3>Người tham gia ({{ participants.length }})</h3>
-          <button class="close-btn" (click)="closeSidePanel()">×</button>
-        </div>
-        <div class="participants-list">
-          <div class="participant-item" *ngFor="let participant of participants">
-            <div class="participant-avatar">
-              <img [src]="participant.avatar" [alt]="participant.name">
-            </div>
-            <div class="participant-info">
-              <span class="participant-name">{{ participant.name }}</span>
-              <span class="participant-role" *ngIf="participant.isHost">Chủ phòng</span>
-            </div>
-            <div class="participant-controls">
-              <i class="icon-mic" [class.muted]="participant.isMuted"></i>
-              <i class="icon-video" [class.off]="!participant.hasVideo"></i>
-              <i class="icon-hand-raised" *ngIf="participant.handRaised"></i>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-   Meeting Controls 
-  <div class="meeting-controls">
-    <div class="control-group left">
-      <button class="control-btn" [class.active]="isMuted" (click)="toggleMute()">
-        <i [class]="isMuted ? 'icon-mic-off' : 'icon-mic'"></i>
-        <span>{{ isMuted ? 'Bật mic' : 'Tắt mic' }}</span>
-      </button>
-      <button class="control-btn" [class.active]="!hasVideo" (click)="toggleVideo()">
-        <i [class]="hasVideo ? 'icon-video' : 'icon-video-off'"></i>
-        <span>{{ hasVideo ? 'Tắt camera' : 'Bật camera' }}</span>
-      </button>
-      <button class="control-btn" [class.active]="isScreenSharing" (click)="toggleScreenShare()">
-        <i class="icon-screen-share"></i>
-        <span>{{ isScreenSharing ? 'Dừng chia sẻ' : 'Chia sẻ màn hình' }}</span>
-      </button>
-    </div>
-
-    <div class="control-group center">
-      <button class="control-btn" [class.active]="handRaised" (click)="toggleHandRaise()">
-        <i class="icon-hand-raised"></i>
-        <span>Giơ tay</span>
-      </button>
-      <button class="control-btn" (click)="openPanel('chat')" [class.active]="activePanel === 'chat'">
-        <i class="icon-chat"></i>
-        <span>Trò chuyện</span>
-        <span class="notification-badge" *ngIf="unreadMessages > 0">{{ unreadMessages }}</span>
-      </button>
-      <button class="control-btn" (click)="openPanel('participants')" [class.active]="activePanel === 'participants'">
-        <i class="icon-participants"></i>
-        <span>Người tham gia</span>
-      </button>
-    </div>
-
-    <div class="control-group right">
-      <button class="control-btn leave-btn" (click)="leaveMeeting()">
-        <i class="icon-phone-off"></i>
-        <span>Rời khỏi</span>
-      </button>
-    </div>
-  </div>
+<div *ngIf="isLoading" class="text-center mt-10">
+  Loading...
 </div>

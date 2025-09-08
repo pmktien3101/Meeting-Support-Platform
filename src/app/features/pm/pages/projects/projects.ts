@@ -4,6 +4,10 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { FormsModule } from '@angular/forms';
 import { PmLayoutComponent } from '../../layout/pm-layout.component';
+import { StreamService } from '../../../../core/services/stream.service';
+import { StreamVideoClientService } from '../../../../core/services/stream-video-client.service';
+import { environment } from '../../../../../environment/environment';
+import { ToastrService } from 'ngx-toastr';
 
 interface ProjectMember {
   id: string;
@@ -51,7 +55,10 @@ export class PmProjects {
   private layoutComponent = inject(PmLayoutComponent);
   private router = inject(Router);
   private fb = inject(FormBuilder);
+  private toastr = inject(ToastrService)
 
+  showCreateProjectModal = false;
+  projectForm!: FormGroup;
   // UI state
   showEditProjectModal = false;
   selectedProject: Project | null = null;
@@ -222,23 +229,60 @@ export class PmProjects {
     }
   ];
 
-  constructor() {
+    constructor(
+    private streamService: StreamService,
+    private streamVideo: StreamVideoClientService,
+  ) {
+    this.streamService.registerUser('user-123', 'Nguyen Van A').subscribe((res) => {
+      this.streamVideo.init(
+        environment.STREAM_API_KEY,
+        { id: res.id, name: 'Nguyen Van A' },
+        res.token
+      );
+    });
     this.initializeForm();
   }
 
   private initializeForm(): void {
-    this.editProjectForm = this.fb.group({
+    this.projectForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
-      description: ['', Validators.required],
+      description: [''],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
-      status: ['', Validators.required]
+      manager: [''],
+      status: ['planning']
     });
   }
 
   // Delegate methods to layout component
-  openCreateProject() { return this.layoutComponent.openCreateProject(); }
-
+  openCreateProject(): void {
+    this.showCreateProjectModal = true;
+    this.projectForm.reset({
+      status: 'planning'
+    });
+  }
+  closeCreateProject(): void {
+    this.showCreateProjectModal = false;
+    this.projectForm.reset();
+  }
+  submitProject(): void {
+    if (this.projectForm.valid) {
+      const projectData = this.projectForm.value;
+      console.log('Creating project:', projectData);
+      
+      // Add the new project to the projects array
+      const newProject: Project = {
+        id: (this.projects.length + 1).toString(),
+        ...projectData,
+        progress: 0,
+        members: []
+      };
+      this.projects.push(newProject);
+      
+      this.closeCreateProject();
+      // TODO: Show success message
+    }
+  }
   // Navigate to project milestones
   viewProjectMilestones(projectId: string) {
     this.router.navigate(['/pm/projects', projectId, 'milestones']);
@@ -342,28 +386,31 @@ export class PmProjects {
     }
   }
 
-  submitAddMeeting() {
+  async submitAddMeeting() {
     if (!this.selectedProjectForMeeting || !this.newMeeting.title || !this.newMeeting.date || !this.newMeeting.time) {
       return;
     }
 
-    const meeting: Meeting = {
-      id: Date.now().toString(),
-      title: this.newMeeting.title,
-      description: this.newMeeting.description,
-      date: this.newMeeting.date,
-      time: this.newMeeting.time,
-      duration: this.newMeeting.duration,
-      location: this.newMeeting.location,
-      type: this.newMeeting.type,
-      projectId: this.selectedProjectForMeeting.id,
-      participants: this.newMeeting.participants,
-      status: 'scheduled',
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const meetingDateTime = new Date(`${this.newMeeting.date}T${this.newMeeting.time}`);
+      const call = await this.streamVideo.createMeeting({
+        id: "",
+        title: this.newMeeting.title, 
+        description: this.newMeeting.description,
+        startsAt: meetingDateTime,
+        duration: this.newMeeting.duration * 60,
+        members: this.newMeeting.participants,
+      });
 
-    console.log('New meeting created:', meeting);
-    // TODO: Call API to save meeting
-    this.closeAddMeeting();
+      this.toastr.success(`Meeting created successfully! Call ID: ${call.id}`, 'Success');
+      this.closeAddMeeting();
+      
+      // Navigate to meeting component
+      this.router.navigate(['/meeting', call.id]);
+
+    } catch (err) {
+      console.error('Error creating meeting:', err);
+      this.toastr.error('Failed to create meeting. Please try again.', 'Error');
+    }
   }
 }

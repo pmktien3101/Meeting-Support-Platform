@@ -21,7 +21,6 @@
              [title]="item.label">
             <span class="nav-icon">{{ item.icon }}</span>
             <span class="nav-label" *ngIf="!sidebarCollapsed()">{{ item.label }}</span>
-            <span class="nav-badge" *ngIf="!sidebarCollapsed() && item.badge">{{ item.badge }}</span>
           </a>
         </li>
       </ul>
@@ -114,51 +113,6 @@
       <router-outlet></router-outlet>
     </div>
   </main>
-
-  <!-- Modals -->
-  <!-- Create Project Modal -->
-  <div class="modal-overlay" *ngIf="showCreateProjectModal()" (click)="closeCreateProject()">
-    <div class="modal" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <h3>📁 Tạo Dự Án Mới</h3>
-        <button class="modal-close" (click)="closeCreateProject()">×</button>
-      </div>
-      <form [formGroup]="projectForm" (ngSubmit)="submitProject()" class="modal-form">
-        <div class="form-group">
-          <label for="projectName">Tên dự án *</label>
-          <input type="text" id="projectName" formControlName="name" placeholder="Nhập tên dự án">
-        </div>
-        <div class="form-group">
-          <label for="projectDescription">Mô tả</label>
-          <textarea id="projectDescription" formControlName="description" rows="3" placeholder="Mô tả dự án"></textarea>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="startDate">Ngày bắt đầu *</label>
-            <input type="date" id="startDate" formControlName="startDate">
-          </div>
-          <div class="form-group">
-            <label for="endDate">Ngày kết thúc *</label>
-            <input type="date" id="endDate" formControlName="endDate">
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="projectStatus">Trạng thái</label>
-          <select id="projectStatus" formControlName="status">
-            <option value="planning">Lập kế hoạch</option>
-            <option value="active">Đang thực hiện</option>
-            <option value="on-hold">Tạm dừng</option>
-            <option value="completed">Hoàn thành</option>
-          </select>
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="btn btn-secondary" (click)="closeCreateProject()">Hủy</button>
-          <button type="submit" class="btn btn-primary" [disabled]="!projectForm.valid">Tạo dự án</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
   <!-- Create Meeting Modal -->
   <div class="modal-overlay" *ngIf="showCreateMeetingModal()" (click)="closeCreateMeeting()">
     <div class="modal" (click)="$event.stopPropagation()">

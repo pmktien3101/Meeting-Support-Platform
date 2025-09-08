@@ -1,0 +1,21 @@
+<div class="setup-container">
+  <h2>Setup before joining</h2>
+  <div *ngIf="hasPermissionError" class="permission-error">
+    <p>Camera and microphone access is required for the meeting.</p>
+    <p>Please allow access in your browser settings and reload the page.</p>
+  </div>
+  <!-- Video preview -->
+  <div class="video-preview" *ngIf="!hasPermissionError">
+    <video #videoPreview autoplay playsinline muted></video>
+  </div>
+
+  <!-- Toggle button -->
+  <div class="controls">
+    <button (click)="toggleMicCam()">
+      {{ isMicCamToggledOn ? 'Disable Mic & Cam' : 'Enable Mic & Cam' }}
+    </button>
+  </div>
+
+  <!-- Join meeting -->
+  <button (click)="onReady()">Join Meeting</button>
+</div>

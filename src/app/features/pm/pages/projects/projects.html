@@ -1,9 +1,5 @@
 <div class="pm-projects">
   <div class="page-header">
-    <div class="header-content">
-      <h2>📁 Quản Lý Dự Án</h2>
-      <p>Theo dõi và quản lý các dự án của bạn</p>
-    </div>
     <div class="header-actions">
       <button class="btn btn-primary" (click)="openCreateProject()">
         ➕ Tạo Dự Án Mới
@@ -23,14 +19,6 @@
         <option value="active">Đang thực hiện</option>
         <option value="on-hold">Tạm dừng</option>
         <option value="completed">Hoàn thành</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>Quản lý:</label>
-      <select class="filter-select" aria-label="Lọc theo quản lý">
-        <option value="">Tất cả</option>
-        <option value="me">Của tôi</option>
-        <option value="team">Của nhóm</option>
       </select>
     </div>
     <div class="filter-group">
@@ -122,6 +110,49 @@
     </div>
   </div>
 </div>
+  <!-- Modals -->
+  <!-- Create Project Modal -->
+  <div class="modal-overlay" *ngIf="showCreateProjectModal" (click)="closeCreateProject()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>📁 Tạo Dự Án Mới</h3>
+        <button class="modal-close" (click)="closeCreateProject()">×</button>
+      </div>
+      <form [formGroup]="projectForm" (ngSubmit)="submitProject()" class="modal-form">
+        <div class="form-group">
+          <label for="projectName">Tên dự án *</label>
+          <input type="text" id="projectName" formControlName="name" placeholder="Nhập tên dự án">
+        </div>
+        <div class="form-group">
+          <label for="projectDescription">Mô tả</label>
+          <textarea id="projectDescription" formControlName="description" rows="3" placeholder="Mô tả dự án"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="startDate">Ngày bắt đầu *</label>
+            <input type="date" id="startDate" formControlName="startDate">
+          </div>
+          <div class="form-group">
+            <label for="endDate">Ngày kết thúc *</label>
+            <input type="date" id="endDate" formControlName="endDate">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="projectStatus">Trạng thái</label>
+          <select id="projectStatus" formControlName="status">
+            <option value="planning">Lập kế hoạch</option>
+            <option value="active">Đang thực hiện</option>
+            <option value="on-hold">Tạm dừng</option>
+            <option value="completed">Hoàn thành</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" (click)="closeCreateProject()">Hủy</button>
+          <button type="submit" class="btn btn-primary" [disabled]="!projectForm.valid">Tạo dự án</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
 <!-- Edit Project Modal -->
 <div class="modal-overlay" *ngIf="showEditProjectModal" (click)="closeEditProject()">
@@ -409,39 +440,6 @@
               </label>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="form-section">
-        <h4 class="section-title">📍 Địa điểm Meeting</h4>
-        
-        <div class="form-group">
-          <label for="meetingLocation">
-            <span class="label-icon">📍</span>
-            Địa điểm
-          </label>
-          <input type="text" 
-                 id="meetingLocation" 
-                 [(ngModel)]="newMeeting.location" 
-                 name="meetingLocation"
-                 placeholder="Nhập địa điểm meeting (phòng họp, online, etc.)"
-                 class="form-input">
-        </div>
-        
-        <div class="form-group">
-          <label for="meetingType">
-            <span class="label-icon">💻</span>
-            Loại Meeting <span class="required">*</span>
-          </label>
-          <select id="meetingType" 
-                  [(ngModel)]="newMeeting.type" 
-                  name="meetingType"
-                  class="form-select"
-                  required>
-            <option value="offline">Offline</option>
-            <option value="online">Online</option>
-            <option value="hybrid">Hybrid</option>
-          </select>
         </div>
       </div>
       

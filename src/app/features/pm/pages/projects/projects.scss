@@ -13,35 +13,14 @@ $off-white: #F9F4EE;
   min-height: 100vh;
 
   .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
     margin-bottom: 32px;
-    background: white;
     padding: 24px;
-    border-radius: 16px;
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-
-    .header-content {
-      h2 {
-        font-size: 28px;
-        font-weight: 700;
-        color: #1e293b;
-        margin: 0 0 8px 0;
-      }
-
-      p {
-        color: #64748b;
-        margin: 0;
-        font-size: 16px;
-      }
-    }
 
     .header-actions {
       display: flex;
       gap: 12px;
-
+      justify-self: end;
+      align-self: flex-end;
       .btn {
         padding: 12px 20px;
         border: none;
@@ -408,7 +387,210 @@ $off-white: #F9F4EE;
     }
   }
 }
+// Modals
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
 
+    .modal {
+      background: white;
+      border-radius: 16px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+
+      .modal-header {
+        padding: 24px 24px 0 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        h3 {
+          margin: 0;
+          font-size: 20px;
+          font-weight: 600;
+          color: #1e293b;
+        }
+
+        .modal-close {
+          background: none;
+          border: none;
+          font-size: 24px;
+          color: #64748b;
+          cursor: pointer;
+          padding: 8px;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+
+          &:hover {
+            background: $light-orange;
+            color: $primary-orange;
+          }
+        }
+      }
+
+      .modal-form {
+        padding: 24px;
+
+        .form-group {
+          margin-bottom: 20px;
+
+          label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
+          }
+
+          input, textarea, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: white;
+
+            &:focus {
+              outline: none;
+              border-color: $primary-orange;
+              box-shadow: 0 0 0 3px rgba(255, 94, 19, 0.1);
+            }
+
+            &::placeholder {
+              color: #9ca3af;
+            }
+          }
+
+          textarea {
+            resize: vertical;
+            min-height: 80px;
+          }
+        }
+
+        .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+
+        .participants-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+          gap: 12px;
+          max-height: 200px;
+          overflow-y: auto;
+          border: 1px solid #e2e8f0;
+          border-radius: 8px;
+          padding: 12px;
+
+          .participant-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &:hover {
+              border-color: $primary-orange;
+              background: $light-orange;
+            }
+
+            &.selected {
+              border-color: $primary-orange;
+              background: $light-orange;
+            }
+
+            .participant-avatar {
+              width: 32px;
+              height: 32px;
+              background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+              color: white;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-weight: 600;
+              font-size: 14px;
+            }
+
+            .participant-name {
+              font-weight: 500;
+              color: #374151;
+              font-size: 14px;
+            }
+
+            .participant-role {
+              color: #64748b;
+              font-size: 12px;
+            }
+          }
+        }
+
+        .modal-actions {
+          display: flex;
+          gap: 12px;
+          justify-content: flex-end;
+          margin-top: 24px;
+          padding-top: 24px;
+          border-top: 1px solid #e2e8f0;
+
+          .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+
+            &.btn-primary {
+              background: linear-gradient(135deg, $primary-orange, $secondary-orange);
+              color: white;
+
+              &:hover:not(:disabled) {
+                background: linear-gradient(135deg, color.adjust($primary-orange, $lightness: -10%), color.adjust($secondary-orange, $lightness: -10%));
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(255, 94, 19, 0.3);
+              }
+
+              &:disabled {
+                background: #94a3b8;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
+              }
+            }
+
+            &.btn-secondary {
+              background: #f3f4f6;
+              color: #374151;
+              border: 1px solid #d1d5db;
+
+              &:hover {
+                background: #e5e7eb;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 // Modal Styles
 .modal-overlay {
   position: fixed;
